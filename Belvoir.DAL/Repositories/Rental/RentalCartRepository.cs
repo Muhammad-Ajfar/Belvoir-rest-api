@@ -74,6 +74,7 @@ namespace Belvoir.DAL.Repositories.Rental
             await _dbConnection.ExecuteAsync("sp_UpdateCartItemQuantity", parameters, commandType: CommandType.StoredProcedure);
         }
 
+
     }
 
 }

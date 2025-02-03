@@ -32,7 +32,7 @@ namespace Belvoir.Bll.Services.Rentals
         public Task<Response<IEnumerable<RentalViewDTO>>> GetRentalsByCategory(
         string gender,
         string garmentType,
-        string fabricType);
+        Guid fabricType);
 
         public Task<Response<object>> AddWishlist(Guid userId, Guid productId);
         public Task<Response<IEnumerable<RentalWhishListviewDTO>>> GetWishlist(Guid userId);
@@ -271,7 +271,7 @@ namespace Belvoir.Bll.Services.Rentals
 
 
 
-        public async Task<Response<IEnumerable<RentalViewDTO>>> GetRentalsByCategory(string gender, string garmentType, string fabricType)
+        public async Task<Response<IEnumerable<RentalViewDTO>>> GetRentalsByCategory(string gender, string garmentType, Guid fabricType)
         {
             var rawData = await _repo.GetRentalsByCategoryAsync(gender, garmentType, fabricType);
 

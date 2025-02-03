@@ -33,7 +33,7 @@ namespace Belvoir.DAL.Repositories.Rental
 
         public Task<int> AddRentalImage(Guid rentalId, string imagePath, bool isPrimary);
 
-        public  Task<IEnumerable<(RentalProduct, RentalImage)>> GetRentalsByCategoryAsync(string gender, string garmentType, string fabricType);
+        public  Task<IEnumerable<(RentalProduct, RentalImage)>> GetRentalsByCategoryAsync(string gender, string garmentType, Guid fabricType);
 
         public Task<IEnumerable<(RentalProduct, RentalImage)>> SearchRentalsByName(string name);
         public  Task<int> AddWhishlist(Guid userid, Guid productid);
@@ -79,12 +79,17 @@ namespace Belvoir.DAL.Repositories.Rental
             var offset = (pageNumber - 1) * pageSize;
 
             var query = @"
-            SELECT * 
-            FROM RentalProduct Left
-            JOIN RentalImage 
-            ON RentalProduct.id = RentalImage.productid 
-            WHERE RentalProduct.IsDeleted = false 
-            LIMIT @page_size OFFSET @offset_value";
+                    WITH PaginatedProducts AS (
+                        SELECT * 
+                        FROM RentalProduct 
+                        WHERE IsDeleted = false 
+                        ORDER BY id 
+                        LIMIT @page_size OFFSET @offset_value
+                    )
+                    SELECT pp.*, ri.* 
+                    FROM PaginatedProducts pp
+                    LEFT JOIN RentalImage ri 
+                    ON pp.id = ri.productid";
 
             return await _connection.QueryAsync<RentalProduct, RentalImage, (RentalProduct, RentalImage)>(
                 query,
@@ -150,7 +155,7 @@ namespace Belvoir.DAL.Repositories.Rental
         }
 
 
-        public async Task<IEnumerable<(RentalProduct, RentalImage)>> GetRentalsByCategoryAsync(string gender, string garmentType, string fabricType)
+        public async Task<IEnumerable<(RentalProduct, RentalImage)>> GetRentalsByCategoryAsync(string gender, string garmentType, Guid fabricType)
         {
             var query = @"
             CALL SearchRentalsByCategory(@gender, @garmentType, @fabricType);";
