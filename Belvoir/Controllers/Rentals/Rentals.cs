@@ -74,7 +74,7 @@ namespace Belvoir.Controllers.Rentals
         [HttpGet("category")]
         public async Task<IActionResult> RentalByCategory(string gender,
         string garmentType,
-        string fabricType)
+        Guid fabricType)
         {
             var response = await _service.GetRentalsByCategory(gender, garmentType, fabricType);
             return StatusCode(response.StatusCode, response);
