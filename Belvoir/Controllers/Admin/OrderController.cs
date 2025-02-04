@@ -1,6 +1,7 @@
 ﻿using Belvoir.Bll.DTO.Order;
 using Belvoir.Bll.Services.Admin;
 using Belvoir.DAL.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -34,7 +35,37 @@ namespace Belvoir.Controllers.Admin
             //Guid userId = Guid.TryParse(user, out Guid parsedGuid) ? parsedGuid : Guid.Empty;
             //order.customerId = userId;
             var response = await _orderServices.AddOrder(order);
-            return StatusCode(statusCode: response.StatusCode, response);
+            return StatusCode(response.StatusCode, response);
+        }
+
+        [Authorize]
+        [HttpGet("user")]
+        public async Task<IActionResult> getUserOrder(string? status)
+        {
+            var user_id = Guid.Parse(HttpContext.Items["UserId"]?.ToString());
+            var response = await _orderServices.orderUserGets(user_id, status);
+            return StatusCode(response.StatusCode, response);
+        }
+
+        [HttpGet("admin")]
+        public async Task<IActionResult> getAdminOrder(string? status)
+        {
+            var response = await _orderServices.orderAdminGets(status);
+            return StatusCode(response.StatusCode, response);
+        }
+
+        [HttpGet("delivery")]
+        public async Task<IActionResult> getDeliveryOrder()
+        {
+            var response = await _orderServices.orderDeliveryGets();
+            return StatusCode(response.StatusCode, response);
+        }
+
+        [HttpGet("tailor")]
+        public async Task<IActionResult> getTailorOrder()
+        {
+            var response = await _orderServices.orderTailorGets();
+            return StatusCode(response.StatusCode, response);
         }
     }
 }
