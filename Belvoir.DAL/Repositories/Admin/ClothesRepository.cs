@@ -101,6 +101,7 @@ namespace Belvoir.DAL.Repositories.Admin
 
         public async Task<ClothCategory> GetCategory()
         {
+
             var query = "GetClothCategory";
 
             var result = await _dbConnection.QueryMultipleAsync(query,commandType:CommandType.StoredProcedure);
