@@ -14,5 +14,6 @@ namespace Belvoir.Bll.DTO.Rental
         public decimal ItemPrice { get; set; }
         public int Quantity { get; set; }
         public string PrimaryImageUrl { get; set; }
+                
     }
 }
