@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Belvoir.Bll.DTO.Order;
 using Belvoir.DAL.Models;
+using Belvoir.DAL.Models.NewFolder;
+using Belvoir.DAL.Models.OrderGet;
 using Belvoir.DAL.Repositories.Admin;
 using System;
 using System.Collections.Generic;
@@ -14,6 +16,10 @@ namespace Belvoir.Bll.Services.Admin
     {
         public Task<Response<object>> AddTailorProducts(TailorProductDTO tailorProductDTO);
         public Task<Response<object>> AddOrder(Order order);
+        public Task<Response<IEnumerable<OrderAdminGet>>> orderAdminGets(string? status);
+        public Task<Response<IEnumerable<OrderUserGet>>> orderUserGets(Guid userid, string? status);
+        public Task<Response<IEnumerable<OrderDeliveryGet>>> orderDeliveryGets();
+        public Task<Response<IEnumerable<OrderTailorGet>>> orderTailorGets();
     }
     public class OrderServices:IOrderServices
     {
@@ -50,7 +56,31 @@ namespace Belvoir.Bll.Services.Admin
             }
             return new Response<object> { StatusCode = 500, Message = "errror" };
         }
-        
+        public async Task<Response<IEnumerable<OrderUserGet>>> orderUserGets(Guid userid, string? status)
+        {
+            var result = await _repo.orderUserGets(userid, status);
+            return new Response<IEnumerable<OrderUserGet>> { StatusCode = 200, Message = "success", Data = result };
+        }
+        public async Task<Response<IEnumerable<OrderTailorGet>>> orderTailorGets()
+        {
+            var result = await _repo.orderTailorGets();
+            foreach (var item in result)
+            {
+                item.deadline = item.order_date.AddDays(3);
+            }
+            return new Response<IEnumerable<OrderTailorGet>> { StatusCode = 200, Message = "success", Data = result };
+        }
+        public async Task<Response<IEnumerable<OrderDeliveryGet>>> orderDeliveryGets()
+        {
+            var result = await _repo.orderDeliveryGets();
+
+            return new Response<IEnumerable<OrderDeliveryGet>> { StatusCode = 200, Message = "success", Data = result };
+        }
+        public async Task<Response<IEnumerable<OrderAdminGet>>> orderAdminGets(string? status)
+        {
+            var result = await _repo.orderAdminGets( status);
+            return new Response<IEnumerable<OrderAdminGet>> { StatusCode = 200, Message = "success", Data = result };
+        }
 
     }
 }

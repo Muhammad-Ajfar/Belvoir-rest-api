@@ -1,4 +1,6 @@
 ﻿using Belvoir.DAL.Models;
+using Belvoir.DAL.Models.NewFolder;
+using Belvoir.DAL.Models.OrderGet;
 using Dapper;
 using System;
 using System.Collections.Generic;
@@ -11,11 +13,14 @@ namespace Belvoir.DAL.Repositories.Admin
 {
     public interface IOrderRepository
     {
-         public Task<bool> AddTailorProduct(TailorProduct tailorProduct);
-         public Task<bool> IsClothExists(Guid Id);
-         public Task<bool> IsDesignExists(Guid Id);
-         public Task<bool> AddOrder(Order order);
-         public Task<IEnumerable<OrderTailorGet>> orderTailorGets(); 
+        public Task<bool> AddTailorProduct(TailorProduct tailorProduct);
+        public Task<bool> IsClothExists(Guid Id);
+        public Task<bool> IsDesignExists(Guid Id);
+        public Task<bool> AddOrder(Order order);
+        public Task<IEnumerable<OrderTailorGet>> orderTailorGets();
+        public Task<IEnumerable<OrderAdminGet>> orderAdminGets(string? status);
+        public Task<IEnumerable<OrderDeliveryGet>> orderDeliveryGets();
+        public Task<IEnumerable<OrderUserGet>> orderUserGets(Guid userid, string? status);
     }
     public class OrderRepository: IOrderRepository
     {
@@ -62,8 +67,28 @@ namespace Belvoir.DAL.Repositories.Admin
         }
         public async Task<IEnumerable<OrderTailorGet>> orderTailorGets()
         {
-            string query = "SELECT orders.order_id,Name,order_date,order_status FROM orders join order_items on orders.order_id = order_items.order_id join User on User.Id = orders.customer_id";
+            string query = "SELECT orders.order_id,User.Name as customerName,order_date,order_status,Cloths.Title as clothTitle,DressDesign.Name as DesignName FROM orders join order_items on orders.order_id = order_items.order_id join User on User.Id = orders.customer_id join tailor_products ON tailor_products.product_id = order_items.tailor_product_id join Cloths on Cloths.Id = tailor_products.cloth_id join DressDesign on DressDesign.Id = tailor_products.design_id where order_status ='pending';";
             return await _dbConnection.QueryAsync<OrderTailorGet>(query);
+        }
+        public async Task<IEnumerable<OrderAdminGet>> orderAdminGets(string? status)
+        {
+            string spname = "GetOrdersByStatus";
+            var parameters = new DynamicParameters();
+            parameters.Add("@p_order_status", status);
+            return await _dbConnection.QueryAsync<OrderAdminGet>(spname,parameters,commandType:CommandType.StoredProcedure);
+        }
+        public async Task<IEnumerable<OrderDeliveryGet>> orderDeliveryGets()
+        {
+            string query = "SELECT orders.order_id,Name as customerName,order_date,order_status FROM orders join order_items on orders.order_id = order_items.order_id join User on User.Id = orders.customer_id  AND order_status ='out for delivery';";
+            return await _dbConnection.QueryAsync<OrderDeliveryGet>(query);
+        }
+        public async Task<IEnumerable<OrderUserGet>> orderUserGets(Guid userid,string? status)
+        {
+            string spName = "orderForUser";
+            var parameters = new DynamicParameters();
+            parameters.Add("@p_order_status", status);
+            parameters.Add("@p_user_id", userid);
+            return await _dbConnection.QueryAsync<OrderUserGet>(spName,parameters,commandType:CommandType.StoredProcedure);
         }
 
 
