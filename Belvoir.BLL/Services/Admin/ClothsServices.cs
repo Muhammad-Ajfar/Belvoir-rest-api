@@ -24,6 +24,8 @@ namespace Belvoir.Bll.Services.Admin
         public Task<Response<IEnumerable<Ratings>>> GetRating(Guid clothid);
         public Task<Response<object>> DeleteRating(Guid ratingId);
         public Task<Response<object>> UpdateRating(Guid ratingId, RatingItem data);
+        public Task<Response<ClothCategory>> GetClothCategory();
+
 
 
     }
@@ -267,5 +269,14 @@ namespace Belvoir.Bll.Services.Admin
         }
 
 
+        public async Task<Response<ClothCategory>> GetClothCategory()
+        {
+            var response = await _repo.GetCategory();
+            return new Response<ClothCategory>
+            {
+                Data = response,
+                Message = "success"
+            };
+        }
     }
 }

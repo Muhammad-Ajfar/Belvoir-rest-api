@@ -100,5 +100,13 @@ namespace Belvoir.Controllers.Admin
             var data = await _myService.UpdateRating(raingid, ratings);
             return StatusCode(data.StatusCode, data);
         }
+
+        [HttpGet("cloth-category")]
+        public async Task<IActionResult> GetClothCategory()
+        {
+            var data = await _myService.GetClothCategory();
+            return StatusCode(data.StatusCode, data);
+        }
+
     }
 }
