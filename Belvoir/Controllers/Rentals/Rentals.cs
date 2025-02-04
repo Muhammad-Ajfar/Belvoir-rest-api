@@ -4,6 +4,7 @@ using Belvoir.Bll.Services.Rentals;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using Belvoir.DAL.Models.Query;
 
 namespace Belvoir.Controllers.Rentals
 {
@@ -35,20 +36,13 @@ namespace Belvoir.Controllers.Rentals
 
         }
 
-        [HttpGet("search")]
-        public async Task<IActionResult> SearchRental(string name)
+        
+
+        [HttpGet("products")]
+        public async Task<IActionResult> Paginated([FromQuery] RentalQuery query)
         {
 
-            var response = await _service.SearchRental(name);
-            return StatusCode(response.StatusCode, response);
-
-        }
-
-        [HttpGet("paginated")]
-        public async Task<IActionResult> Paginated(int pagenumber, int pagesize)
-        {
-
-            var response = await _service.PaginatedProduct(pagenumber, pagesize);
+            var response = await _service.PaginatedRentalProduct(query);
             return StatusCode(response.StatusCode, response);
 
         }
@@ -71,15 +65,7 @@ namespace Belvoir.Controllers.Rentals
 
         }
 
-        [HttpGet("category")]
-        public async Task<IActionResult> RentalByCategory(string gender,
-        string garmentType,
-        string fabricType)
-        {
-            var response = await _service.GetRentalsByCategory(gender, garmentType, fabricType);
-            return StatusCode(response.StatusCode, response);
-
-        }
+        
 
         [HttpPost("whishlist")]
         public async Task<IActionResult> AddToWhisList(Guid productid)
