@@ -19,9 +19,10 @@ namespace Belvoir.Bll.Services.Admin
         public Task<Response<object>> AddWishlist(Guid userId, Guid productId);
 
         public Task<Response<IEnumerable<WhishList>>> GetWishlist(Guid userId);
-        public Task<Response<object>> AddRating(Guid userid, Guid clothid, RatingItem data);
 
+        public Task<Response<object>> AddRating(Guid userid, Guid clothid, RatingItem data);
         public Task<Response<IEnumerable<Ratings>>> GetRating(Guid clothid);
+
         public Task<Response<object>> DeleteRating(Guid ratingId);
         public Task<Response<object>> UpdateRating(Guid ratingId, RatingItem data);
 
