@@ -12,6 +12,7 @@ using System.Data.Common;
 using System.Xml.Linq;
 using static System.Net.Mime.MediaTypeNames;
 using CloudinaryDotNet;
+using Belvoir.DAL.Models.Query;
 
 namespace Belvoir.Bll.Services.Rentals
 {
@@ -21,18 +22,12 @@ namespace Belvoir.Bll.Services.Rentals
 
         public Task<Response<RentalViewDTO>> GetRentalById(Guid id);
 
-        public  Task<Response<IEnumerable<RentalViewDTO>>> SearchRental(string name);
-
-        public Task<Response<IEnumerable<RentalViewDTO>>> PaginatedProduct(int pagenumber, int pagesize);
+        public Task<Response<IEnumerable<RentalViewDTO>>> PaginatedRentalProduct(RentalQuery query);
 
         public Task<Response<object>> DeleteRental(Guid rentalId, Guid userid);
 
         public Task<Response<object>> UpdateRental(Guid rentalId, IFormFile[] files, RentalSetDTO Data, Guid userid);
 
-        public Task<Response<IEnumerable<RentalViewDTO>>> GetRentalsByCategory(
-        string gender,
-        string garmentType,
-        Guid fabricType);
 
         public Task<Response<object>> AddWishlist(Guid userId, Guid productId);
         public Task<Response<IEnumerable<RentalWhishListviewDTO>>> GetWishlist(Guid userId);
@@ -139,49 +134,13 @@ namespace Belvoir.Bll.Services.Rentals
        
 
 
-        public async Task<Response<IEnumerable<RentalViewDTO>>> SearchRental(string name)
+        
+
+
+
+        public async Task<Response<IEnumerable<RentalViewDTO>>> PaginatedRentalProduct(RentalQuery query)
         {
-            var rawData = await _repo.SearchRentalsByName(name);
-
-            var resultDict = new Dictionary<Guid, RentalViewDTO>(); 
-
-            foreach (var (rentalproduct, rentalimage) in rawData)
-            {
-                var mapped = _mapper.Map<RentalViewDTO>(rentalproduct);
-
-                if (!resultDict.ContainsKey(rentalproduct.Id))
-                {
-                    mapped.images = new List<RentalImage>();
-                    resultDict[rentalproduct.Id] = mapped;
-                }
-
-                resultDict[rentalproduct.Id].images.Add(rentalimage);
-            }
-
-            var finalResults = resultDict.Values.ToList();
-
-            if (!finalResults.Any())
-            {
-                return new Response<IEnumerable<RentalViewDTO>>
-                {
-                    StatusCode = 404,
-                    Error = "No rental products found matching the search criteria."
-                };
-            }
-
-            return new Response<IEnumerable<RentalViewDTO>>
-            {
-                Message = "Rental products retrieved successfully.",
-                StatusCode = 200,
-                Data = finalResults
-            };
-        }
-
-
-
-        public async Task<Response<IEnumerable<RentalViewDTO>>> PaginatedProduct(int pagenumber, int pagesize)
-        {
-            var rawData = await _repo.GetRentalProductsAsync(pagenumber, pagesize);
+            var rawData = await _repo.GetRentalProductsAsync(query);
 
             var resultDict = new Dictionary<string, RentalViewDTO>();
 
@@ -279,45 +238,7 @@ namespace Belvoir.Bll.Services.Rentals
 
 
 
-        public async Task<Response<IEnumerable<RentalViewDTO>>> GetRentalsByCategory(string gender, string garmentType, Guid fabricType)
-        {
-            var rawData = await _repo.GetRentalsByCategoryAsync(gender, garmentType, fabricType);
 
-            var resultDict = new Dictionary<string, RentalViewDTO>();
-
-            foreach (var (rentalProduct, rentalImage) in rawData)
-            {
-                if (!resultDict.ContainsKey(rentalProduct.Id.ToString()))
-                {
-                    var mapped = _mapper.Map<RentalViewDTO>(rentalProduct);
-                    mapped.images = new List<RentalImage>();
-                    resultDict[rentalProduct.Id.ToString()] = mapped;
-                }
-
-                if (rentalImage != null)
-                {
-                    resultDict[rentalProduct.Id.ToString()].images.Add(rentalImage);
-                }
-            }
-
-            var rentals = resultDict.Values.ToList();
-
-            if (!rentals.Any())
-            {
-                return new Response<IEnumerable<RentalViewDTO>>
-                {
-                    StatusCode = 404,
-                    Error = "No rentals found for the specified category"
-                };
-            }
-
-            return new Response<IEnumerable<RentalViewDTO>>
-            {
-                Message = "Rental items retrieved successfully",
-                StatusCode = 200,
-                Data = rentals
-            };
-        }
 
         public async Task<Response<object>> AddWishlist(Guid userId, Guid productId)
         {

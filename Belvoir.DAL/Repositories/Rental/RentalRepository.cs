@@ -1,4 +1,5 @@
 ﻿using Belvoir.DAL.Models;
+using Belvoir.DAL.Models.Query;
 using Dapper;
 using System;
 using System.Collections.Generic;
@@ -18,7 +19,7 @@ namespace Belvoir.DAL.Repositories.Rental
 
         public Task<int> AddRentalProductAsync(RentalProduct rentalProduct,Guid Userid);
 
-        public Task<IEnumerable<(RentalProduct, RentalImage)>> GetRentalProductsAsync(int pageSize, int pageNumber);
+        public Task<IEnumerable<(RentalProduct, RentalImage)>> GetRentalProductsAsync(RentalQuery query);
 
         public  Task<RentalProduct> GetRentalProductById(Guid rentalId);
 
@@ -33,9 +34,6 @@ namespace Belvoir.DAL.Repositories.Rental
 
         public Task<int> AddRentalImage(Guid rentalId, string imagePath, bool isPrimary);
 
-        public  Task<IEnumerable<(RentalProduct, RentalImage)>> GetRentalsByCategoryAsync(string gender, string garmentType, Guid fabricType);
-
-        public Task<IEnumerable<(RentalProduct, RentalImage)>> SearchRentalsByName(string name);
         public  Task<int> AddWhishlist(Guid userid, Guid productid);
         public  Task<IEnumerable<(RentalWhishlist, RentalImage)>> GetWishlist(Guid userId);
         public Task<int> ExistItem(Guid userId, Guid productId);
@@ -82,27 +80,28 @@ namespace Belvoir.DAL.Repositories.Rental
 
 
 
-        public async Task<IEnumerable<(RentalProduct, RentalImage)>> GetRentalProductsAsync(int pageNumber, int pageSize)
+        public async Task<IEnumerable<(RentalProduct, RentalImage)>> GetRentalProductsAsync(RentalQuery query)
         {
-            var offset = (pageNumber - 1) * pageSize;
 
-            var query = @"
-                    WITH PaginatedProducts AS (
-                        SELECT * 
-                        FROM RentalProduct 
-                        WHERE IsDeleted = false 
-                        ORDER BY id 
-                        LIMIT @page_size OFFSET @offset_value
-                    )
-                    SELECT pp.*, ri.* 
-                    FROM PaginatedProducts pp
-                    LEFT JOIN RentalImage ri 
-                    ON pp.id = ri.productid";
+            var offset = (query.pageNo - 1) * query.pageSize;
+
+            var spName = "GetRentalProducts";
+            var parameters = new DynamicParameters();
+            parameters.Add("@p_name", query.searchName);
+            parameters.Add("@p_minPrice", query.minPrice);
+            parameters.Add("@p_maxPrice", query.maxPrice);
+            parameters.Add("@p_gender", query.gender);
+            parameters.Add("@p_garmentType", query.garmentType);
+            parameters.Add("@p_fabricType", query.fabric_type);
+            parameters.Add("@p_pageSize", query.pageSize);
+            parameters.Add("@p_offset", offset);
+
 
             return await _connection.QueryAsync<RentalProduct, RentalImage, (RentalProduct, RentalImage)>(
-                query,
+                spName,
                 (rentalProduct, rentalImage) => (rentalProduct, rentalImage),
-                new { page_size = pageSize, offset_value = offset }
+                parameters,
+                commandType:CommandType.StoredProcedure
             );
         }
 
@@ -163,37 +162,9 @@ namespace Belvoir.DAL.Repositories.Rental
         }
 
 
-        public async Task<IEnumerable<(RentalProduct, RentalImage)>> GetRentalsByCategoryAsync(string gender, string garmentType, Guid fabricType)
-        {
-            var query = @"
-            CALL SearchRentalsByCategory(@gender, @garmentType, @fabricType);";
 
-            return await _connection.QueryAsync<RentalProduct, RentalImage, (RentalProduct, RentalImage)>(
-                query,
-                (rentalProduct, rentalImage) => (rentalProduct, rentalImage),
-                new { gender, garmentType, fabricType },
-                splitOn: "id"
-            );
-        }
 
-        public async Task<IEnumerable<(RentalProduct, RentalImage)>> SearchRentalsByName(string name)
-        {
-        var query = @"
-        SELECT * FROM RentalProduct 
-        left JOIN RentalImage ON RentalProduct.id = RentalImage.productid
-        WHERE (Title LIKE CONCAT('%', @name, '%') 
-               OR Description LIKE CONCAT('%', @name, '%'))
-              AND RentalProduct.IsDeleted = false";
-
-            var result = await _connection.QueryAsync<RentalProduct, RentalImage, (RentalProduct, RentalImage)>(
-                query,
-                (rentalproduct, rentalimage) => (rentalproduct, rentalimage),
-                new { name }
-            );
-
-            Console.WriteLine("the result is" ,result);
-            return result.ToList();
-        }
+        
 
         public async Task<int> AddWhishlist(Guid userid, Guid productid)
         {
