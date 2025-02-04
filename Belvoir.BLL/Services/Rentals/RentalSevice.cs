@@ -28,8 +28,17 @@ namespace Belvoir.Bll.Services.Rentals
 
         public Task<Response<object>> UpdateRental(Guid rentalId, IFormFile[] files, RentalSetDTO Data, Guid userid);
 
+
         public Task<Response<object>> AddWishlist(Guid userId, Guid productId);
         public Task<Response<IEnumerable<RentalWhishListviewDTO>>> GetWishlist(Guid userId);
+
+
+        public Task<Response<object>> AddRating(Guid userid, Guid rentalid, RatingItem data);
+        public Task<Response<IEnumerable<Ratings>>> GetRating(Guid rentalid);
+        public Task<Response<object>> DeleteRating(Guid ratingId);
+        public Task<Response<object>> UpdateRating(Guid ratingId, RatingItem data);
+
+
 
 
 
@@ -229,7 +238,7 @@ namespace Belvoir.Bll.Services.Rentals
 
 
 
-        
+
 
         public async Task<Response<object>> AddWishlist(Guid userId, Guid productId)
         {
@@ -281,6 +290,85 @@ namespace Belvoir.Bll.Services.Rentals
 
         }
 
+        public async Task<Response<object>> AddRating(Guid userid, Guid rentalid, RatingItem data)
+        {
+            var response = await _repo.AddRating(rentalid, userid, data);
+            if (response == 0)
+            {
+                return new Response<object>
+                {
+                    StatusCode = 400,
+                    Message = "Error in adding Rating"
+                };
+            }
+            return new Response<object>
+            {
 
+                StatusCode = 200,
+                Message = "success"
+            };
+        }
+
+        public async Task<Response<IEnumerable<Ratings>>> GetRating(Guid rentalid)
+        {
+            var ratings = await _repo.GetRating(rentalid);
+
+            if (ratings == null || !ratings.Any())
+            {
+                return new Response<IEnumerable<Ratings>>
+                {
+                    StatusCode = 404,
+                    Message = "No ratings found",
+                    Data = null
+                };
+            }
+
+            return new Response<IEnumerable<Ratings>>
+            {
+                StatusCode = 200,
+                Message = "Ratings retrieved successfully",
+                Data = ratings
+            };
+        }
+
+        public async Task<Response<object>> DeleteRating(Guid ratingId)
+        {
+            var response = await _repo.DeleteRating(ratingId);
+
+            if (response == 0)
+            {
+                return new Response<object>
+                {
+                    StatusCode = 400,
+                    Message = "Error deleting rating"
+                };
+            }
+
+            return new Response<object>
+            {
+                StatusCode = 200,
+                Message = "Rating deleted successfully"
+            };
+        }
+
+        public async Task<Response<object>> UpdateRating(Guid ratingId, RatingItem data)
+        {
+            var response = await _repo.UpdateRating(ratingId, data);
+
+            if (response == 0)
+            {
+                return new Response<object>
+                {
+                    StatusCode = 400,
+                    Message = "Error updating rating"
+                };
+            }
+
+            return new Response<object>
+            {
+                StatusCode = 200,
+                Message = "Rating updated successfully"
+            };
+        }
     }
 }

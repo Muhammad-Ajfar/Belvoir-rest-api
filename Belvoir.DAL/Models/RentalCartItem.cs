@@ -8,12 +8,12 @@ namespace Belvoir.Bll.DTO.Rental
 {
     public class RentalCartItem
     {
-        public Guid Id { get; set; }
+        public Guid ItemId { get; set; }
         public Guid ProductId { get; set; }
         public string ProductName { get; set; }
-        public string ProductDescription { get; set; }
-        public decimal Price { get; set; }
+        public decimal ItemPrice { get; set; }
         public int Quantity { get; set; }
         public string PrimaryImageUrl { get; set; }
+                
     }
 }

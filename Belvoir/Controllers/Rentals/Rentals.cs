@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Belvoir.DAL.Models.Query;
+using Belvoir.DAL.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Belvoir.Controllers.Rentals
 {
@@ -65,7 +67,6 @@ namespace Belvoir.Controllers.Rentals
 
         }
 
-        
 
         [HttpPost("whishlist")]
         public async Task<IActionResult> AddToWhisList(Guid productid)
@@ -80,6 +81,40 @@ namespace Belvoir.Controllers.Rentals
         {
             Guid userId = Guid.Parse(HttpContext.Items["UserId"].ToString());
             var data = await _service.GetWishlist(userId);
+            return StatusCode(data.StatusCode, data);
+        }
+
+        [Authorize]
+        [HttpGet("rental-rating")]
+        public async Task<IActionResult> GetRating_(Guid productid)
+        {
+            var data = await _service.GetRating(productid);
+            return StatusCode(data.StatusCode, data);
+        }
+
+        [Authorize]
+        [HttpPost("rental-rating")]
+        public async Task<IActionResult> AddRatings(Guid productid, [FromBody] RatingItem ratings)
+        {
+            Guid userId = Guid.Parse(HttpContext.Items["UserId"].ToString());
+            var data = await _service.AddRating(userId, productid, ratings);
+            return StatusCode(data.StatusCode, data);
+        }
+
+        [Authorize]
+        [HttpDelete("rental-rating")]
+        public async Task<IActionResult> Removerating(Guid ratingid)
+        {
+            var data = await _service.DeleteRating(ratingid);
+            return StatusCode(data.StatusCode, data);
+        }
+
+        [Authorize]
+        [HttpPut("rental-rating")]
+        public async Task<IActionResult> UpdateRating(Guid raitngid, [FromBody] RatingItem ratings)
+        {
+            Guid userId = Guid.Parse(HttpContext.Items["UserId"].ToString());
+            var data = await _service.UpdateRating(raitngid, ratings);
             return StatusCode(data.StatusCode, data);
         }
     }

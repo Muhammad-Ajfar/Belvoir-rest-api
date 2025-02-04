@@ -20,6 +20,14 @@ namespace Belvoir.Bll.Services.Admin
 
         public Task<Response<IEnumerable<WhishList>>> GetWishlist(Guid userId);
 
+        public Task<Response<object>> AddRating(Guid userid, Guid clothid, RatingItem data);
+        public Task<Response<IEnumerable<Ratings>>> GetRating(Guid clothid);
+
+        public Task<Response<object>> DeleteRating(Guid ratingId);
+        public Task<Response<object>> UpdateRating(Guid ratingId, RatingItem data);
+        public Task<Response<ClothCategory>> GetClothCategory();
+
+
 
     }
     public class ClothsServices : IClothsServices
@@ -179,6 +187,97 @@ namespace Belvoir.Bll.Services.Admin
                 Message = "Wishlist retrieved successfully."
             };
 
+        }
+
+        public async Task<Response<object>> AddRating (Guid userid ,Guid clothid,RatingItem data)
+        {
+             var response =await _repo.AddRating(clothid,userid,data);
+             if (response==0 ) {
+                return new Response<object>
+                {
+                    StatusCode = 400,
+                    Message = "Error in adding Rating"
+                };
+            }
+            return new Response<object>
+            {
+              
+                StatusCode = 200,
+                Message = "success"
+            };
+        }
+
+        public async Task<Response<IEnumerable<Ratings>>> GetRating(Guid clothid)
+        {
+            var ratings = await _repo.GetRating(clothid);
+
+            if (ratings == null || !ratings.Any())
+            {
+                return new Response<IEnumerable<Ratings>>
+                {
+                    StatusCode = 404,
+                    Message = "No ratings found",
+                    Data = null
+                };
+            }
+
+            return new Response<IEnumerable<Ratings>>
+            {
+                StatusCode = 200,
+                Message = "Ratings retrieved successfully",
+                Data = ratings
+            };
+        }
+
+        public async Task<Response<object>> DeleteRating(Guid ratingId)
+        {
+            var response = await _repo.DeleteRating(ratingId);
+
+            if (response == 0)
+            {
+                return new Response<object>
+                {
+                    StatusCode = 400,
+                    Message = "Error deleting rating"
+                };
+            }
+
+            return new Response<object>
+            {
+                StatusCode = 200,
+                Message = "Rating deleted successfully"
+            };
+        }
+
+        public async Task<Response<object>> UpdateRating(Guid ratingId, RatingItem data)
+        {
+            var response = await _repo.UpdateRating(ratingId, data);
+
+            if (response == 0)
+            {
+                return new Response<object>
+                {
+                    StatusCode = 400,
+                    Message = "Error updating rating"
+                };
+            }
+
+            return new Response<object>
+            {
+                StatusCode = 200,
+                Message = "Rating updated successfully"
+            };
+        }
+
+
+        public async Task<Response<ClothCategory>> GetClothCategory()
+        {
+            var response = await _repo.GetCategory();
+            return new Response<ClothCategory>
+            {
+                Data = response,
+                Message = "success"
+            };
         }
     }
 }

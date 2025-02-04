@@ -33,9 +33,18 @@ namespace Belvoir.DAL.Repositories.Rental
         public Task<int> DeleteRentalImages(Guid rentalId);
 
         public Task<int> AddRentalImage(Guid rentalId, string imagePath, bool isPrimary);
+
         public  Task<int> AddWhishlist(Guid userid, Guid productid);
         public  Task<IEnumerable<(RentalWhishlist, RentalImage)>> GetWishlist(Guid userId);
         public Task<int> ExistItem(Guid userId, Guid productId);
+
+
+        public Task<int> AddRating(Guid rentalid, Guid userid, RatingItem data);
+        public Task<IEnumerable<Ratings>> GetRating(Guid rentalid);
+        public Task<int> DeleteRating(Guid ratingId);
+        public Task<int> UpdateRating(Guid ratingId, RatingItem data);
+
+
 
 
 
@@ -73,6 +82,7 @@ namespace Belvoir.DAL.Repositories.Rental
 
         public async Task<IEnumerable<(RentalProduct, RentalImage)>> GetRentalProductsAsync(RentalQuery query)
         {
+
             var offset = (query.pageNo - 1) * query.pageSize;
 
             var spName = "GetRentalProducts";
@@ -85,6 +95,7 @@ namespace Belvoir.DAL.Repositories.Rental
             parameters.Add("@p_fabricType", query.fabric_type);
             parameters.Add("@p_pageSize", query.pageSize);
             parameters.Add("@p_offset", offset);
+
 
             return await _connection.QueryAsync<RentalProduct, RentalImage, (RentalProduct, RentalImage)>(
                 spName,
@@ -151,7 +162,7 @@ namespace Belvoir.DAL.Repositories.Rental
         }
 
 
-        
+
 
         
 
@@ -199,5 +210,34 @@ namespace Belvoir.DAL.Repositories.Rental
             return await _connection.ExecuteAsync(query, new { usrid = userId, prid = productId });
         }
 
+
+        public async Task<int> AddRating(Guid rentalid, Guid userid, RatingItem data)
+        {
+            var query = @"insert into Ratings (id,rentalid,userid,isdeleted,createdby,message,ratingvalue) values (UUID(),@rentalid,@userid,@isdeleted,@createdby,@message,@ratingvalue)";
+            return await _connection.ExecuteAsync(query, new { rentalid = rentalid, userid = userid, isdeleted = false, createdby = userid, message = data.message, ratingvalue = data.ratingvalue });
+        }
+
+        public async Task<IEnumerable<Ratings>> GetRating(Guid rentalid)
+        {
+            var query = @"select Ratings.id ,User.name as username,Ratings.ratingvalue,message from Ratings join User on Ratings.userid=User.id  where rentalid=@rentalid";
+            return await _connection.QueryAsync<Ratings>(query, new { rentalid = rentalid });
+        }
+
+        public async Task<int> DeleteRating(Guid ratingId)
+        {
+            var query = @"DELETE FROM Ratings WHERE id = @ratingId";
+            return await _connection.ExecuteAsync(query, new { ratingId });
+        }
+
+        public async Task<int> UpdateRating(Guid ratingId, RatingItem data)
+        {
+            var query = @"
+            UPDATE Ratings 
+            SET ratingvalue = @ratingValue, 
+                message = @message
+            WHERE id = @ratingId";
+
+            return await _connection.ExecuteAsync(query, new { ratingId = ratingId, @message = data.message, @ratingValue = data.ratingvalue });
+        }
     }
 }
