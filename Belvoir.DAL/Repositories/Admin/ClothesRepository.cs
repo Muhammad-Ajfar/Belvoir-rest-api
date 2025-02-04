@@ -20,6 +20,8 @@ namespace Belvoir.DAL.Repositories.Admin
         public Task<IEnumerable<Ratings>> GetRating(Guid clothid);
         public Task<int> DeleteRating(Guid ratingId);
         public Task<int> UpdateRating(Guid ratingId, RatingItem data);
+        public Task<ClothCategory> GetCategory();
+
 
     }
     public class ClothesRepository : IClothesRepository
@@ -95,6 +97,23 @@ namespace Belvoir.DAL.Repositories.Admin
             WHERE id = @ratingId";
 
             return await _dbConnection.ExecuteAsync(query, new { ratingId=ratingId, @message=data.message, @ratingValue=data.ratingvalue});
+        }
+
+        public async Task<ClothCategory> GetCategory()
+        {
+            var query = "GetClothCategory";
+
+            var result = await _dbConnection.QueryMultipleAsync(query,commandType:CommandType.StoredProcedure);
+            var designtype = await result.ReadAsync<CategoryItem>();
+            var colors = await result.ReadAsync<CategoryItem>();
+            var materialtype = await result.ReadAsync<CategoryItem>();
+
+            return new ClothCategory
+            {
+                Designtype = designtype?.ToList() ?? new List<CategoryItem>(),
+                colors = colors?.ToList() ?? new List<CategoryItem>(),
+                Materialtype = materialtype?.ToList() ?? new List<CategoryItem>()
+            };
         }
 
     }
