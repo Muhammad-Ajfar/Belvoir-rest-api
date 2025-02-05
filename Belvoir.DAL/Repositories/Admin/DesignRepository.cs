@@ -13,10 +13,12 @@ namespace Belvoir.DAL.Repositories.Admin
 {
     public interface IDesignRepository
     {
-        Task<List<Design>> GetDesignsAsync(DesignQueryParameters queryParams);
-        Task<Design> GetDesignById(Guid designId);
+        public Task<List<Design>> GetDesignsAsync(DesignQueryParameters queryParams);
+        public Task<Design> GetDesignById(Guid designId);
 
-        Task<int> AddDesignWithImagesAsync(Design design);
+        public Task<int> AddDesignWithImagesAsync(Design design);
+
+        
     }
 
     public class DesignRepository : IDesignRepository
