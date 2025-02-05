@@ -72,6 +72,15 @@ namespace Belvoir.DAL.Repositories.Admin
 
         public async Task<int> AddRating(Guid clothid ,Guid userid,RatingItem data)
         {
+            int reviewExists = await _dbConnection.ExecuteScalarAsync<int>(
+                    "SELECT COUNT(*) FROM Ratings WHERE userid = @UserId AND productid = @ProductId",
+                    new { UserId = userid, ProductId = clothid });
+
+            if (reviewExists > 0)
+            {
+                return -1; // Indicates that the user has already rated this product
+            }
+
             var query = @"insert into Ratings (id,productid,userid,isdeleted,createdby,message,ratingvalue) values (UUID(),@productid,@userid,@isdeleted,@createdby,@message,@ratingvalue)";
             return await _dbConnection.ExecuteAsync(query,new { productid=clothid, userid=userid,isdeleted=false ,createdby=userid,message=data.message,ratingvalue=data.ratingvalue});
         }

@@ -293,6 +293,15 @@ namespace Belvoir.Bll.Services.Rentals
         public async Task<Response<object>> AddRating(Guid userid, Guid rentalid, RatingItem data)
         {
             var response = await _repo.AddRating(rentalid, userid, data);
+
+            if (response == -1)
+            {
+                return new Response<object>
+                {
+                    StatusCode = 400,
+                    Message = "The user has already rated this product "
+                };
+            }
             if (response == 0)
             {
                 return new Response<object>
