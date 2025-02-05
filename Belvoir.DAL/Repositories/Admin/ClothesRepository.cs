@@ -113,11 +113,20 @@ namespace Belvoir.DAL.Repositories.Admin
 
             var query = "GetClothCategory";
 
-            var result = await _dbConnection.QueryMultipleAsync(query,commandType:CommandType.StoredProcedure);
+            var result = await _dbConnection.QueryMultipleAsync(query,commandType:CommandType.StoredProcedure, commandTimeout: 60);
             var designtype = await result.ReadAsync<CategoryItem>();
             var colors = await result.ReadAsync<CategoryItem>();
             var materialtype = await result.ReadAsync<CategoryItem>();
+            if (!designtype.Any() && !colors.Any() && !materialtype.Any())
+            {
+                return new ClothCategory
+                {
+                    Designtype = null,
+                    colors = null,
+                    Materialtype = null
+                };
 
+            }
             return new ClothCategory
             {
                 Designtype = designtype?.ToList() ?? new List<CategoryItem>(),

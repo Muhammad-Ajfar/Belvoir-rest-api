@@ -284,6 +284,7 @@ namespace Belvoir.Bll.Services.Admin
             var response = await _repo.GetCategory();
             return new Response<ClothCategory>
             {
+                StatusCode = 200,
                 Data = response,
                 Message = "success"
             };
