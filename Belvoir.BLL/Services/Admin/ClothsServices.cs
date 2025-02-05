@@ -190,7 +190,16 @@ namespace Belvoir.Bll.Services.Admin
         public async Task<Response<object>> AddRating (Guid userid ,Guid clothid,RatingItem data)
         {
              var response =await _repo.AddRating(clothid,userid,data);
-             if (response==0 ) {
+
+            if (response == -1)
+            {
+                return new Response<object>
+                {
+                    StatusCode = 400,
+                    Message = "The user has already rated this cloth "
+                };
+            }
+            if (response==0 ) {
                 return new Response<object>
                 {
                     StatusCode = 400,

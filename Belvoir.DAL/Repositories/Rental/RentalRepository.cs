@@ -242,6 +242,15 @@ namespace Belvoir.DAL.Repositories.Rental
 
         public async Task<int> AddRating(Guid rentalid, Guid userid, RatingItem data)
         {
+            int reviewExists = await _connection.ExecuteScalarAsync<int>(
+                "SELECT COUNT(*) FROM Ratings WHERE userid = @UserId AND rentalid = @RentalId",
+                new { UserId = userid, RentalId = rentalid });
+
+            if (reviewExists > 0)
+            {
+                return -1; // Indicates that the user has already rated this rental
+            }
+
             var query = @"insert into Ratings (id,rentalid,userid,isdeleted,createdby,message,ratingvalue) values (UUID(),@rentalid,@userid,@isdeleted,@createdby,@message,@ratingvalue)";
             return await _connection.ExecuteAsync(query, new { rentalid = rentalid, userid = userid, isdeleted = false, createdby = userid, message = data.message, ratingvalue = data.ratingvalue });
         }
