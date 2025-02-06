@@ -2,11 +2,13 @@
 using Belvoir.Bll.DTO.Design;
 using Belvoir.Bll.Helpers;
 using Belvoir.DAL.Models;
+using Belvoir.DAL.Models.Mesurements;
 using Belvoir.DAL.Repositories.Admin;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -19,7 +21,9 @@ namespace Belvoir.Bll.Services.Admin
         Task<Response<DesignDTO>> GetDesignByIdAsync(Guid designId);
 
         Task<Response<string>> AddDesignAsync(Design design, List<IFormFile> imageFiles);
-
+        Task<Response<object>> AddMesurementGuide(Mesurment_Guides design_Mesurments);
+        Task<Response<object>> AddDesignMesurement(List<Design_Mesurment> mesurement);
+        Task<Response<IEnumerable<MesurementListGet>>> GetDesignMesurment(Guid design_id);
     }
 
     public class DesignService : IDesignService
@@ -145,6 +149,38 @@ namespace Belvoir.Bll.Services.Admin
                 Error = "Database insert error."
             };
         }
+
+        public async Task<Response<object>> AddMesurementGuide(Mesurment_Guides mesurment_Guides)
+        {
+            bool result = await _designRepository.AddMesurementGuide(mesurment_Guides);
+            if (result)
+            {
+                return new Response<object> { StatusCode = 200, Message = "added successfully" };
+            }
+            return new Response<object> { StatusCode = 200, Message = "Failed" , Error = "server error" };
+        }
+        public async Task<Response<object>> AddDesignMesurement(List<Design_Mesurment> design_Mesurments)
+        {
+            bool result = await _designRepository.AddDesignMesurment(design_Mesurments);
+            if (result)
+            {
+                return new Response<object> { StatusCode = 200, Message = "added successfully" };
+            }
+            return new Response<object> { StatusCode = 200, Message = "Failed", Error = "server error" };
+        }
+        public async Task<Response<IEnumerable<MesurementListGet>>> GetDesignMesurment(Guid design_id)
+        {
+            var data = await _designRepository.GetDesignMesurment(design_id);
+            if (data == null)
+            {
+                return new Response<IEnumerable<MesurementListGet>> { StatusCode = 200, Message = "no data" };
+            }
+            else
+            {
+                return new Response<IEnumerable<MesurementListGet>> { StatusCode = 200, Message = "success", Data = data };
+            }
+        }
+
 
     }
 }
