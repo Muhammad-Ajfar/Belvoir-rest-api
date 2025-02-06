@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Belvoir.Bll.DTO;
+using Belvoir.Bll.DTO.Address;
 using Belvoir.Bll.DTO.Delivery;
 
 using Belvoir.Bll.DTO.Design;
@@ -45,6 +46,9 @@ namespace Belvoir.Bll.Mappings
                 .ForMember(dest => dest.Images, opt => opt.MapFrom(src => src.Images));
 
             CreateMap<Image, ImageDTO>();
+
+            CreateMap<Address, AddressGetDTO>();
+            CreateMap<AddressAddDTO, Address>();
 
             CreateMap<RentalWhishlist, RentalWhishListviewDTO>();
 
