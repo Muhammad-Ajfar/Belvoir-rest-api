@@ -34,8 +34,9 @@ namespace Belvoir.DAL.Repositories.Admin
         {
             var parameters = new DynamicParameters();
             parameters.Add("pTitle", query.SearchTerm, DbType.String);
-            parameters.Add("pMaterial", query.Material, DbType.String);
-            parameters.Add("pDesignPattern", query.DesignPattern, DbType.String); 
+            parameters.Add("pMaterial", query.Materials != null && query.Materials.Any() ? string.Join(",", query.Materials) : null);
+            parameters.Add("pColors", query.Colors != null && query.Colors.Any() ? string.Join(",", query.Colors) : null);
+            parameters.Add("pDesignPattern", query.DesignPatterns != null && query.DesignPatterns.Any() ? string.Join(",", query.DesignPatterns) : null);
             parameters.Add("pMinPrice", query.MinPrice, DbType.Decimal);
             parameters.Add("pMaxPrice", query.MaxPrice, DbType.Decimal);
             parameters.Add("pSortBy", query.SortBy, DbType.String);
