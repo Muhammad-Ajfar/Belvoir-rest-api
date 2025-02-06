@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 
 namespace Belvoir.DAL.Models.Mesurements
 {
-    public class Mesurment_Guides
+    public class MesurementListGet
     {
-        public string measurement_name { get; set; }
+        public Guid id { get; set; }
         public string description { get; set; }
+        public string measurement_name { get; set; }
+
     }
 }
