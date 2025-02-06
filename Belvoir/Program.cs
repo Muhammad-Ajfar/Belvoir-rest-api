@@ -41,6 +41,8 @@ builder.Services.AddScoped<IFabricService, FabricService>();
 
 builder.Services.AddScoped<IOrderServices,OrderServices>();
 
+builder.Services.AddScoped<IAddressService, AddressService>();
+
 builder.Services.AddScoped<IDesignService,DesignService>();
 
 builder.Services.AddScoped<IDeliveryServices, DeliveryServices>();
@@ -58,6 +60,8 @@ builder.Services.AddScoped<IRentalCartRepository,RentalCartRepository>();
 builder.Services.AddScoped<IFabricRepository, FabricRepository>();
 
 builder.Services.AddScoped<IOrderRepository,OrderRepository>();
+
+builder.Services.AddScoped<IAddressRepository, AddressRepository>();
 
 builder.Services.AddScoped<IDesignRepository,DesignRepository>();
 

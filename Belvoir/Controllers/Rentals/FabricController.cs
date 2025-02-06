@@ -17,7 +17,6 @@ namespace Belvoir.Controllers.Rentals
             _fabricService = fabricService;
         }
 
-        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetFabricCategories()
         {
