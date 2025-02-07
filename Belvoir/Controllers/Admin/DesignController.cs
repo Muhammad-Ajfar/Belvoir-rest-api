@@ -71,5 +71,13 @@ namespace Belvoir.Controllers.Admin
             var result = await _designService.GetDesignMesurment(design_id);
             return StatusCode(result.StatusCode, result);
         }
+
+        [HttpPost("add/mesurment/values")]
+        public async Task<IActionResult> AddMesurmentValues(MesurementSet mesurement)
+        {
+            Guid user_id = Guid.Parse(HttpContext.Items["UserId"]?.ToString());
+            var result = await _designService.AddMesurmentValues(mesurement,user_id);
+            return StatusCode(result.StatusCode, result);   
+        }
     }
 }

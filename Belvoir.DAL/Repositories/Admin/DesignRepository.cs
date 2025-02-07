@@ -21,6 +21,7 @@ namespace Belvoir.DAL.Repositories.Admin
         public Task<bool> AddMesurementGuide(Mesurment_Guides mesurment);
         public Task<bool> AddDesignMesurment(List<Design_Mesurment> design_Mesurments);
         public Task<IEnumerable<MesurementListGet>> GetDesignMesurment(Guid design_id);
+        public Task<bool> AddMesurmentValues(MesurementSet mesurment, Guid user_id);
     }
 
     public class DesignRepository : IDesignRepository
@@ -185,6 +186,37 @@ namespace Belvoir.DAL.Repositories.Admin
         {
             string query = @"SELECT id,measurement_name,description FROM belvoir.design_mesurment as dm JOIN belvoir.measurement_guides as mg ON dm.guide_id = mg.guide_id Where design_id = @design ;";             
             return await _dbConnection.QueryAsync<MesurementListGet>(query,new { design = design_id});
+        }
+
+        public async Task<bool> AddMesurmentValues(MesurementSet mesurment,Guid user_id)
+        {
+            Guid set_id = Guid.NewGuid();
+            string query1 = @"INSERT INTO `belvoir`.`measurements` (`measurement_id`,`set_id`,`des_mes_id`,`measurement_value`,`created_at`,`updated_at`) VALUES (UUID(),@set_id,@des_mes_id,@measurement_value);";
+            string query2 = @"INSERT INTO `belvoir`.`measurement_sets` (`set_id`,`set_name`,`created_at`,`updated_at`,`user_id`,`design_id`) VALUES (@set_id,@set_name,@user_id,@design_id);";
+
+            _dbConnection.Open();
+
+            using (var transaction = _dbConnection.BeginTransaction())
+            {
+                try
+                {
+                    bool ans = await _dbConnection.ExecuteAsync(query2, new { set_id = set_id, set_name = mesurment.set_name, user_id = user_id, design_id = mesurment.design_id }) > 0;
+                    if (ans)
+                    {
+                        foreach (var item in mesurment.values)
+                        {
+                            await _dbConnection.ExecuteAsync(query1, new { set_id = set_id, des_mes_id = item.id, measurement_value = item.mesurement_value });
+                        }
+                    }
+                    return true;
+                }
+                catch 
+                {
+                    return false;
+                }
+                
+            }
+            
         }
     }
 }

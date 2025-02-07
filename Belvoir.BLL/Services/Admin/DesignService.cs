@@ -19,11 +19,11 @@ namespace Belvoir.Bll.Services.Admin
     {
         Task<Response<List<DesignDTO>>> GetDesignsAsync(DesignQueryParameters queryParams);
         Task<Response<DesignDTO>> GetDesignByIdAsync(Guid designId);
-
         Task<Response<string>> AddDesignAsync(Design design, List<IFormFile> imageFiles);
         Task<Response<object>> AddMesurementGuide(Mesurment_Guides design_Mesurments);
         Task<Response<object>> AddDesignMesurement(List<Design_Mesurment> mesurement);
         Task<Response<IEnumerable<MesurementListGet>>> GetDesignMesurment(Guid design_id);
+        Task<Response<object>> AddMesurmentValues(MesurementSet mesurment, Guid user_id);
     }
 
     public class DesignService : IDesignService
@@ -181,6 +181,14 @@ namespace Belvoir.Bll.Services.Admin
             }
         }
 
-
+        public async Task<Response<object>> AddMesurmentValues(MesurementSet mesurment, Guid user_id)
+        {
+            bool result = await _designRepository.AddMesurmentValues(mesurment, user_id);
+            if (!result)
+            {
+                return new Response<object> { StatusCode = 500, Error = "server error" };
+            }
+            return new Response<object> { StatusCode = 200, Message = "success" };
+        }
     }
 }

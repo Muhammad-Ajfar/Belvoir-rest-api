@@ -16,7 +16,7 @@ namespace Belvoir.DAL.Repositories.Admin
         public Task<bool> AddTailorProduct(TailorProduct tailorProduct);
         public Task<bool> IsClothExists(Guid Id);
         public Task<bool> IsDesignExists(Guid Id);
-        public Task<bool> AddOrder(Order order);
+        public Task<bool> AddOrder(Order order, Guid user_id);
         public Task<IEnumerable<OrderTailorGet>> orderTailorGets();
         public Task<IEnumerable<OrderAdminGet>> orderAdminGets(string? status);
         public Task<IEnumerable<OrderDeliveryGet>> orderDeliveryGets();
@@ -44,18 +44,16 @@ namespace Belvoir.DAL.Repositories.Admin
             string query = "SELECT Count(*) FROM DressDesign WHERE Id = @Id";
             return await _dbConnection.ExecuteScalarAsync<int>(query, new { Id }) > 0;
         }
-        public async Task<bool> AddOrder(Order order)
+        public async Task<bool> AddOrder(Order order,Guid user_id)
         {
             var parameters = new DynamicParameters();
-            parameters.Add("@p_customer_id", "918eab05-0a0b-42a9-9ce6-2cc973c9eb3a");
-            parameters.Add("@p_order_date", order.orderDate);
+            parameters.Add("@p_customer_id", user_id);
             parameters.Add("@p_total_amount", order.totalAmount);
             parameters.Add("@p_payment_method", order.paymentMethod);
             parameters.Add("@p_shipping_address", order.shippingAddress);
             parameters.Add("@p_shipping_method", order.shippingMethod);
             parameters.Add("@p_shipping_cost", order.shippingCost);
             parameters.Add("@p_tracking_number", order.trackingNumber);
-            parameters.Add("@p_updated_by", order.updatedBy);
             parameters.Add("@p_product_type", order.productType);
             parameters.Add("@p_tailor_product_id", order.tailorProductId);
             parameters.Add("@p_rental_product_id", order.rentalProductId);
