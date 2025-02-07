@@ -11,8 +11,9 @@ namespace Belvoir.DAL.Models
         public string? SearchTerm { get; set; }
         public string? SortBy { get; set; } 
         public bool IsDescending { get; set; } = false; 
-        public string? Material { get; set; } 
-        public string? DesignPattern { get; set; } 
+        public List<string>? Materials { get; set; } 
+        public List<string>? Colors {  get; set; }
+        public List<string>? DesignPatterns { get; set; } 
         public decimal? MinPrice { get; set; } 
         public decimal? MaxPrice { get; set; } 
         public int? PageNo { get; set; } 

@@ -1,4 +1,5 @@
 ﻿using Belvoir.DAL.Models;
+using Belvoir.DAL.Models.Mesurements;
 using Dapper;
 using Newtonsoft.Json;
 using System;
@@ -13,10 +14,14 @@ namespace Belvoir.DAL.Repositories.Admin
 {
     public interface IDesignRepository
     {
-        Task<List<Design>> GetDesignsAsync(DesignQueryParameters queryParams);
-        Task<Design> GetDesignById(Guid designId);
+        public Task<List<Design>> GetDesignsAsync(DesignQueryParameters queryParams);
+        public Task<Design> GetDesignById(Guid designId);
 
-        Task<int> AddDesignWithImagesAsync(Design design);
+        public Task<int> AddDesignWithImagesAsync(Design design);
+        public Task<bool> AddMesurementGuide(Mesurment_Guides mesurment);
+        public Task<bool> AddDesignMesurment(List<Design_Mesurment> design_Mesurments);
+        public Task<IEnumerable<MesurementListGet>> GetDesignMesurment(Guid design_id);
+        public Task<bool> AddMesurmentValues(MesurementSet mesurment, Guid user_id);
     }
 
     public class DesignRepository : IDesignRepository
@@ -144,5 +149,74 @@ namespace Belvoir.DAL.Repositories.Admin
             }
         }
 
+        public async Task<bool> AddMesurementGuide(Mesurment_Guides mesurment)
+        {
+            string query = @"INSERT INTO `belvoir`.`measurement_guides` (`guide_id`, `measurement_name`,`description`) VALUES (UUID(),@measurement_name,@description);";
+
+            return await _dbConnection.ExecuteAsync(query, new { measurement_name = mesurment.measurement_name, description = mesurment.description }) > 0;
+        }
+
+        public async Task<bool> AddDesignMesurment(List<Design_Mesurment> design_Mesurments)
+        {
+            _dbConnection.Open();
+            using (var transaction = _dbConnection.BeginTransaction())
+            {
+                try
+                {
+                    string query = @"INSERT INTO `belvoir`.`design_mesurment` (`id`,`design_id`,`guide_id`) VALUES (UUID(),@design_id,@guide_id);";
+
+                    foreach (var item in design_Mesurments) {
+                        await _dbConnection.ExecuteAsync(query, new { guide_id = item.guide_id, design_id  = item.design_id});
+                    }
+                    transaction.Commit();
+                    return true;
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    return false;
+                }
+            }
+            
+            
+            
+        }
+
+        public async Task<IEnumerable<MesurementListGet>> GetDesignMesurment(Guid design_id)
+        {
+            string query = @"SELECT id,measurement_name,description FROM belvoir.design_mesurment as dm JOIN belvoir.measurement_guides as mg ON dm.guide_id = mg.guide_id Where design_id = @design ;";             
+            return await _dbConnection.QueryAsync<MesurementListGet>(query,new { design = design_id});
+        }
+
+        public async Task<bool> AddMesurmentValues(MesurementSet mesurment,Guid user_id)
+        {
+            Guid set_id = Guid.NewGuid();
+            string query1 = @"INSERT INTO `belvoir`.`measurements` (`measurement_id`,`set_id`,`des_mes_id`,`measurement_value`,`created_at`,`updated_at`) VALUES (UUID(),@set_id,@des_mes_id,@measurement_value);";
+            string query2 = @"INSERT INTO `belvoir`.`measurement_sets` (`set_id`,`set_name`,`created_at`,`updated_at`,`user_id`,`design_id`) VALUES (@set_id,@set_name,@user_id,@design_id);";
+
+            _dbConnection.Open();
+
+            using (var transaction = _dbConnection.BeginTransaction())
+            {
+                try
+                {
+                    bool ans = await _dbConnection.ExecuteAsync(query2, new { set_id = set_id, set_name = mesurment.set_name, user_id = user_id, design_id = mesurment.design_id }) > 0;
+                    if (ans)
+                    {
+                        foreach (var item in mesurment.values)
+                        {
+                            await _dbConnection.ExecuteAsync(query1, new { set_id = set_id, des_mes_id = item.id, measurement_value = item.mesurement_value });
+                        }
+                    }
+                    return true;
+                }
+                catch 
+                {
+                    return false;
+                }
+                
+            }
+            
+        }
     }
 }

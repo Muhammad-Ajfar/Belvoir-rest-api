@@ -15,7 +15,7 @@ namespace Belvoir.Bll.Services.Admin
     public interface IOrderServices
     {
         public Task<Response<object>> AddTailorProducts(TailorProductDTO tailorProductDTO);
-        public Task<Response<object>> AddOrder(Order order);
+        public Task<Response<object>> AddOrder(Order order, Guid user_id);
         public Task<Response<IEnumerable<OrderAdminGet>>> orderAdminGets(string? status);
         public Task<Response<IEnumerable<OrderUserGet>>> orderUserGets(Guid userid, string? status);
         public Task<Response<IEnumerable<OrderDeliveryGet>>> orderDeliveryGets();
@@ -49,8 +49,8 @@ namespace Belvoir.Bll.Services.Admin
             }
             return new Response<object> { StatusCode = 500, Message = "failed" };
         }
-        public async Task<Response<object>> AddOrder(Order order){
-            if (await _repo.AddOrder(order))
+        public async Task<Response<object>> AddOrder(Order order, Guid user_id){
+            if (await _repo.AddOrder(order,user_id))
             {
                 return new Response<object> { StatusCode = 200, Message = "success" };
             }

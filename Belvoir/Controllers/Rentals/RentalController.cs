@@ -38,8 +38,8 @@ namespace Belvoir.Controllers.Rentals
 
         }
 
-        
 
+        
         [HttpGet("products")]
         public async Task<IActionResult> Paginated([FromQuery] RentalQuery query)
         {
@@ -67,7 +67,7 @@ namespace Belvoir.Controllers.Rentals
 
         }
 
-
+        [Authorize]
         [HttpPost("whishlist")]
         public async Task<IActionResult> AddToWhisList(Guid productid)
         {
