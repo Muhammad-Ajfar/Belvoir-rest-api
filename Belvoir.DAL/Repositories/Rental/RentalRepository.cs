@@ -34,9 +34,8 @@ namespace Belvoir.DAL.Repositories.Rental
 
         public Task<int> AddRentalImage(Guid rentalId, string imagePath, bool isPrimary);
 
-        public  Task<int> AddWhishlist(Guid userid, Guid productid);
-        public  Task<IEnumerable<(RentalWhishlist, RentalImage)>> GetWishlist(Guid userId);
-        public Task<int> ExistItem(Guid userId, Guid productId);
+        public Task<int> ToggleWishlist(Guid userId, Guid productId);
+        public Task<IEnumerable<(RentalWhishlist, RentalImage)>> GetWishlist(Guid userId);
 
 
         public Task<int> AddRating(Guid rentalid, Guid userid, RatingItem data);
@@ -164,14 +163,6 @@ namespace Belvoir.DAL.Repositories.Rental
 
 
 
-        
-
-        public async Task<int> AddWhishlist(Guid userid, Guid productid)
-        {
-            return await _connection.ExecuteAsync("insert into Wishlist (user_id,rental_id) values(@usrid,@prid)", new { usrid = userid, prid = productid });
-        }
-
-
         public async Task<IEnumerable<(RentalWhishlist, RentalImage)>> GetWishlist(Guid userId)
         {
             var query = @"
@@ -198,17 +189,43 @@ namespace Belvoir.DAL.Repositories.Rental
             );
         }
 
-
-
-
-        public async Task<int> ExistItem(Guid userId, Guid productId)
+        public async Task<int> ToggleWishlist(Guid userId, Guid productId)
         {
-            var query = @"SELECT COUNT(*) 
-                  FROM Wishlist 
-                  WHERE user_id = @usrid AND rental_id = @prid";
+            // Check if the product exists
+            var productExists = await _connection.QueryFirstOrDefaultAsync<int>(
+                "SELECT COUNT(1) FROM RentalProduct WHERE Id = @prid",
+                new { prid = productId });
 
-            return await _connection.ExecuteAsync(query, new { usrid = userId, prid = productId });
+            if (productExists == 0)
+            {
+                // Product does not exist
+                return -2; // Return a special code indicating product not found
+            }
+
+            // Check if the product is already in the wishlist
+            var existingEntry = await _connection.QueryFirstOrDefaultAsync<int>(
+                "SELECT COUNT(1) FROM Wishlist WHERE user_id = @usrid AND rental_id = @prid",
+                new { usrid = userId, prid = productId });
+
+            if (existingEntry > 0)
+            {
+                // Remove the item from the wishlist
+                await _connection.ExecuteAsync(
+                    "DELETE FROM Wishlist WHERE user_id = @usrid AND rental_id = @prid",
+                    new { usrid = userId, prid = productId });
+
+                return -1; // Indicates the item was removed
+            }
+            else
+            {
+                // Add the item to the wishlist
+                return await _connection.ExecuteAsync(
+                    "INSERT INTO Wishlist (user_id, rental_id) VALUES (@usrid, @prid)",
+                    new { usrid = userId, prid = productId });
+            }
         }
+
+
 
 
         public async Task<int> AddRating(Guid rentalid, Guid userid, RatingItem data)
