@@ -67,7 +67,7 @@ namespace Belvoir.Controllers.Rentals
 
         }
 
-
+        [Authorize]
         [HttpPost("whishlist")]
         public async Task<IActionResult> AddToWhisList(Guid productid)
         {
