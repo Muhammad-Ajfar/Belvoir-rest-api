@@ -8,15 +8,12 @@ namespace Belvoir.DAL.Models
 {
     public class Order
     {
-        public Guid customerId { get; set; }
-        public DateTime orderDate { get; set; }
         public decimal totalAmount { get; set; }
         public string paymentMethod { get; set; }
         public string shippingAddress { get; set; }
         public string shippingMethod { get; set; }
         public decimal shippingCost { get; set; }
         public string trackingNumber { get; set; }
-        public Guid updatedBy { get; set; }
         public string productType { get; set; }
         public Guid? tailorProductId { get; set; }
         public Guid? rentalProductId { get; set; }

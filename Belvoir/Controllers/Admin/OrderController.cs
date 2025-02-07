@@ -31,10 +31,8 @@ namespace Belvoir.Controllers.Admin
         [HttpPost("PlaceOrder")]
         public async Task<IActionResult> AddOrder(Order order)
         {
-            //string user = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).ToString();
-            //Guid userId = Guid.TryParse(user, out Guid parsedGuid) ? parsedGuid : Guid.Empty;
-            //order.customerId = userId;
-            var response = await _orderServices.AddOrder(order);
+            var user_id = Guid.Parse(HttpContext.Items["UserId"]?.ToString());
+            var response = await _orderServices.AddOrder(order, user_id );
             return StatusCode(response.StatusCode, response);
         }
 
