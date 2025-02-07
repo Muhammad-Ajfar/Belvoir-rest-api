@@ -24,6 +24,7 @@ namespace Belvoir.Bll.Services.Admin
         Task<Response<object>> AddDesignMesurement(List<Design_Mesurment> mesurement);
         Task<Response<IEnumerable<MesurementListGet>>> GetDesignMesurment(Guid design_id);
         Task<Response<object>> AddMesurmentValues(MesurementSet mesurment, Guid user_id);
+        public Task<Response<IEnumerable<MesurmentGuidGet>>> GetMesurement();
     }
 
     public class DesignService : IDesignService
@@ -189,6 +190,15 @@ namespace Belvoir.Bll.Services.Admin
                 return new Response<object> { StatusCode = 500, Error = "server error" };
             }
             return new Response<object> { StatusCode = 200, Message = "success" };
+        }
+        public async Task<Response<IEnumerable<MesurmentGuidGet>>> GetMesurement()
+        {
+            var result = await _designRepository.GetMesurement();
+            if (result == null)
+            {
+                return new Response<IEnumerable<MesurmentGuidGet>> { StatusCode = 500, Error = "server error" };
+            }
+            return new Response<IEnumerable<MesurmentGuidGet>> { StatusCode = 200, Message = "success" , Data = result};
         }
     }
 }

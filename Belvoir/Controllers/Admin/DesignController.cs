@@ -65,7 +65,7 @@ namespace Belvoir.Controllers.Admin
             return StatusCode(result.StatusCode, result);
         }
 
-        [HttpGet("get/mesurments")]
+        [HttpGet("get/mesurments/{design_id}")]
         public async Task<IActionResult> GetMesurmentList(Guid design_id)
         {
             var result = await _designService.GetDesignMesurment(design_id);
@@ -78,6 +78,12 @@ namespace Belvoir.Controllers.Admin
             Guid user_id = Guid.Parse(HttpContext.Items["UserId"]?.ToString());
             var result = await _designService.AddMesurmentValues(mesurement,user_id);
             return StatusCode(result.StatusCode, result);   
+        }
+        [HttpGet("get/mesurments")]
+        public async Task<IActionResult> GetMesurment()
+        {
+            var result = await _designService.GetMesurement();
+            return StatusCode(result.StatusCode, result);
         }
     }
 }
