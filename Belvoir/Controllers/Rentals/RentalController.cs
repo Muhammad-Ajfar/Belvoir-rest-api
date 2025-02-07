@@ -12,10 +12,10 @@ namespace Belvoir.Controllers.Rentals
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class Rentals : ControllerBase
+    public class RentalController : ControllerBase
     {
         private readonly IRentalService _service;
-        public Rentals(IRentalService service)
+        public RentalController(IRentalService service)
         {
             _service = service;
         }
@@ -67,13 +67,13 @@ namespace Belvoir.Controllers.Rentals
 
         }
 
-
+        [Authorize]
         [HttpPost("whishlist")]
         public async Task<IActionResult> AddToWhisList(Guid productid)
         {
             Guid userId = Guid.Parse(HttpContext.Items["UserId"].ToString());
             var data = await _service.AddWishlist(userId, productid);
-            return StatusCode(data.StatusCode, data.Message);
+            return StatusCode(data.StatusCode, data);
         }
 
         [HttpGet("whishlist")]
