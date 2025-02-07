@@ -48,9 +48,10 @@ namespace Belvoir.Bll.Services.Admin
         {
             try
             {
-                pquery.Materials = pquery.Materials.IsNullOrEmpty() ? null : pquery.Materials;
-                pquery.Colors = pquery.Colors.IsNullOrEmpty() ? null : pquery.Colors;
-                pquery.DesignPatterns = pquery.DesignPatterns.IsNullOrEmpty() ? null : pquery.DesignPatterns;
+                pquery.Materials = pquery.Materials.Where(m => !string.IsNullOrWhiteSpace(m)).ToList();
+                pquery.Colors = pquery.Colors.Where(m => !string.IsNullOrWhiteSpace(m)).ToList();
+                pquery.DesignPatterns = pquery.DesignPatterns.Where(m => !string.IsNullOrWhiteSpace(m)).ToList();
+
                 var clothes = await _repo.GetClothes(pquery);
                 return new Response<object> { Data = clothes, StatusCode = 200, Message = "success" };
             }
