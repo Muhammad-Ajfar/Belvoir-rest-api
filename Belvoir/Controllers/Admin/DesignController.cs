@@ -3,6 +3,7 @@ using Belvoir.Bll.DTO.Design;
 using Belvoir.DAL.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Belvoir.DAL.Models.Mesurements;
 
 namespace Belvoir.Controllers.Admin
 {
@@ -48,6 +49,27 @@ namespace Belvoir.Controllers.Admin
             var response = await _designService.AddDesignAsync(design, designDTO.ImageFiles);
 
             return StatusCode(response.StatusCode, response);
+        }
+
+        [HttpPost("add/mesurment")]
+        public async Task<IActionResult> AddMesurementGuide(Mesurment_Guides mesurment_Guides)
+        {
+            var result = await _designService.AddMesurementGuide(mesurment_Guides);
+            return StatusCode(result.StatusCode, result);
+        }
+
+        [HttpPost("add/dis-mes")]
+        public async Task<IActionResult> AddDesignMesurement(List<Design_Mesurment> disign_mesurement)
+        {
+            var result = await _designService.AddDesignMesurement(disign_mesurement);
+            return StatusCode(result.StatusCode, result);
+        }
+
+        [HttpGet("get/mesurments")]
+        public async Task<IActionResult> GetMesurmentList(Guid design_id)
+        {
+            var result = await _designService.GetDesignMesurment(design_id);
+            return StatusCode(result.StatusCode, result);
         }
     }
 }

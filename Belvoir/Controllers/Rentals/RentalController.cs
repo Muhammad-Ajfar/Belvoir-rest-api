@@ -38,8 +38,8 @@ namespace Belvoir.Controllers.Rentals
 
         }
 
-        
 
+        
         [HttpGet("products")]
         public async Task<IActionResult> Paginated([FromQuery] RentalQuery query)
         {
