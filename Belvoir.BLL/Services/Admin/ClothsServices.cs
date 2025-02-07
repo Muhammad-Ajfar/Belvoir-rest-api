@@ -4,6 +4,7 @@ using Belvoir.DAL.Models;
 using Belvoir.DAL.Repositories.Admin;
 using Dapper;
 using Microsoft.AspNetCore.Http;
+using Microsoft.IdentityModel.Tokens;
 using System.Data;
 
 namespace Belvoir.Bll.Services.Admin
@@ -47,6 +48,9 @@ namespace Belvoir.Bll.Services.Admin
         {
             try
             {
+                pquery.Materials = pquery.Materials.IsNullOrEmpty() ? null : pquery.Materials;
+                pquery.Colors = pquery.Colors.IsNullOrEmpty() ? null : pquery.Colors;
+                pquery.DesignPatterns = pquery.DesignPatterns.IsNullOrEmpty() ? null : pquery.DesignPatterns;
                 var clothes = await _repo.GetClothes(pquery);
                 return new Response<object> { Data = clothes, StatusCode = 200, Message = "success" };
             }
