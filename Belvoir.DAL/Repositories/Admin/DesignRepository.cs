@@ -22,6 +22,7 @@ namespace Belvoir.DAL.Repositories.Admin
         public Task<bool> AddDesignMesurment(List<Design_Mesurment> design_Mesurments);
         public Task<IEnumerable<MesurementListGet>> GetDesignMesurment(Guid design_id);
         public Task<bool> AddMesurmentValues(MesurementSet mesurment, Guid user_id);
+        public Task<IEnumerable<MesurmentGuidGet>> GetMesurement();
     }
 
     public class DesignRepository : IDesignRepository
@@ -217,6 +218,12 @@ namespace Belvoir.DAL.Repositories.Admin
                 
             }
             
+        }
+
+        public async Task<IEnumerable<MesurmentGuidGet>> GetMesurement()
+        {
+            var query = "SELECT * FROM measurement_guides";
+            return await _dbConnection.QueryAsync<MesurmentGuidGet>(query);
         }
     }
 }
