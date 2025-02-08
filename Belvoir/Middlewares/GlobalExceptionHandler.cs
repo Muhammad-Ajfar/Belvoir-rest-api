@@ -1,4 +1,5 @@
 ﻿using Belvoir.DAL.Models;
+using MySql.Data.MySqlClient;
 using System.Text.Json;
 
 namespace Belvoir.Middlewares
@@ -13,13 +14,28 @@ namespace Belvoir.Middlewares
             }
             catch (Exception ex)
             {
-                var response = new Response<object>
+                Response<object> response;
+                if (ex is MySqlException exc)
                 {
-                    StatusCode = 500,
-                    Message = "An unexpected error occurred.",
-                    Error = ex.Message,
-                    Data = null
-                };
+                    response = new Response<object>
+                    {
+                        StatusCode = 500,
+                        Message = "An database error occurred.",
+                        Error = ex.Message,
+                        Data = null
+                    };
+                }
+                else
+                {
+                    response = new Response<object>
+                    {
+                        StatusCode = 500,
+                        Message = "An unexpected error occurred.",
+                        Error = ex.Message,
+                        Data = null
+                    };
+                }
+                
 
                 context.Response.StatusCode = 500;
                 context.Response.ContentType = "application/json";
@@ -28,6 +44,7 @@ namespace Belvoir.Middlewares
                 await context.Response.WriteAsync(responseJson);
 
             }
+            
         }
     }
 }

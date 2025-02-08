@@ -184,6 +184,13 @@ namespace Belvoir.Bll.Services.Admin
 
         public async Task<Response<object>> AddMesurmentValues(MesurementSet mesurment, Guid user_id)
         {
+            if (mesurment == null ) {
+                return new Response<object> { StatusCode = 404, Error = "can't be null" };
+            }
+            if (mesurment.values == null)
+            {
+                return new Response<object> { StatusCode = 404, Error = "mesurment can't be null" };
+            }
             bool result = await _designRepository.AddMesurmentValues(mesurment, user_id);
             if (!result)
             {
@@ -193,6 +200,7 @@ namespace Belvoir.Bll.Services.Admin
         }
         public async Task<Response<IEnumerable<MesurmentGuidGet>>> GetMesurement()
         {
+            
             var result = await _designRepository.GetMesurement();
             if (result == null)
             {

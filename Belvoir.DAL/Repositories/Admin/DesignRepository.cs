@@ -193,7 +193,7 @@ namespace Belvoir.DAL.Repositories.Admin
         {
             Guid set_id = Guid.NewGuid();
             string query1 = @"INSERT INTO `belvoir`.`measurements` (`measurement_id`,`set_id`,`des_mes_id`,`measurement_value`,`created_at`,`updated_at`) VALUES (UUID(),@set_id,@des_mes_id,@measurement_value);";
-            string query2 = @"INSERT INTO `belvoir`.`measurement_sets` (`set_id`,`set_name`,`created_at`,`updated_at`,`user_id`,`design_id`) VALUES (@set_id,@set_name,@user_id,@design_id);";
+            string query2 = @"INSERT INTO `belvoir`.`measurement_sets` (`set_id`,`set_name`,`user_id`,`design_id`) VALUES (@set_id,@set_name,@user_id,@design_id);";
 
             _dbConnection.Open();
 
@@ -209,11 +209,15 @@ namespace Belvoir.DAL.Repositories.Admin
                             await _dbConnection.ExecuteAsync(query1, new { set_id = set_id, des_mes_id = item.id, measurement_value = item.mesurement_value });
                         }
                     }
+                    transaction.Commit();
                     return true;
                 }
-                catch 
+                catch (Exception ex) 
                 {
+                    transaction.Rollback();
+                    throw ex;
                     return false;
+                    
                 }
                 
             }
