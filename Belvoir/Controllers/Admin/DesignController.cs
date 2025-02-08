@@ -4,6 +4,7 @@ using Belvoir.DAL.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Belvoir.DAL.Models.Mesurements;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Belvoir.Controllers.Admin
 {
@@ -72,6 +73,8 @@ namespace Belvoir.Controllers.Admin
             return StatusCode(result.StatusCode, result);
         }
 
+
+        [Authorize]
         [HttpPost("add/mesurment/values")]
         public async Task<IActionResult> AddMesurmentValues(MesurementSet mesurement)
         {
@@ -85,5 +88,6 @@ namespace Belvoir.Controllers.Admin
             var result = await _designService.GetMesurement();
             return StatusCode(result.StatusCode, result);
         }
+        
     }
 }
