@@ -63,12 +63,12 @@ namespace Belvoir.DAL.Repositories
                 }
 
                 var insertCartQuery = @"
-                        INSERT INTO RentalCart (Id, UserId, ItemCount, TotalAmount, IsDeleted, CreatedBy, CreatedAt)
-                        VALUES (@Id, @UserId, 0, 0.00, 0, @CreatedBy, NOW())";
+                        INSERT INTO RentalCart (Id, UserId, IsDeleted, CreatedBy, CreatedAt)
+                        VALUES (UUID(), @UserId, 0, @CreatedBy, NOW())";
 
                 var cart = new
                 {
-                    Id = Guid.NewGuid(),
+                    
                     UserId = user.Id,
                     CreatedBy = user.Id
                 };
