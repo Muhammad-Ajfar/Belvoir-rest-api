@@ -21,7 +21,7 @@ namespace Belvoir.DAL.Repositories.Admin
         public Task<bool> AddMesurementGuide(Mesurment_Guides mesurment);
         public Task<bool> AddDesignMesurment(List<Design_Mesurment> design_Mesurments);
         public Task<IEnumerable<MesurementListGet>> GetDesignMesurment(Guid design_id);
-        public Task<bool> AddMesurmentValues(MesurementSet mesurment, Guid user_id);
+        public Task<IEnumerable<MesurmentResponse>> AddMesurmentValues(MesurementSet mesurment, Guid user_id);
         public Task<IEnumerable<MesurmentGuidGet>> GetMesurement();
     }
 
@@ -189,10 +189,10 @@ namespace Belvoir.DAL.Repositories.Admin
             return await _dbConnection.QueryAsync<MesurementListGet>(query,new { design = design_id});
         }
 
-        public async Task<bool> AddMesurmentValues(MesurementSet mesurment,Guid user_id)
+        public async Task<IEnumerable<MesurmentResponse>> AddMesurmentValues(MesurementSet mesurment,Guid user_id)
         {
             Guid set_id = Guid.NewGuid();
-            string query1 = @"INSERT INTO `belvoir`.`measurements` (`measurement_id`,`set_id`,`des_mes_id`,`measurement_value`,`created_at`,`updated_at`) VALUES (UUID(),@set_id,@des_mes_id,@measurement_value);";
+            string query1 = @"INSERT INTO `belvoir`.`measurements` (`measurement_id`,`set_id`,`des_mes_id`,`measurement_value`) VALUES (UUID(),@set_id,@des_mes_id,@measurement_value);";
             string query2 = @"INSERT INTO `belvoir`.`measurement_sets` (`set_id`,`set_name`,`user_id`,`design_id`) VALUES (@set_id,@set_name,@user_id,@design_id);";
 
             _dbConnection.Open();
@@ -210,17 +210,20 @@ namespace Belvoir.DAL.Repositories.Admin
                         }
                     }
                     transaction.Commit();
-                    return true;
+
+                    var res = await _dbConnection.QueryAsync<MesurmentResponse>("SELECT measurement_name,measurement_value FROM design_mesurment dm JOIN measurement_guides mg ON dm.guide_id = mg.guide_id left join measurements m ON m.des_mes_id = dm.id where m.set_id = @set_id", new { set_id = set_id });
+                    return res;
                 }
                 catch (Exception ex) 
                 {
                     transaction.Rollback();
                     throw ex;
-                    return false;
+                    
                     
                 }
                 
             }
+            
             
         }
 
@@ -229,5 +232,6 @@ namespace Belvoir.DAL.Repositories.Admin
             var query = "SELECT * FROM measurement_guides";
             return await _dbConnection.QueryAsync<MesurmentGuidGet>(query);
         }
+        
     }
 }

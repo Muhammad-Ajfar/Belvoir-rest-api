@@ -23,7 +23,7 @@ namespace Belvoir.Bll.Services.Admin
         Task<Response<object>> AddMesurementGuide(Mesurment_Guides design_Mesurments);
         Task<Response<object>> AddDesignMesurement(List<Design_Mesurment> mesurement);
         Task<Response<IEnumerable<MesurementListGet>>> GetDesignMesurment(Guid design_id);
-        Task<Response<object>> AddMesurmentValues(MesurementSet mesurment, Guid user_id);
+        Task<Response<IEnumerable<MesurmentResponse>>> AddMesurmentValues(MesurementSet mesurment, Guid user_id);
         public Task<Response<IEnumerable<MesurmentGuidGet>>> GetMesurement();
     }
 
@@ -182,21 +182,18 @@ namespace Belvoir.Bll.Services.Admin
             }
         }
 
-        public async Task<Response<object>> AddMesurmentValues(MesurementSet mesurment, Guid user_id)
+        public async Task<Response<IEnumerable<MesurmentResponse>>> AddMesurmentValues(MesurementSet mesurment, Guid user_id)
         {
             if (mesurment == null ) {
-                return new Response<object> { StatusCode = 404, Error = "can't be null" };
+                return new Response<IEnumerable<MesurmentResponse>> { StatusCode = 404, Error = "can't be null" };
             }
             if (mesurment.values == null)
             {
-                return new Response<object> { StatusCode = 404, Error = "mesurment can't be null" };
+                return new Response<IEnumerable<MesurmentResponse>> { StatusCode = 404, Error = "mesurment can't be null" };
             }
-            bool result = await _designRepository.AddMesurmentValues(mesurment, user_id);
-            if (!result)
-            {
-                return new Response<object> { StatusCode = 500, Error = "server error" };
-            }
-            return new Response<object> { StatusCode = 200, Message = "success" };
+            var result = await _designRepository.AddMesurmentValues(mesurment, user_id);
+            
+            return new Response<IEnumerable<MesurmentResponse>> { StatusCode = 200, Message = "success"  ,Data = result};
         }
         public async Task<Response<IEnumerable<MesurmentGuidGet>>> GetMesurement()
         {
@@ -208,5 +205,6 @@ namespace Belvoir.Bll.Services.Admin
             }
             return new Response<IEnumerable<MesurmentGuidGet>> { StatusCode = 200, Message = "success" , Data = result};
         }
+       
     }
 }
