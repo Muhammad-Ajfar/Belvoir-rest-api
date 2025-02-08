@@ -15,7 +15,7 @@ namespace Belvoir.Controllers.Delivery
         }
 
         [HttpGet("profile-delivery")]
-        public async Task<IActionResult> GetTailorProfile()
+        public async Task<IActionResult> GetDeliveryProfile()
         {
             Guid userId = Guid.Parse(HttpContext.Items["UserId"].ToString());
             var response = await _service.GetDeliveryProfile(userId);
