@@ -19,6 +19,8 @@ using MySql.Data.MySqlClient;
 using System.Data;
 using System.Text;
 using Belvoir.Bll.Services.Notification;
+using Belvoir.Bll.Services.UserSer;
+using Belvoir.DAL.Repositories.UserRep;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -47,6 +49,7 @@ builder.Services.AddScoped<IDesignService,DesignService>();
 
 builder.Services.AddScoped<IDeliveryServices, DeliveryServices>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IuserService, UserService>();
 
 
 //Add Repository
@@ -68,7 +71,7 @@ builder.Services.AddScoped<IDesignRepository,DesignRepository>();
 builder.Services.AddScoped<IDeliveryRepository, DeliveryRepository>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<INotificationServiceSignal,NotificationServiceSignal>();
-
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 builder.Services.AddTransient<GlobalExceptionHandler>();
 
