@@ -9,6 +9,7 @@ namespace Belvoir.Bll.Services.DeliverySer
     public interface IDeliveryServices
     {
         public Task<Response<DeliveryResponseDTO>> GetDeliveryProfile(Guid id);
+        public Task<Response<DeliveryDashboard>> GetDeliveryDashboard(Guid id);
 
     }
     public class DeliveryServices : IDeliveryServices
@@ -31,5 +32,17 @@ namespace Belvoir.Bll.Services.DeliverySer
             }
             return new Response<DeliveryResponseDTO> { StatusCode = 200, Message = "success", Data = mapped };
         }
+        public async Task<Response<DeliveryDashboard>> GetDeliveryDashboard(Guid id)
+        {
+            var response = await _repo.GetDeliveryDashboard(id);
+            
+            if (response == null)
+            {
+                return new Response<DeliveryDashboard> { StatusCode = 404, Message = "the profile doesnot exist", };
+            }
+            return new Response<DeliveryDashboard> { StatusCode = 200, Message = "success", Data = response };
+
+        }
+
     }
 }
