@@ -2,6 +2,7 @@
 using Belvoir.Bll.DTO.Address;
 using Belvoir.Bll.Services;
 using Belvoir.DAL.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,6 +23,7 @@ namespace Belvoir.Controllers
         }
 
         // Get Addresses by User
+        [Authorize]
         [HttpGet("user")]
         public async Task<IActionResult> GetAddressesByUser()
         {
@@ -35,6 +37,7 @@ namespace Belvoir.Controllers
         }
 
         // Add Address
+        [Authorize]
         [HttpPost("Add")]
         public async Task<IActionResult> AddAddress([FromBody] AddressAddDTO addressAddDto)
         {
@@ -50,6 +53,7 @@ namespace Belvoir.Controllers
         }
 
         // Update Address
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAddress(Guid id, [FromBody] AddressAddDTO addressDto)
         {
@@ -67,6 +71,7 @@ namespace Belvoir.Controllers
         }
 
         // Soft Delete Address
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> SoftDeleteAddress(Guid id)
         {

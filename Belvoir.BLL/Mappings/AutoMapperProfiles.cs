@@ -52,6 +52,8 @@ namespace Belvoir.Bll.Mappings
 
             CreateMap<RentalWhishlist, RentalWhishListviewDTO>();
 
+            CreateMap<PlaceOrderDTO, Order>();
+
         }
     }
 }
