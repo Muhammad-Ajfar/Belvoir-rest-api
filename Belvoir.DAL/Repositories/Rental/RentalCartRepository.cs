@@ -15,6 +15,8 @@ namespace Belvoir.DAL.Repositories.Rental
 
         Task AddToCartAsync(Guid userId, Guid productId, int quantity);
         Task UpdateCartItemQuantityAsync(Guid cartItemId, int newQuantity);
+        Task RemoveCartItemAsync(Guid cartItemId);
+
 
     }
 
@@ -40,11 +42,15 @@ namespace Belvoir.DAL.Repositories.Rental
                     if (!cartDictionary.TryGetValue(cart.Id, out var cartEntry))
                     {
                         cartEntry = cart;
+                        cartEntry.Items = new List<RentalCartItem>(); // Ensure initialization
                         cartDictionary.Add(cart.Id, cartEntry);
                     }
-
-                    cartEntry.Items.Add(cartItem);
-
+                
+                    if (cartItem != null) // Prevent null items from being added
+                    {
+                        cartEntry.Items.Add(cartItem);
+                    }
+                
                     return cartEntry;
                 },
                 new { UserId = userId },
@@ -59,10 +65,15 @@ namespace Belvoir.DAL.Repositories.Rental
         {
             var parameters = new DynamicParameters();
             parameters.Add("p_UserId", userId);
-            parameters.Add("p_ProductId", productId.ToString());
+            parameters.Add("p_ProductId", productId);
             parameters.Add("p_Quantity", quantity);
 
-            await _dbConnection.ExecuteAsync("sp_AddToCart", parameters, commandType: CommandType.StoredProcedure);
+            await _dbConnection.ExecuteAsync("sp_AddOrUpdateCartItem", parameters, commandType: CommandType.StoredProcedure);
+        }
+
+        public async Task RemoveCartItemAsync(Guid cartItemId)
+        {
+            await _dbConnection.ExecuteAsync("DELETE FROM RentalCartItem WHERE Id = @cartItemId;", new { cartItemId = cartItemId });
         }
 
         public async Task UpdateCartItemQuantityAsync(Guid cartItemId, int newQuantity)
