@@ -66,5 +66,11 @@ namespace Belvoir.Controllers.Admin
             var response = await _orderServices.orderTailorGets();
             return StatusCode(response.StatusCode, response);
         }
+        [HttpGet("{order_id}")]
+        public async Task<IActionResult> SingleOrder(Guid order_id)
+        {
+            var response = await _orderServices.SingleOrder(order_id);
+            return StatusCode(response.StatusCode, response);
+        }
     }
 }

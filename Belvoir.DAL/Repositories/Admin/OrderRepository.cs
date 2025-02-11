@@ -21,6 +21,7 @@ namespace Belvoir.DAL.Repositories.Admin
         public Task<IEnumerable<OrderAdminGet>> orderAdminGets(string? status);
         public Task<IEnumerable<OrderDeliveryGet>> orderDeliveryGets();
         public Task<IEnumerable<OrderUserGet>> orderUserGets(Guid userid, string? status);
+        public Task<SingleOrderTailoring> SingleOrder(Guid order_id);
     }
     public class OrderRepository: IOrderRepository
     {
@@ -91,7 +92,35 @@ namespace Belvoir.DAL.Repositories.Admin
             parameters.Add("@p_user_id", userid);
             return await _dbConnection.QueryAsync<OrderUserGet>(spName,parameters,commandType:CommandType.StoredProcedure);
         }
-
+        public async Task<SingleOrderTailoring> SingleOrder(Guid order_id)
+        {
+            string query = @"
+                SELECT 
+                    order_items.order_item_id,
+                    Address.ContactName,
+                    Address.ContactNumber,
+                    CONCAT(Address.BuildingName,', ',Address.Street,', ',Address.City,', ',Address.State,', ',Address.PostalCode) as address,
+                    Cloths.ImageUrl as clothImage,
+                    Cloths.Title as clothTitle,
+                    DesignImages.ImageUrl as designImage,
+                    DressDesign.Name as designTitle,
+                    orders.order_date,
+                    order_status,
+                    order_items.price,
+                    tailor_products.product_name,
+                    order_items.quantity
+                FROM orders
+                JOIN order_items ON orders.order_id = order_items.order_id
+                JOIN tailor_products ON tailor_products.product_id = order_items.tailor_product_id
+                JOIN DressDesign ON DressDesign.Id = tailor_products.design_id
+                JOIN DesignImages ON DressDesign.Id = DesignImages.DesignId
+                JOIN Cloths ON  Cloths.Id = tailor_products.cloth_id
+                JOIN Address ON orders.shipping_address = Address.Id
+                WHERE product_type = 'tailor'
+                AND DesignImages.IsPrimary = true 
+                AND order_items.order_item_id = @user_id;";
+            return await _dbConnection.QueryFirstOrDefaultAsync<SingleOrderTailoring>(query, new { order_id = order_id });
+        }
         
     }
 }
