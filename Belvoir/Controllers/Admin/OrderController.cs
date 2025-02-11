@@ -28,11 +28,12 @@ namespace Belvoir.Controllers.Admin
             return StatusCode(statusCode: response.StatusCode, response);
         }
 
+        [Authorize]
         [HttpPost("PlaceOrder")]
-        public async Task<IActionResult> AddOrder(Order order)
+        public async Task<IActionResult> AddOrder(PlaceOrderDTO orderDto)
         {
             var user_id = Guid.Parse(HttpContext.Items["UserId"]?.ToString());
-            var response = await _orderServices.AddOrder(order, user_id );
+            var response = await _orderServices.AddOrder(orderDto, user_id );
             return StatusCode(response.StatusCode, response);
         }
 

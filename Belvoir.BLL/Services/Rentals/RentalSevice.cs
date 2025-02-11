@@ -242,22 +242,45 @@ namespace Belvoir.Bll.Services.Rentals
 
         public async Task<Response<object>> AddWishlist(Guid userId, Guid productId)
         {
-            var itemexist = await _repo.ExistItem(userId, productId);
-            if (itemexist > 0)
+            // Toggle the wishlist item and get the number of rows affected
+            var res = await _repo.ToggleWishlist(userId, productId);
+
+            // Determine the response based on the number of rows affected
+            if (res == 1)
             {
                 return new Response<object>
                 {
-                    Message = "item already exist",
-                    StatusCode = 409
+                    Message = "item added to wishlist",
+                    StatusCode = 200
                 };
             }
-            await _repo.AddWhishlist(userId, productId);
-            return new Response<object>
+            else if (res == -1)
             {
-                Message = "item added success",
-                StatusCode = 200
-            };
+                return new Response<object>
+                {
+                    Message = "item removed from wishlist",
+                    StatusCode = 200
+                };
+            }
+            else if (res == -2)
+            {
+                return new Response<object>
+                {
+                    Message = "Product not found",
+                    StatusCode = 404
+                };
+            }
+            else
+            {
+                return new Response<object>
+                {
+                    Message = "unexpected result",
+                    StatusCode = 500
+                };
+            }
         }
+
+
         public async Task<Response<IEnumerable<RentalWhishListviewDTO>>> GetWishlist(Guid userId)
         {
             var rawData = await _repo.GetWishlist(userId);
@@ -293,6 +316,15 @@ namespace Belvoir.Bll.Services.Rentals
         public async Task<Response<object>> AddRating(Guid userid, Guid rentalid, RatingItem data)
         {
             var response = await _repo.AddRating(rentalid, userid, data);
+
+            if (response == -1)
+            {
+                return new Response<object>
+                {
+                    StatusCode = 400,
+                    Message = "The user has already rated this product "
+                };
+            }
             if (response == 0)
             {
                 return new Response<object>

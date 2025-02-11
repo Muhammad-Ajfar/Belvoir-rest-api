@@ -16,7 +16,7 @@ namespace Belvoir.DAL.Repositories.Admin
         public Task<bool> AddTailorProduct(TailorProduct tailorProduct);
         public Task<bool> IsClothExists(Guid Id);
         public Task<bool> IsDesignExists(Guid Id);
-        public Task<bool> AddOrder(Order order, Guid user_id);
+        public Task<bool> AddOrder(Order order );
         public Task<IEnumerable<OrderTailorGet>> orderTailorGets();
         public Task<IEnumerable<OrderAdminGet>> orderAdminGets(string? status);
         public Task<IEnumerable<OrderDeliveryGet>> orderDeliveryGets();
@@ -44,25 +44,28 @@ namespace Belvoir.DAL.Repositories.Admin
             string query = "SELECT Count(*) FROM DressDesign WHERE Id = @Id";
             return await _dbConnection.ExecuteScalarAsync<int>(query, new { Id }) > 0;
         }
-        public async Task<bool> AddOrder(Order order,Guid user_id)
+        public async Task<bool> AddOrder(Order order)
         {
-            var parameters = new DynamicParameters();
-            parameters.Add("@p_customer_id", user_id);
-            parameters.Add("@p_total_amount", order.totalAmount);
-            parameters.Add("@p_payment_method", order.paymentMethod);
-            parameters.Add("@p_shipping_address", order.shippingAddress);
-            parameters.Add("@p_shipping_method", order.shippingMethod);
-            parameters.Add("@p_shipping_cost", order.shippingCost);
-            parameters.Add("@p_tracking_number", order.trackingNumber);
-            parameters.Add("@p_product_type", order.productType);
-            parameters.Add("@p_tailor_product_id", order.tailorProductId);
-            parameters.Add("@p_rental_product_id", order.rentalProductId);
-            parameters.Add("@p_quantity", order.quantity);
-            parameters.Add("@p_price", order.price);
+                var parameters = new DynamicParameters();
+                parameters.Add("@p_customer_id", order.userId);
+                parameters.Add("@p_total_amount", order.totalAmount);
+                parameters.Add("@p_payment_method", order.paymentMethod);
+                parameters.Add("@p_shipping_address", order.shippingAddress);
+                parameters.Add("@p_fast_shipping", order.fastShipping);
+                parameters.Add("@p_shipping_cost", order.shippingCost);
+                parameters.Add("@p_tracking_number", order.trackingNumber);
+                parameters.Add("@p_product_type", order.productType);
+                parameters.Add("@p_tailor_product_id", order.tailorProductId);
+                parameters.Add("@p_rental_product_id", order.rentalProductId);
+                parameters.Add("@p_quantity", order.quantity);
+                parameters.Add("@p_price", order.price);
+                parameters.Add("@p_success", dbType: DbType.Int32, direction: ParameterDirection.Output);
 
-            return await _dbConnection.ExecuteAsync("InsertOrderWithItems", parameters, commandType: CommandType.StoredProcedure)>0;
+                await _dbConnection.ExecuteAsync("InsertOrderWithItems", parameters, commandType: CommandType.StoredProcedure);
 
+                return parameters.Get<int>("@p_success") == 1;
         }
+
         public async Task<IEnumerable<OrderTailorGet>> orderTailorGets()
         {
             string query = "SELECT orders.order_id,User.Name as customerName,order_date,order_status,Cloths.Title as clothTitle,DressDesign.Name as DesignName FROM orders join order_items on orders.order_id = order_items.order_id join User on User.Id = orders.customer_id join tailor_products ON tailor_products.product_id = order_items.tailor_product_id join Cloths on Cloths.Id = tailor_products.cloth_id join DressDesign on DressDesign.Id = tailor_products.design_id where order_status ='pending';";

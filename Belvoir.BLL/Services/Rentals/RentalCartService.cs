@@ -48,92 +48,51 @@ namespace Belvoir.Bll.Services.Rentals
 
         public async Task<Response<string>> AddToCartAsync(Guid userId, AddToCartDTO cartDTO)
         {
-            try
+            var currentCart = await _repository.GetCartByUserId(userId) ?? new RentalCart();
+            currentCart.Items ??= new List<RentalCartItem>();
+
+
+            if (currentCart.Items.Count >= 20)
             {
-                // Fetch the current cart to check if the user has reached the item limit
-                var currentCart = await _repository.GetCartByUserId(userId);
-                if (currentCart == null)
-                {
-                    return new Response<string>
-                    {
-                        StatusCode = 404,
-                        Message = "Cart not found for the user.",
-                        Error = "No cart associated with the user.",
-                        Data = null
-                    };
-                }
+                return new Response<string> { StatusCode = 400, Message = "You can only have a maximum of 20 items in your cart.", Error = "Cart limit reached.", Data = null };
 
-                // Check if the cart already has 20 items
-                if (currentCart.Items.Count >= 20)
-                {
-                    return new Response<string>
-                    {
-                        StatusCode = 400,
-                        Message = "Cart limit reached.",
-                        Error = "You can only have a maximum of 20 items in your cart.",
-                        Data = null
-                    };
-                }
-
-                // Check if the product already exists in the cart
-                var existingCartItem = currentCart.Items
-                    .FirstOrDefault(item => item.ProductId == cartDTO.ProductId);
-
-                // If the product already exists, update its quantity
-                if (existingCartItem != null)
-                {
-                    var newQuantity = existingCartItem.Quantity + cartDTO.Quantity;
-                    if (newQuantity > 10)
-                    {
-                        return new Response<string>
-                        {
-                            StatusCode = 400,
-                            Message = "Quantity limit exceeded.",
-                            Error = "You can only have a maximum of 10 of the same product in your cart.",
-                            Data = null
-                        };
-                    }
-
-                    // Update the cart item with the new quantity
-                    await _repository.UpdateCartItemQuantityAsync(existingCartItem.ItemId, newQuantity);
-                }
-                else
-                {
-                    // If the product doesn't exist in the cart, add a new item
-                    if (cartDTO.Quantity > 10)
-                    {
-                        return new Response<string>
-                        {
-                            StatusCode = 400,
-                            Message = "Quantity limit exceeded.",
-                            Error = "You can only add a maximum of 10 of the same product to your cart.",
-                            Data = null
-                        };
-                    }
-
-                    // Add a new cart item with the provided quantity
-                    await _repository.AddToCartAsync(userId, cartDTO.ProductId, cartDTO.Quantity);
-                }
-
-                // After the add/update, return success
-                return new Response<string>
-                {
-                    StatusCode = 200,
-                    Message = "Product added to cart successfully.",
-                    Data = null
-                };
             }
-            catch (Exception ex)
+
+            var existingCartItem = currentCart.Items.FirstOrDefault(item => item.ProductId == cartDTO.ProductId);
+
+            if (existingCartItem != null)
             {
-                return new Response<string>
-                {
-                    StatusCode = 500,
-                    Message = "An error occurred while adding the product to the cart.",
-                    Error = ex.Message,
-                    Data = null
-                };
+                return await UpdateCartItemQuantityAsync(existingCartItem.ItemId, existingCartItem.Quantity + cartDTO.Quantity);
             }
+
+            if (cartDTO.Quantity > 10)
+            {
+                return new Response<string> { StatusCode = 400, Message = "You can only add a maximum of 10 of the same product to your cart.", Error = "Quantity limit exceeded.", Data = null };
+
+            }
+
+            await _repository.AddToCartAsync(userId, cartDTO.ProductId, cartDTO.Quantity);
+
+            return new Response<string> { StatusCode = 200, Message = "Product added to cart successfully.", Data = null };
         }
+
+        public async Task<Response<string>> UpdateCartItemQuantityAsync(Guid cartItemId, int newQuantity)
+        {
+            if (newQuantity < 1 || newQuantity > 10)
+            {
+                return new Response<string> { StatusCode = 400, Message = "Quantity must be between 1 and 10.", Error = "Invalid quantity.", Data = null };
+            }
+
+            await _repository.UpdateCartItemQuantityAsync(cartItemId, newQuantity);
+            return new Response<string> { StatusCode = 200, Message = "Cart item quantity updated successfully.", Data = null };
+        }
+
+        public async Task<Response<string>> RemoveCartItemAsync(Guid cartItemId)
+        {
+            await _repository.RemoveCartItemAsync(cartItemId);
+            return new Response<string> { StatusCode = 200, Message = "Cart item removed successfully.", Data = null };
+        }
+
 
     }
 
