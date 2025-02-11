@@ -22,5 +22,12 @@ namespace Belvoir.Controllers.Delivery
             return StatusCode(response.StatusCode, response);
         }
 
+        [HttpGet("dashboard")]
+        public async  Task<IActionResult> GetDeliveryDashboard() {
+            Guid userId = Guid.Parse(HttpContext.Items["UserId"].ToString());
+            var response = await _service.GetDeliveryDashboard(userId);
+            return StatusCode(response.StatusCode, response);
+        }
+
     }
 }

@@ -20,6 +20,7 @@ namespace Belvoir.Bll.Services.Admin
         public Task<Response<IEnumerable<OrderUserGet>>> orderUserGets(Guid userid, string? status);
         public Task<Response<IEnumerable<OrderDeliveryGet>>> orderDeliveryGets();
         public Task<Response<IEnumerable<OrderTailorGet>>> orderTailorGets();
+        public Task<Response<SingleOrderTailoring>> SingleOrder(Guid order_id);
     }
     public class OrderServices:IOrderServices
     {
@@ -92,6 +93,10 @@ namespace Belvoir.Bll.Services.Admin
         public async Task<Response<IEnumerable<OrderTailorGet>>> orderTailorGets()
         {
             var result = await _repo.orderTailorGets();
+            if (result == null)
+            {
+                return new Response<IEnumerable<OrderTailorGet>> { StatusCode = 404, Message = " no orders" };
+            }
             foreach (var item in result)
             {
                 item.deadline = item.order_date.AddDays(3);
@@ -102,7 +107,11 @@ namespace Belvoir.Bll.Services.Admin
 
         public async Task<Response<IEnumerable<OrderDeliveryGet>>> orderDeliveryGets()
         {
-            var result = await _repo.orderDeliveryGets();
+            var result = await _repo.orderDeliveryGets(); 
+            if (result == null)
+            {
+                return new Response<IEnumerable<OrderDeliveryGet>> { StatusCode = 404, Message = " no orders" };
+            }
 
             return new Response<IEnumerable<OrderDeliveryGet>> { StatusCode = 200, Message = "success", Data = result };
         }
@@ -111,7 +120,20 @@ namespace Belvoir.Bll.Services.Admin
         public async Task<Response<IEnumerable<OrderAdminGet>>> orderAdminGets(string? status)
         {
             var result = await _repo.orderAdminGets( status);
+            if (result == null)
+            {
+                return new Response<IEnumerable<OrderAdminGet>> { StatusCode = 404, Message = " no orders" };
+            }
             return new Response<IEnumerable<OrderAdminGet>> { StatusCode = 200, Message = "success", Data = result };
+        }
+        public async Task<Response<SingleOrderTailoring>> SingleOrder(Guid order_id)
+        {
+            var result = await _repo.SingleOrder(order_id);
+            if(result == null)
+            {
+                return new Response<SingleOrderTailoring> { StatusCode = 404, Message = "Order not found" };
+            }
+            return new Response<SingleOrderTailoring> { StatusCode = 200, Message = "success", Data = result };
         }
 
     }

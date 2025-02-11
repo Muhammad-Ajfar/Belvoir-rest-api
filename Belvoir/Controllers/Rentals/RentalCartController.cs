@@ -18,7 +18,7 @@ namespace Belvoir.Controllers.Rentals
         {
             _service = service;
         }
-
+        [Authorize]
         [HttpGet("my-cart")]
         public async Task<IActionResult> GetCart()
         {
