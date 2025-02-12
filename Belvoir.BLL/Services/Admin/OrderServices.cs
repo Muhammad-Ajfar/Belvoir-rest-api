@@ -16,6 +16,8 @@ namespace Belvoir.Bll.Services.Admin
     {
         public Task<Response<object>> AddTailorProducts(TailorProductDTO tailorProductDTO);
         public Task<Response<object>> AddOrder(PlaceOrderDTO orderDto, Guid user_id);
+        public Task<Response<object>> CheckoutRentalCartAsync(Guid userId, CheckoutRentalCartDTO checkoutDto);
+
         public Task<Response<IEnumerable<OrderAdminGet>>> orderAdminGets(string? status);
         public Task<Response<IEnumerable<OrderUserGet>>> orderUserGets(Guid userid, string? status);
         public Task<Response<IEnumerable<OrderDeliveryGet>>> orderDeliveryGets();
@@ -78,6 +80,20 @@ namespace Belvoir.Bll.Services.Admin
                 return new Response<object> { StatusCode = 200, Message = "success" };
             }
             return new Response<object> { StatusCode = 500, Message = "error" };
+        }
+
+        public async Task<Response<object>> CheckoutRentalCartAsync(Guid userId, CheckoutRentalCartDTO checkoutDto)
+        {
+            string trackingNumber = GenerateFedExTrackingNumber();
+
+            bool checkoutSuccess = await _repo.CheckoutRentalCartAsync(userId, checkoutDto.PaymentMethod,
+                                    checkoutDto.ShippingAddress, checkoutDto.FastShipping, trackingNumber);
+
+            if (checkoutSuccess)
+            {
+                return new Response<object> { StatusCode = 200, Message = "Checkout successful", Data = null };
+            }
+            return new Response<object> { StatusCode = 500, Message = "Checkout failed", Error = "Database operation failed" };
         }
 
 

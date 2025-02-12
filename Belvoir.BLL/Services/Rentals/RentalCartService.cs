@@ -12,8 +12,11 @@ namespace Belvoir.Bll.Services.Rentals
     public interface IRentalCartService
     {
         Task<Response<RentalCart>> GetCartByUserId(Guid userId);
-
         Task<Response<string>> AddToCartAsync(Guid userId, AddToCartDTO cartDTO);
+        Task<Response<string>> UpdateCartItemQuantityAsync(Guid cartItemId, int newQuantity);
+        Task<Response<string>> RemoveCartItemAsync(Guid cartItemId);
+
+
     }
 
     public class RentalCartService : IRentalCartService

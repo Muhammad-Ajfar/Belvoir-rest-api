@@ -63,6 +63,20 @@ namespace Belvoir.Controllers.Rentals
             return StatusCode(response.StatusCode, response);
         }
 
+        [HttpPut("update-quantity/{cartItemId}")]
+        public async Task<IActionResult> UpdateCartItemQuantity(Guid cartItemId, [FromQuery] int newQuantity)
+        {
+            var response = await _service.UpdateCartItemQuantityAsync(cartItemId, newQuantity);
+            return StatusCode(response.StatusCode, response);
+        }
+
+        [HttpDelete("remove-item/{cartItemId}")]
+        public async Task<IActionResult> RemoveCartItem(Guid cartItemId)
+        {
+            var response = await _service.RemoveCartItemAsync(cartItemId);
+            return StatusCode(response.StatusCode, response);
+        }
+
     }
 
 }
