@@ -17,6 +17,8 @@ namespace Belvoir.DAL.Repositories.Admin
         public Task<bool> IsClothExists(Guid Id);
         public Task<bool> IsDesignExists(Guid Id);
         public Task<bool> AddOrder(Order order );
+        public Task<bool> CheckoutRentalCartAsync(Guid userId, string paymentMethod, Guid shippingAddress, bool fastShipping, string trackingNumber);
+
         public Task<IEnumerable<OrderTailorGet>> orderTailorGets();
         public Task<IEnumerable<OrderAdminGet>> orderAdminGets(string? status);
         public Task<IEnumerable<OrderDeliveryGet>> orderDeliveryGets();
@@ -66,6 +68,30 @@ namespace Belvoir.DAL.Repositories.Admin
 
                 return parameters.Get<int>("@p_success") == 1;
         }
+
+        public async Task<bool> CheckoutRentalCartAsync(Guid userId, string paymentMethod, Guid shippingAddress, bool fastShipping, string trackingNumber)
+        {
+            try
+            {
+                var parameters = new DynamicParameters();
+                parameters.Add("@p_user_id", userId);
+                parameters.Add("@p_payment_method", paymentMethod);
+                parameters.Add("@p_shipping_address", shippingAddress);
+                parameters.Add("@p_fast_shipping", fastShipping);
+                parameters.Add("@p_tracking_number", trackingNumber);
+                parameters.Add("@p_success", dbType: DbType.Int32, direction: ParameterDirection.Output);
+
+
+                await _dbConnection.ExecuteAsync("CheckoutRentalCart", parameters, commandType: CommandType.StoredProcedure);
+                return parameters.Get<int>("@p_success") == 1;
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error processing rental cart checkout", ex);
+            }
+        }
+
 
         public async Task<IEnumerable<OrderTailorGet>> orderTailorGets()
         {
