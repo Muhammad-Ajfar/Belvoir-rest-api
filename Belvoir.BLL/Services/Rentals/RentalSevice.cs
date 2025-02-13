@@ -34,7 +34,7 @@ namespace Belvoir.Bll.Services.Rentals
 
 
         public Task<Response<object>> AddRating(Guid userid, Guid rentalid, RatingItem data);
-        public Task<Response<IEnumerable<Ratings>>> GetRating(Guid rentalid);
+        public Task<Response<AvgRating>> GetRating(Guid rentalid);
         public Task<Response<object>> DeleteRating(Guid ratingId);
         public Task<Response<object>> UpdateRating(Guid ratingId, RatingItem data);
 
@@ -130,13 +130,6 @@ namespace Belvoir.Bll.Services.Rentals
                 Data = mapped
             };
         }
-
-       
-
-
-        
-
-
 
         public async Task<Response<IEnumerable<RentalViewDTO>>> PaginatedRentalProduct(RentalQuery query)
         {
@@ -341,13 +334,13 @@ namespace Belvoir.Bll.Services.Rentals
             };
         }
 
-        public async Task<Response<IEnumerable<Ratings>>> GetRating(Guid rentalid)
+        public async Task<Response<AvgRating>> GetRating(Guid rentalid)
         {
             var ratings = await _repo.GetRating(rentalid);
 
-            if (ratings == null || !ratings.Any())
+            if (ratings == null)
             {
-                return new Response<IEnumerable<Ratings>>
+                return new Response<AvgRating>
                 {
                     StatusCode = 404,
                     Message = "No ratings found",
@@ -355,7 +348,7 @@ namespace Belvoir.Bll.Services.Rentals
                 };
             }
 
-            return new Response<IEnumerable<Ratings>>
+            return new Response<AvgRating>
             {
                 StatusCode = 200,
                 Message = "Ratings retrieved successfully",

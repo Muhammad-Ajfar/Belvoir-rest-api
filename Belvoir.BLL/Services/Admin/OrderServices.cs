@@ -145,7 +145,7 @@ namespace Belvoir.Bll.Services.Admin
         public async Task<Response<SingleOrderTailoring>> SingleOrder(Guid order_id)
         {
             var result = await _repo.SingleOrder(order_id);
-            if(result == null)
+            if (result == null)
             {
                 return new Response<SingleOrderTailoring> { StatusCode = 404, Message = "Order not found" };
             }
