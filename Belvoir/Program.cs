@@ -21,6 +21,8 @@ using System.Text;
 using Belvoir.Bll.Services.Notification;
 using Belvoir.Bll.Services.UserSer;
 using Belvoir.DAL.Repositories.UserRep;
+using Belvoir.Bll.Services.Payments;
+using Belvoir.DAL.Repositories.Payments;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -36,6 +38,8 @@ builder.Services.AddScoped<IAuthServices, AuthServices>();
 builder.Services.AddTransient<IAdminServices,AdminServices>();
 builder.Services.AddScoped<IJwtHelper, JwtHelper>();
 builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
+
+builder.Services.AddScoped<IRazorpayService, RazorpayService>();
 
 builder.Services.AddScoped<IRentalService, RentalSevice>();
 builder.Services.AddScoped<IRentalCartService,RentalCartService>();
@@ -67,6 +71,8 @@ builder.Services.AddScoped<IOrderRepository,OrderRepository>();
 builder.Services.AddScoped<IAddressRepository, AddressRepository>();
 
 builder.Services.AddScoped<IDesignRepository,DesignRepository>();
+
+builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 
 builder.Services.AddScoped<IDeliveryRepository, DeliveryRepository>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
