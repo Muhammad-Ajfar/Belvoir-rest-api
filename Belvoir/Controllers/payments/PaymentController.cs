@@ -21,7 +21,7 @@ namespace Belvoir.Controllers.payments
 
 
         [HttpPost("create-order")]
-        public IActionResult CreateOrder([FromBody] decimal amount)
+        public IActionResult CreateOrder(decimal amount)
         {
             var order = _razorpayService.CreateOrder(amount);
 
