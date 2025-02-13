@@ -13,7 +13,7 @@ namespace Belvoir.DAL.Models
         public decimal totalAmount { get; set; }
         public string paymentMethod { get; set; }
         public Guid shippingAddress { get; set; }
-        public bool fastShipping { get; set; }
+        public bool FastShipping { get; set; }
         public decimal shippingCost { get; set; }
         public string trackingNumber { get; set; }
         public string productType { get; set; }
