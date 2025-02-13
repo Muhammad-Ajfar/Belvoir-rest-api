@@ -84,7 +84,6 @@ namespace Belvoir.Controllers.Rentals
             return StatusCode(data.StatusCode, data);
         }
 
-        [Authorize]
         [HttpGet("rental-rating")]
         public async Task<IActionResult> GetRating_(Guid productid)
         {

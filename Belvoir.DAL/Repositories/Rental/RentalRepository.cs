@@ -39,7 +39,7 @@ namespace Belvoir.DAL.Repositories.Rental
 
 
         public Task<int> AddRating(Guid rentalid, Guid userid, RatingItem data);
-        public Task<IEnumerable<Ratings>> GetRating(Guid rentalid);
+        public Task<AvgRating> GetRating(Guid rentalid);
         public Task<int> DeleteRating(Guid ratingId);
         public Task<int> UpdateRating(Guid ratingId, RatingItem data);
 
@@ -243,10 +243,12 @@ namespace Belvoir.DAL.Repositories.Rental
             return await _connection.ExecuteAsync(query, new { rentalid = rentalid, userid = userid, isdeleted = false, createdby = userid, message = data.message, ratingvalue = data.ratingvalue });
         }
 
-        public async Task<IEnumerable<Ratings>> GetRating(Guid rentalid)
+        public async Task<AvgRating> GetRating(Guid rentalid)
         {
+            var query1 = @"select AVG(ratingvalue), COUNT(*) from Ratings join User on Ratings.userid=User.id  where rentalid=@rentalid";
+            var res = await _connection.QueryFirstOrDefaultAsync<AVGCount>(query1, new { rentalid = rentalid });
             var query = @"select Ratings.id ,User.name as username,Ratings.ratingvalue,message from Ratings join User on Ratings.userid=User.id  where rentalid=@rentalid";
-            return await _connection.QueryAsync<Ratings>(query, new { rentalid = rentalid });
+            return new AvgRating() { ratings = await _connection.QueryAsync<Ratings>(query, new { rentalid = rentalid }),averageRating = res.averageRating,count = res.count };
         }
 
         public async Task<int> DeleteRating(Guid ratingId)

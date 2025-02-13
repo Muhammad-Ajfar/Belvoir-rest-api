@@ -118,7 +118,7 @@ namespace Belvoir.DAL.Repositories.Admin
                 JOIN Address ON orders.shipping_address = Address.Id
                 WHERE product_type = 'tailor'
                 AND DesignImages.IsPrimary = true 
-                AND order_items.order_item_id = @user_id;";
+                AND order_items.order_item_id = @order_id;";
             return await _dbConnection.QueryFirstOrDefaultAsync<SingleOrderTailoring>(query, new { order_id = order_id });
         }
         
