@@ -54,7 +54,7 @@ namespace Belvoir.DAL.Repositories.Admin
                 parameters.Add("@p_total_amount", order.totalAmount);
                 parameters.Add("@p_payment_method", order.paymentMethod);
                 parameters.Add("@p_shipping_address", order.shippingAddress);
-                parameters.Add("@p_fast_shipping", order.fastShipping);
+                parameters.Add("@p_fast_shipping", order.FastShipping);
                 parameters.Add("@p_shipping_cost", order.shippingCost);
                 parameters.Add("@p_tracking_number", order.trackingNumber);
                 parameters.Add("@p_product_type", order.productType);

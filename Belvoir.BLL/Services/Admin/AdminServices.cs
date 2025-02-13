@@ -163,7 +163,7 @@ namespace Belvoir.Bll.Services.Admin
 
             var newUser = _mapper.Map<Delivery>(deliveryDTO);
             newUser.Id = Guid.NewGuid();
-            newUser.PasswordHash = BCrypt.Net.BCrypt.HashPassword(deliveryDTO.PasswordHash);
+            newUser.PasswordHash = BCrypt.Net.BCrypt.HashPassword(deliveryDTO.Password);
             newUser.dId = Guid.NewGuid();
 
             bool isrowAffected = await _repo.AddDelivery(newUser);
