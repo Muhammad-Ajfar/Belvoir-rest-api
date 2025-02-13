@@ -63,7 +63,7 @@ namespace Belvoir.Bll.Services.Admin
         public async Task<Response<object>> AddOrder(PlaceOrderDTO orderDto, Guid userId)
         {
             var order = _mapper.Map<Order>(orderDto);
-            order.shippingCost = orderDto.fastShipping? 10 : 60;
+            order.shippingCost = orderDto.FastShipping? 10 : 60;
             order.trackingNumber = GenerateFedExTrackingNumber(); // Generate tracking number
             order.userId = userId;
             order.totalAmount = orderDto.price + order.shippingCost;

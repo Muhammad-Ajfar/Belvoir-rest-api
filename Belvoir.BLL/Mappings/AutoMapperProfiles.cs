@@ -32,7 +32,10 @@ namespace Belvoir.Bll.Mappings
             CreateMap<User, RegisterResponseDTO>();
             CreateMap<User, TailorResponseDTO>();
             CreateMap<TailorGetDTO, Tailor>().ReverseMap();
-            CreateMap<DeliveryDTO, Delivery>().ReverseMap();
+
+            CreateMap<DeliveryDTO, Delivery>().ForMember(dest => dest.PasswordHash, opt => opt.Ignore())
+                .ReverseMap();
+
 
             CreateMap<Delivery, DeliveryResponseDTO>();
             CreateMap<RentalSetDTO, RentalProduct>().ForMember(dest=>dest.Id,opt=>opt.Ignore());
