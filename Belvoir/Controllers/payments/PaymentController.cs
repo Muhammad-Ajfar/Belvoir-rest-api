@@ -1,5 +1,5 @@
 ﻿using Belvoir.Bll.Services.Payments;
-using Belvoir.DAL.Models.Payment;
+using Belvoir.DAL.Models.Payments;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
