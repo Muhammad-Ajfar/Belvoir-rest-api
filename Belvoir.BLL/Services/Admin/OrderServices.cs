@@ -16,7 +16,7 @@ namespace Belvoir.Bll.Services.Admin
     {
         public Task<Response<object>> AddTailorProducts(TailorProductDTO tailorProductDTO);
         public Task<Response<object>> AddOrder(PlaceOrderDTO orderDto, Guid user_id);
-        public Task<Response<object>> CheckoutRentalCartAsync(Guid userId, CheckoutRentalCartDTO checkoutDto);
+        public Task<Response<int>> CheckoutRentalCartAsync(Guid userId, CheckoutRentalCartDTO checkoutDto);
 
         public Task<Response<IEnumerable<OrderAdminGet>>> orderAdminGets(string? status);
         public Task<Response<IEnumerable<OrderUserGet>>> orderUserGets(Guid userid, string? status);
@@ -83,18 +83,18 @@ namespace Belvoir.Bll.Services.Admin
             return new Response<object> { StatusCode = 500, Message = "error" };
         }
 
-        public async Task<Response<object>> CheckoutRentalCartAsync(Guid userId, CheckoutRentalCartDTO checkoutDto)
+        public async Task<Response<int>> CheckoutRentalCartAsync(Guid userId, CheckoutRentalCartDTO checkoutDto)
         {
             string trackingNumber = GenerateFedExTrackingNumber();
 
-            bool checkoutSuccess = await _repo.CheckoutRentalCartAsync(userId, checkoutDto.PaymentMethod,
+            int totalAmount = await _repo.CheckoutRentalCartAsync(userId, checkoutDto.PaymentMethod,
                                     checkoutDto.ShippingAddress, checkoutDto.FastShipping, trackingNumber);
 
-            if (checkoutSuccess)
+            if (totalAmount != -1)
             {
-                return new Response<object> { StatusCode = 200, Message = "Checkout successful", Data = null };
+                return new Response<int> { StatusCode = 200, Message = "Checkout successful", Data = totalAmount };
             }
-            return new Response<object> { StatusCode = 500, Message = "Checkout failed", Error = "Database operation failed" };
+            return new Response<int> { StatusCode = 500, Message = "Checkout failed", Error = "Database operation failed" };
         }
 
 
