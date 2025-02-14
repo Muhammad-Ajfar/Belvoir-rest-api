@@ -17,7 +17,7 @@ namespace Belvoir.DAL.Repositories.Admin
         public Task<bool> IsClothExists(Guid Id);
         public Task<bool> IsDesignExists(Guid Id);
         public Task<bool> AddOrder(Order order );
-        public Task<bool> CheckoutRentalCartAsync(Guid userId, string paymentMethod, Guid shippingAddress, bool fastShipping, string trackingNumber);
+        public Task<int> CheckoutRentalCartAsync(Guid userId, string paymentMethod, Guid shippingAddress, bool fastShipping, string trackingNumber);
 
         public Task<IEnumerable<OrderTailorGet>> orderTailorGets();
         public Task<IEnumerable<OrderAdminGet>> orderAdminGets(string? status);
@@ -69,7 +69,7 @@ namespace Belvoir.DAL.Repositories.Admin
                 return parameters.Get<int>("@p_success") == 1;
         }
 
-        public async Task<bool> CheckoutRentalCartAsync(Guid userId, string paymentMethod, Guid shippingAddress, bool fastShipping, string trackingNumber)
+        public async Task<int> CheckoutRentalCartAsync(Guid userId, string paymentMethod, Guid shippingAddress, bool fastShipping, string trackingNumber)
         {
             try
             {
@@ -79,11 +79,11 @@ namespace Belvoir.DAL.Repositories.Admin
                 parameters.Add("@p_shipping_address", shippingAddress);
                 parameters.Add("@p_fast_shipping", fastShipping);
                 parameters.Add("@p_tracking_number", trackingNumber);
-                parameters.Add("@p_success", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                parameters.Add("@p_total_amount", dbType: DbType.Int32, direction: ParameterDirection.Output);
 
 
                 await _dbConnection.ExecuteAsync("CheckoutRentalCart", parameters, commandType: CommandType.StoredProcedure);
-                return parameters.Get<int>("@p_success") == 1;
+                return parameters.Get<int>("@p_total_amount");
 
             }
             catch (Exception ex)

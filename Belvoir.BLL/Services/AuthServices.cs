@@ -62,7 +62,6 @@ namespace Belvoir.Bll.Services
 
                 // Prepare the response
                 var responseDTO = _mapper.Map<RegisterResponseDTO>(newUser);
-                _signal.TriggerNotification(newUser.Id.ToString(), "User registered in the Belvoir");
 
                 return new Response<RegisterResponseDTO>
                 {
