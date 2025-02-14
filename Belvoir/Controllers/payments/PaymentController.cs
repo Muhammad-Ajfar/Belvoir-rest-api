@@ -1,5 +1,6 @@
 ﻿using Belvoir.Bll.Services.Payments;
 using Belvoir.DAL.Models.Payments;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,7 +16,7 @@ namespace Belvoir.Controllers.payments
         {
             _razorpayService = razorpayService;
 
-            var apiSecret = configuration["Razorpay:ApiSecret"];
+            var apiSecret =  Environment.GetEnvironmentVariable("razorpaySecret") ?? string.Empty;
         }
 
 
@@ -24,13 +25,13 @@ namespace Belvoir.Controllers.payments
         public IActionResult CreateOrder(decimal amount)
         {
             var order = _razorpayService.CreateOrder(amount);
-
+            var razorpayLink = Environment.GetEnvironmentVariable("razorpayLink") ?? string.Empty;
             return Ok(new orderDetails
             {
                 orderId = order["id"],
                 amount = order["amount"],
                 currency = order["currency"],
-                Link = "file:///C:/Users/nabee/OneDrive/Desktop/index.html"
+                Link = razorpayLink
             });
 
 
@@ -40,13 +41,13 @@ namespace Belvoir.Controllers.payments
         public IActionResult VerifyPayments([FromBody] PaymentVerificationRequest request)
         {
             Guid userId = Guid.Parse(HttpContext.Items["UserId"].ToString());
-
+            var razorpaySecret = Environment.GetEnvironmentVariable("razorpaySecret") ?? string.Empty;
 
             bool isValid = _razorpayService.VerifyPaymentSignature(
                 request.PaymentId,
                 request.OrderId,
                 request.Signature,
-                "7h2qnyXl8f91qZN5cAZ2G4cr",
+                razorpaySecret,
                 userId
             );
 
