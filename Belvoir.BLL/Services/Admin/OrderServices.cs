@@ -18,6 +18,7 @@ namespace Belvoir.Bll.Services.Admin
         public Task<Response<object>> AddOrder(PlaceOrderDTO orderDto, Guid user_id);
         public Task<Response<IEnumerable<OrderAdminGet>>> orderAdminGets(string? status);
         public Task<Response<IEnumerable<OrderUserGet>>> orderUserGets(Guid userid, string? status);
+        public Task<Response<IEnumerable<OrderUserRentalGet>>> orderRentalUserGets(Guid userid, string? status);
         public Task<Response<IEnumerable<OrderDeliveryGet>>> orderDeliveryGets();
         public Task<Response<IEnumerable<OrderTailorGet>>> orderTailorGets();
         public Task<Response<SingleOrderTailoring>> SingleOrder(Guid order_id);
@@ -86,7 +87,21 @@ namespace Belvoir.Bll.Services.Admin
         public async Task<Response<IEnumerable<OrderUserGet>>> orderUserGets(Guid userid, string? status)
         {
             var result = await _repo.orderUserGets(userid, status);
+            if (result == null)
+            {
+                return new Response<IEnumerable<OrderUserGet>> { StatusCode = 200, Message = "No Orders"};
+            }
             return new Response<IEnumerable<OrderUserGet>> { StatusCode = 200, Message = "success", Data = result };
+        }
+
+        public async Task<Response<IEnumerable<OrderUserRentalGet>>> orderRentalUserGets(Guid userid, string? status)
+        {
+            var result = await _repo.orderRentalUserGets(userid, status);
+            if (result == null)
+            {
+                return new Response<IEnumerable<OrderUserRentalGet>> { StatusCode = 200, Message = "No Orders" };
+            }
+            return new Response<IEnumerable<OrderUserRentalGet>> { StatusCode = 200, Message = "success", Data = result };
         }
 
 

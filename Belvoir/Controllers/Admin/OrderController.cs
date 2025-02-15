@@ -38,11 +38,20 @@ namespace Belvoir.Controllers.Admin
         }
 
         [Authorize]
-        [HttpGet("user")]
+        [HttpGet("user/tailor")]
         public async Task<IActionResult> getUserOrder(string? status)
         {
             var user_id = Guid.Parse(HttpContext.Items["UserId"]?.ToString());
             var response = await _orderServices.orderUserGets(user_id, status);
+            return StatusCode(response.StatusCode, response);
+        }
+
+        [Authorize]
+        [HttpGet("user/rental")]
+        public async Task<IActionResult> getRentalUserOrder(string? status)
+        {
+            var user_id = Guid.Parse(HttpContext.Items["UserId"]?.ToString());
+            var response = await _orderServices.orderRentalUserGets(user_id, status);
             return StatusCode(response.StatusCode, response);
         }
 
