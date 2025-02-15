@@ -17,13 +17,13 @@ namespace Belvoir.Bll.Services.Admin
         public Task<Response<object>> AddTailorProducts(TailorProductDTO tailorProductDTO);
         public Task<Response<object>> AddOrder(PlaceOrderDTO orderDto, Guid user_id);
         public Task<Response<int>> CheckoutRentalCartAsync(Guid userId, CheckoutRentalCartDTO checkoutDto);
-
         public Task<Response<IEnumerable<OrderAdminGet>>> orderAdminGets(string? status);
         public Task<Response<IEnumerable<OrderUserGet>>> orderUserGets(Guid userid, string? status);
         public Task<Response<IEnumerable<OrderUserRentalGet>>> orderRentalUserGets(Guid userid, string? status);
         public Task<Response<IEnumerable<OrderDeliveryGet>>> orderDeliveryGets();
         public Task<Response<IEnumerable<OrderTailorGet>>> orderTailorGets();
         public Task<Response<SingleOrderTailoring>> SingleOrder(Guid order_id);
+        public Task<Response<object>> OrderStatusUpdate(Guid order_id, string status);
     }
     public class OrderServices:IOrderServices
     {
@@ -166,6 +166,14 @@ namespace Belvoir.Bll.Services.Admin
             }
             return new Response<SingleOrderTailoring> { StatusCode = 200, Message = "success", Data = result };
         }
-
+        public async Task<Response<object>> OrderStatusUpdate(Guid order_id, string status)
+        {
+            bool res = await _repo.UpdateStatus(order_id, status);
+            if (!res)
+            {
+                return new Response<object> { StatusCode = 500, Message = "failed", Error = "status not updated " };
+            }
+            return new Response<object> { StatusCode = 200, Message = "success" };
+        }
     }
 }

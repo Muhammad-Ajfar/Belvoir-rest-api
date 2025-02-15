@@ -92,5 +92,12 @@ namespace Belvoir.Controllers.Admin
             var response = await _orderServices.SingleOrder(order_id);
             return StatusCode(response.StatusCode, response);
         }
+
+        [HttpPost("update/status/{order_id}")]
+        public async Task<IActionResult> OrderStatusUpdate(Guid order_id,string status)
+        {
+            var response = await _orderServices.SingleOrder(order_id);
+            return StatusCode(response.StatusCode, response);
+        }
     }
 }

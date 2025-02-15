@@ -175,7 +175,7 @@ namespace Belvoir.DAL.Repositories.Admin
         
         public async Task<bool> UpdateStatus(Guid order_id,string status)
         {
-            string query = @"UPDATE orders SET status = @NewStatus WHERE id = @OrderId;";
+            string query = @"UPDATE order_items SET order_status = @NewStatus WHERE order_item_id = @OrderId;";
             return await _dbConnection.ExecuteAsync(query, new { OrderId = order_id, NewStatus = status }) > 0;
         }
         
