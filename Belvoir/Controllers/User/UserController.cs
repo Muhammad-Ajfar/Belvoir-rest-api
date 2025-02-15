@@ -17,7 +17,7 @@ namespace Belvoir.Controllers.User
 
         [Authorize]
         [HttpGet("profile-User")]
-        public async Task<IActionResult> GetDeliveryProfile()
+        public async Task<IActionResult> GetUserProfile()
         {
             Guid userId = Guid.Parse(HttpContext.Items["UserId"].ToString());
             var response = await _userService.GetUserProfile(userId);
