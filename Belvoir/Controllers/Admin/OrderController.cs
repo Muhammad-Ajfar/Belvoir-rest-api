@@ -38,7 +38,18 @@ namespace Belvoir.Controllers.Admin
         }
 
         [Authorize]
+        [HttpPost("checkout/rental")]
+        public async Task<IActionResult> CheckoutRentalCart([FromBody] CheckoutRentalCartDTO checkoutDto)
+        {
+            var userId = Guid.Parse(HttpContext.Items["UserId"]?.ToString());
+            var response = await _orderServices.CheckoutRentalCartAsync(userId, checkoutDto);
+
+            return StatusCode(response.StatusCode, response);
+        }
+
+        [Authorize]
         [HttpGet("user/tailor")]
+
         public async Task<IActionResult> getUserOrder(string? status)
         {
             var user_id = Guid.Parse(HttpContext.Items["UserId"]?.ToString());

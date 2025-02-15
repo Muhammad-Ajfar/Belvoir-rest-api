@@ -16,6 +16,8 @@ namespace Belvoir.Bll.Services.Admin
     {
         public Task<Response<object>> AddTailorProducts(TailorProductDTO tailorProductDTO);
         public Task<Response<object>> AddOrder(PlaceOrderDTO orderDto, Guid user_id);
+        public Task<Response<int>> CheckoutRentalCartAsync(Guid userId, CheckoutRentalCartDTO checkoutDto);
+
         public Task<Response<IEnumerable<OrderAdminGet>>> orderAdminGets(string? status);
         public Task<Response<IEnumerable<OrderUserGet>>> orderUserGets(Guid userid, string? status);
         public Task<Response<IEnumerable<OrderUserRentalGet>>> orderRentalUserGets(Guid userid, string? status);
@@ -62,7 +64,7 @@ namespace Belvoir.Bll.Services.Admin
         public async Task<Response<object>> AddOrder(PlaceOrderDTO orderDto, Guid userId)
         {
             var order = _mapper.Map<Order>(orderDto);
-            order.shippingCost = orderDto.fastShipping? 10 : 60;
+            order.shippingCost = orderDto.FastShipping? 10 : 60;
             order.trackingNumber = GenerateFedExTrackingNumber(); // Generate tracking number
             order.userId = userId;
             order.totalAmount = orderDto.price + order.shippingCost;
@@ -80,6 +82,20 @@ namespace Belvoir.Bll.Services.Admin
                 return new Response<object> { StatusCode = 200, Message = "success" };
             }
             return new Response<object> { StatusCode = 500, Message = "error" };
+        }
+
+        public async Task<Response<int>> CheckoutRentalCartAsync(Guid userId, CheckoutRentalCartDTO checkoutDto)
+        {
+            string trackingNumber = GenerateFedExTrackingNumber();
+
+            int totalAmount = await _repo.CheckoutRentalCartAsync(userId, checkoutDto.PaymentMethod,
+                                    checkoutDto.ShippingAddress, checkoutDto.FastShipping, trackingNumber);
+
+            if (totalAmount != -1)
+            {
+                return new Response<int> { StatusCode = 200, Message = "Checkout successful", Data = totalAmount };
+            }
+            return new Response<int> { StatusCode = 500, Message = "Checkout failed", Error = "Database operation failed" };
         }
 
 
