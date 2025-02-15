@@ -37,7 +37,7 @@ namespace Belvoir.Bll.Services.Admin
 
         public async Task<Response<object>> AddTailorProducts(TailorProductDTO tailorProductDTO) {
 
-
+            Guid id = Guid.NewGuid();
             var tailorProduct = _mapper.Map<TailorProduct>(tailorProductDTO);
             if (!await _repo.IsClothExists(tailorProduct.ClothId))
             {
@@ -47,7 +47,7 @@ namespace Belvoir.Bll.Services.Admin
             {
                 return new Response<object> { StatusCode = 404, Message = "DressDesign not exist" };
             }
-            if (await _repo.AddTailorProduct(tailorProduct))
+            if (await _repo.AddTailorProduct(tailorProduct,id))
             {
                 return new Response<object> { StatusCode = 200, Message = "success" };
             }
