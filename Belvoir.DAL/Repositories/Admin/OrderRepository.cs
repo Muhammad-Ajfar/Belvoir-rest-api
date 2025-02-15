@@ -25,6 +25,7 @@ namespace Belvoir.DAL.Repositories.Admin
         public Task<IEnumerable<OrderUserGet>> orderUserGets(Guid userid, string? status);
         public Task<IEnumerable<OrderUserRentalGet>> orderRentalUserGets(Guid userid, string? status);
         public Task<SingleOrderTailoring> SingleOrder(Guid order_id);
+        public Task<bool> UpdateStatus(Guid order_id, string status);
     }
     public class OrderRepository: IOrderRepository
     {
@@ -169,6 +170,13 @@ namespace Belvoir.DAL.Repositories.Admin
                             AND DesignImages.IsPrimary = true 
                             AND order_items.order_item_id = @order_id;";
             return await _dbConnection.QueryFirstOrDefaultAsync<SingleOrderTailoring>(query, new { order_id = order_id });
+        }
+
+        
+        public async Task<bool> UpdateStatus(Guid order_id,string status)
+        {
+            string query = @"UPDATE orders SET status = @NewStatus WHERE id = @OrderId;";
+            return await _dbConnection.ExecuteAsync(query, new { OrderId = order_id, NewStatus = status }) > 0;
         }
         
     }
