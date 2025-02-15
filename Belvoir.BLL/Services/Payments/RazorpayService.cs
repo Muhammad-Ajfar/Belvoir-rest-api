@@ -29,7 +29,7 @@ namespace Belvoir.Bll.Services.Payments
         public RazorpayService(IConfiguration configuration,IPaymentRepository paymentRepository)
         {
             var razorpayKey = Environment.GetEnvironmentVariable("razorpayKey") ?? string.Empty;
-            var razorpaySecret = Environment.GetEnvironmentVariable("rezorpaySecret") ?? string.Empty;
+            var razorpaySecret = Environment.GetEnvironmentVariable("razorpaySecret") ?? string.Empty;
 
             if (string.IsNullOrEmpty(razorpayKey) || string.IsNullOrEmpty(razorpaySecret))
             {
@@ -39,6 +39,7 @@ namespace Belvoir.Bll.Services.Payments
             _client = new RazorpayClient(razorpayKey, razorpaySecret);
             _paymentRepository = paymentRepository; 
         }
+
 
         public Razorpay.Api.Order CreateOrder(decimal amount )
         {
