@@ -63,6 +63,7 @@ namespace Belvoir.Bll.Services.Admin
 
         public async Task<Response<object>> AddOrder(PlaceOrderDTO orderDto, Guid userId)
         {
+            var addressCheck = await _repo.IsAddressExists(orderDto.shippingAddress);
             var order = _mapper.Map<Order>(orderDto);
             order.shippingCost = orderDto.FastShipping? 10 : 60;
             order.trackingNumber = GenerateFedExTrackingNumber(); // Generate tracking number

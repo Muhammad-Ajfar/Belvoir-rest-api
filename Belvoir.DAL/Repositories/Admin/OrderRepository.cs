@@ -16,6 +16,7 @@ namespace Belvoir.DAL.Repositories.Admin
         public Task<bool> AddTailorProduct(TailorProduct tailorProduct,Guid id);
         public Task<bool> IsClothExists(Guid Id);
         public Task<bool> IsDesignExists(Guid Id);
+        public Task<bool> IsAddressExists(Guid Id);
         public Task<bool> AddOrder(Order order );
         public Task<int> CheckoutRentalCartAsync(Guid userId, string paymentMethod, Guid shippingAddress, bool fastShipping, string trackingNumber);
 
@@ -47,6 +48,11 @@ namespace Belvoir.DAL.Repositories.Admin
         public async Task<bool> IsDesignExists(Guid Id)
         {
             string query = "SELECT Count(*) FROM DressDesign WHERE Id = @Id";
+            return await _dbConnection.ExecuteScalarAsync<int>(query, new { Id }) > 0;
+        }
+        public async Task<bool> IsAddressExists(Guid Id)
+        {
+            string query = "SELECT Count(*) FROM Address WHERE Id = @Id";
             return await _dbConnection.ExecuteScalarAsync<int>(query, new { Id }) > 0;
         }
         public async Task<bool> AddOrder(Order order)
