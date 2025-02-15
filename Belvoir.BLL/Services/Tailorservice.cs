@@ -112,9 +112,8 @@ namespace Belvoir.Bll.Services
 
         public async Task<Response<object>> ResetPassword(Guid Tailorid, PasswordResetDTO data)
         {
-
-            var response = await _repo.SingleUserwithId(Tailorid);
-            if (response == null)
+            var passwordHash = await _repo.UserPassword(Tailorid);
+            if (passwordHash == null)
             {
                 return new Response<object>
                 {
@@ -123,7 +122,7 @@ namespace Belvoir.Bll.Services
                 };
             }
 
-            bool isOldPasswordValid = BCrypt.Net.BCrypt.Verify(data.OldPassword, response.PasswordHash);
+            bool isOldPasswordValid = BCrypt.Net.BCrypt.Verify(data.OldPassword, passwordHash);
             if (!isOldPasswordValid)
             {
                 return new Response<object>
@@ -134,8 +133,8 @@ namespace Belvoir.Bll.Services
             }
 
             var hashedNewPassword = BCrypt.Net.BCrypt.HashPassword(data.NewPassword);
-
             bool updateResponse = await _repo.UpdatePassword(Tailorid, hashedNewPassword);
+
             if (!updateResponse)
             {
                 return new Response<object>
@@ -151,6 +150,7 @@ namespace Belvoir.Bll.Services
                 StatusCode = 200
             };
         }
+
 
 
 

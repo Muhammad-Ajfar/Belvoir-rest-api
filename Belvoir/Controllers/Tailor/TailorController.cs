@@ -65,10 +65,7 @@ namespace Belvoir.Controllers.Tailor
         {
             var user = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
 
-            if (user == null)
-            {
-                return Unauthorized("Please login");
-            }
+
             var response = await _tailorService.GetTailorprofile(Guid.Parse(user.Value));
             return StatusCode(response.StatusCode, response);
         }
@@ -77,13 +74,9 @@ namespace Belvoir.Controllers.Tailor
         [HttpPost("/tailor/resetpassword")]
         public async Task<IActionResult> ResetTailorPassword([FromBody] PasswordResetDTO data)
         {
-            var user = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
+            var userId = Guid.Parse(HttpContext.Items["UserId"].ToString()); // Fetch userId from HttpContext
 
-            if (user == null)
-            {
-                return Unauthorized("Please login");
-            }
-            var response = await _tailorService.ResetPassword(Guid.Parse(user.Value),data);
+            var response = await _tailorService.ResetPassword(userId, data);
             return StatusCode(response.StatusCode, response);
         }
     }

@@ -17,9 +17,9 @@ namespace Belvoir.Bll.DTO.Order
 
         [Required(ErrorMessage = "Product name is required.")]
         [StringLength(100, ErrorMessage = "Product name can't exceed 100 characters.")]
-        public string ProductName { get; set; }
+        public string product_name { get; set; }
 
         [Range(0.01, double.MaxValue, ErrorMessage = "Price must be greater than 0.")]
-        public decimal Price { get; set; }
+        public decimal price { get; set; }
     }
 }
