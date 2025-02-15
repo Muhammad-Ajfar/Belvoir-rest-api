@@ -20,6 +20,7 @@ namespace Belvoir.Bll.Services.UserSer
         {
             _userRepository = userRepository;
         }
+
         public async Task<Response<UserProfile>> GetUserProfile(Guid id)
         {
             var response = await _userRepository.SingleProfile(id);
