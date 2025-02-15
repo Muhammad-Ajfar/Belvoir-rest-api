@@ -28,15 +28,15 @@ namespace Belvoir.Bll.Services.Payments
 
         public RazorpayService(IConfiguration configuration,IPaymentRepository paymentRepository)
         {
-            var apiKey = configuration["Razorpay:ApiKey"];
-            var apiSecret = configuration["Razorpay:ApiSecret"];
+            var razorpayKey = Environment.GetEnvironmentVariable("razorpayKey") ?? string.Empty;
+            var razorpaySecret = Environment.GetEnvironmentVariable("rezorpaySecret") ?? string.Empty;
 
-            if (string.IsNullOrEmpty(apiKey) || string.IsNullOrEmpty(apiSecret))
+            if (string.IsNullOrEmpty(razorpayKey) || string.IsNullOrEmpty(razorpaySecret))
             {
                 throw new ArgumentException("Razorpay API credentials are missing.");
             }
 
-            _client = new RazorpayClient(apiKey, apiSecret);
+            _client = new RazorpayClient(razorpayKey, razorpaySecret);
             _paymentRepository = paymentRepository; 
         }
 
