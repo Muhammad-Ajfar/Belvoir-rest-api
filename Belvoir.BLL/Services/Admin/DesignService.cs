@@ -20,6 +20,10 @@ namespace Belvoir.Bll.Services.Admin
         Task<Response<List<DesignDTO>>> GetDesignsAsync(DesignQueryParameters queryParams);
         Task<Response<DesignDTO>> GetDesignByIdAsync(Guid designId);
         Task<Response<string>> AddDesignAsync(Design design, List<IFormFile> imageFiles);
+        Task<Response<string>> UpdateDesignAsync(UpdateDesignDto dto);
+        public Task<Response<string>> SoftDeleteDesignAsync(Guid designId);
+
+
         Task<Response<object>> AddMesurementGuide(Mesurment_Guides design_Mesurments);
         Task<Response<object>> AddDesignMesurement(List<Design_Mesurment> mesurement);
         Task<Response<IEnumerable<MesurementListGet>>> GetDesignMesurment(Guid design_id);
@@ -150,6 +154,121 @@ namespace Belvoir.Bll.Services.Admin
                 Error = "Database insert error."
             };
         }
+
+        public async Task<Response<string>> UpdateDesignAsync(UpdateDesignDto dto)
+        {
+            // Retrieve existing images
+            var existingImages = await _designRepository.GetImagesByDesignIdAsync(dto.Id);
+            int currentImageCount = existingImages.Count();
+
+            // Remove images if requested
+            if (dto.RemoveImageIds != null && dto.RemoveImageIds.Any())
+            {
+                currentImageCount -= dto.RemoveImageIds.Count;
+            }
+
+            // Upload new images if provided
+            var uploadedImages = new List<Image>();
+            if (dto.NewImages != null && dto.NewImages.Any())
+            {
+                foreach (var image in dto.NewImages)
+                {
+                    var imageUrl = await _cloudinaryService.UploadImageAsync(image);
+                    uploadedImages.Add(new Image
+                    {
+                        Id = Guid.NewGuid(),
+                        EntityId = dto.Id,
+                        ImageUrl = imageUrl,
+                        IsPrimary = false // Default to false; logic can be added for primary flag
+                    });
+                }
+                currentImageCount += uploadedImages.Count;
+            }
+
+            // Ensure at least 3 images exist
+            if (currentImageCount < 3)
+            {
+                return new Response<string>
+                {
+                    StatusCode = 400,
+                    Message = "At least 3 images are required.",
+                    Error = "Image count is less than 3",
+                    Data = null
+                };
+            }
+
+            // Update design and images in a transaction
+            var design = new Design
+            {
+                Id = dto.Id,
+                Name = dto.Name,
+                Description = dto.Description,
+                Category = dto.Category,
+                Price = dto.Price,
+                Available = dto.Available
+            };
+
+            var success = await _designRepository.UpdateDesignAsync(design, dto.RemoveImageIds, uploadedImages);
+
+            if (success)
+            {
+                return new Response<string>
+                {
+                    StatusCode = 200,
+                    Message = "Design updated successfully",
+                    Error = null,
+                    Data = "Success"
+                };
+            }
+            else
+            {
+                return new Response<string>
+                {
+                    StatusCode = 500,
+                    Message = "Failed to update design",
+                    Error = "Database error",
+                    Data = null
+                };
+            }
+        }
+
+        public async Task<Response<string>> SoftDeleteDesignAsync(Guid designId)
+        {
+            var existingDesign = await _designRepository.GetDesignById(designId);
+
+            if (existingDesign == null || existingDesign.IsDeleted)
+            {
+                return new Response<string>
+                {
+                    StatusCode = 404,
+                    Message = "Design not found or already deleted.",
+                    Error = "Invalid DesignId",
+                    Data = null
+                };
+            }
+
+            var rowsAffected = await _designRepository.SoftDeleteDesignAsync(designId);
+
+            if (rowsAffected > 0)
+            {
+                return new Response<string>
+                {
+                    StatusCode = 200,
+                    Message = "Design soft deleted successfully.",
+                    Error = null,
+                    Data = null
+                };
+            }
+
+            return new Response<string>
+            {
+                StatusCode = 500,
+                Message = "Failed to soft delete design.",
+                Error = "Database error",
+                Data = null
+            };
+        }
+
 
         public async Task<Response<object>> AddMesurementGuide(Mesurment_Guides mesurment_Guides)
         {
