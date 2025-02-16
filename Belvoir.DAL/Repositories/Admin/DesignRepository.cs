@@ -18,6 +18,12 @@ namespace Belvoir.DAL.Repositories.Admin
         public Task<Design> GetDesignById(Guid designId);
 
         public Task<int> AddDesignWithImagesAsync(Design design);
+        public Task<IEnumerable<Image>> GetImagesByDesignIdAsync(Guid designId);
+
+        public Task<bool> UpdateDesignAsync(Design design, List<Guid>? removeImageIds, List<Image>? newImages);
+        public Task<int> SoftDeleteDesignAsync(Guid designId);
+
+
         public Task<bool> AddMesurementGuide(Mesurment_Guides mesurment);
         public Task<bool> AddDesignMesurment(List<Design_Mesurment> design_Mesurments);
         public Task<IEnumerable<MesurementListGet>> GetDesignMesurment(Guid design_id);
@@ -149,6 +155,71 @@ namespace Belvoir.DAL.Repositories.Admin
                 }
             }
         }
+
+        public async Task<IEnumerable<Image>> GetImagesByDesignIdAsync(Guid designId)
+        {
+            var sql = "SELECT Id, DesignId AS EntityId, ImageUrl, IsPrimary FROM DesignImages WHERE DesignId = @DesignId";
+            return await _dbConnection.QueryAsync<Image>(sql, new { DesignId = designId });
+        }
+
+
+        public async Task<bool> UpdateDesignAsync(Design design, List<Guid>? removeImageIds, List<Image>? newImages)
+        {
+            if (_dbConnection.State != ConnectionState.Open)
+            {
+                _dbConnection.Open();
+            }
+
+                using var transaction = _dbConnection.BeginTransaction();
+            try
+            {
+                // Update design details
+                var updateDesignSql = @"
+            UPDATE DressDesign 
+            SET Name = @Name, 
+                Description = @Description, 
+                Category = @Category, 
+                Price = @Price, 
+                Available = @Available, 
+                UpdatedAt = NOW() 
+            WHERE Id = @Id;
+        ";
+                await _dbConnection.ExecuteAsync(updateDesignSql, design, transaction);
+
+                // Remove specified images
+                if (removeImageIds != null && removeImageIds.Any())
+                {
+                    var removeImagesSql = "DELETE FROM DesignImages WHERE Id IN @Ids;";
+                    await _dbConnection.ExecuteAsync(removeImagesSql, new { Ids = removeImageIds }, transaction);
+                }
+
+                // Add new images if provided
+                if (newImages != null && newImages.Any())
+                {
+                    var addImagesSql = @"
+                INSERT INTO DesignImages (Id, DesignId, ImageUrl, IsPrimary, CreatedAt)
+                VALUES (@Id, @EntityId, @ImageUrl, @IsPrimary, NOW());
+            ";
+                    await _dbConnection.ExecuteAsync(addImagesSql, newImages, transaction);
+                }
+
+                transaction.Commit();
+                return true;
+            }
+            catch
+            {
+                transaction.Rollback();
+                return false;
+            }
+        }
+
+        public async Task<int> SoftDeleteDesignAsync(Guid designId)
+        {
+            var sql = "UPDATE DressDesign SET IsDeleted = 1 WHERE Id = @DesignId";
+            return await _dbConnection.ExecuteAsync(sql, new { DesignId = designId });
+        }
+
+
 
         public async Task<bool> AddMesurementGuide(Mesurment_Guides mesurment)
         {
