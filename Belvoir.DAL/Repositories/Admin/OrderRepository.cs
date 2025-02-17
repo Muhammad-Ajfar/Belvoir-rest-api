@@ -56,8 +56,10 @@ namespace Belvoir.DAL.Repositories.Admin
         }
         public async Task<bool> AddTailorProduct(TailorProductAdd tailorProduct,Guid id, Guid user_id)
         {
+
             string query = "INSERT INTO `belvoir`.`tailor_products` (`product_id`,`customer_id`,`design_id`,`cloth_id`,`product_name`,`price`) VALUES (@id,@user_id,@designid,@clothid,@productname,@price)";
             return await _dbConnection.ExecuteAsync(query, new {id = id, clothid = tailorProduct.ClothId, user_id = user_id,designid = tailorProduct.DesignId,productname = tailorProduct.product_name,price = tailorProduct.price })>0;
+
         }
         public async Task<bool> RemoveTailorProduct(Guid product_id,Guid user_id)
         {
