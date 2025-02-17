@@ -98,7 +98,6 @@ namespace Belvoir.Controllers.Admin
 
 
 
-
         [HttpGet("admin")]
 
         public async Task<IActionResult> AdminGetTailorOrder(Guid? userId, string? status)
