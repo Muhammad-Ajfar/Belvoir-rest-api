@@ -20,6 +20,7 @@ namespace Belvoir.Controllers.Rentals
             _service = service;
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> AddRental(IFormFile[] files, [FromForm] RentalSetDTO rentalData)
         {
@@ -49,6 +50,7 @@ namespace Belvoir.Controllers.Rentals
 
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("")]
         public async Task<IActionResult> DeleteRental(Guid id)
         {
@@ -58,6 +60,7 @@ namespace Belvoir.Controllers.Rentals
 
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPut("update")]
         public async Task<IActionResult> UpdateRental(Guid rentalId, IFormFile[] files, [FromForm] RentalSetDTO rentalData)
         {
@@ -67,7 +70,7 @@ namespace Belvoir.Controllers.Rentals
 
         }
 
-        [Authorize]
+        [Authorize(Roles = "User")]
         [HttpPost("whishlist")]
         public async Task<IActionResult> AddToWhisList(Guid productid)
         {
@@ -76,6 +79,7 @@ namespace Belvoir.Controllers.Rentals
             return StatusCode(data.StatusCode, data);
         }
 
+        [Authorize(Roles = "User")]
         [HttpGet("whishlist")]
         public async Task<IActionResult> GetWhistList()
         {
@@ -91,7 +95,7 @@ namespace Belvoir.Controllers.Rentals
             return StatusCode(data.StatusCode, data);
         }
 
-        [Authorize]
+        [Authorize(Roles = "User")]
         [HttpPost("rental-rating")]
         public async Task<IActionResult> AddRatings(Guid productid, [FromBody] RatingItem ratings)
         {
@@ -100,7 +104,7 @@ namespace Belvoir.Controllers.Rentals
             return StatusCode(data.StatusCode, data);
         }
 
-        [Authorize]
+        [Authorize(Roles = "User")]
         [HttpDelete("rental-rating")]
         public async Task<IActionResult> Removerating(Guid ratingid)
         {
@@ -108,7 +112,7 @@ namespace Belvoir.Controllers.Rentals
             return StatusCode(data.StatusCode, data);
         }
 
-        [Authorize]
+        [Authorize(Roles = "User")]
         [HttpPut("rental-rating")]
         public async Task<IActionResult> UpdateRating(Guid raitngid, [FromBody] RatingItem ratings)
         {

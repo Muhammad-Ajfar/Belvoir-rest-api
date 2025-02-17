@@ -24,7 +24,7 @@ namespace Belvoir.Controllers.Rentals
             return StatusCode(response.StatusCode, response);
         }
 
-        [Authorize]
+        [Authorize (Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> AddFabricCategory([FromBody] string name)
         {
@@ -43,7 +43,7 @@ namespace Belvoir.Controllers.Rentals
             return StatusCode(response.StatusCode, response);
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpPut]
         public async Task<IActionResult> UpdateFabricCategory([FromBody] FabricCategory fabricCategory)
         {
