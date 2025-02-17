@@ -35,7 +35,7 @@ namespace Belvoir.Bll.DTO.Address
         public string ContactName { get; set; }
 
         [Required(ErrorMessage = "Contact Number is required.")]
-        [RegularExpression(@"^\+?[1-9]\d{9,14}$", ErrorMessage = "Invalid contact number format.")]
+        [RegularExpression(@"^[6-9]\d{9}$", ErrorMessage = "Phone number must be a 10-digit Indian number starting with 6-9.")]
         public string ContactNumber { get; set; }
     }
 

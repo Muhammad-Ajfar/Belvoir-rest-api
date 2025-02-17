@@ -23,7 +23,7 @@ namespace Belvoir.Controllers
         }
 
         // Get Addresses by User
-        [Authorize]
+        [Authorize(Roles = "User")]
         [HttpGet("user")]
         public async Task<IActionResult> GetAddressesByUser()
         {
@@ -37,7 +37,7 @@ namespace Belvoir.Controllers
         }
 
         // Add Address
-        [Authorize]
+        [Authorize(Roles = "User")]
         [HttpPost("Add")]
         public async Task<IActionResult> AddAddress([FromBody] AddressAddDTO addressAddDto)
         {
@@ -53,7 +53,7 @@ namespace Belvoir.Controllers
         }
 
         // Update Address
-        [Authorize]
+        [Authorize(Roles = "User")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAddress(Guid id, [FromBody] AddressAddDTO addressDto)
         {
@@ -71,7 +71,7 @@ namespace Belvoir.Controllers
         }
 
         // Soft Delete Address
-        [Authorize]
+        [Authorize(Roles = "User")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> SoftDeleteAddress(Guid id)
         {
