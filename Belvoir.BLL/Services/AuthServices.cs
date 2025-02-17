@@ -115,6 +115,7 @@ namespace Belvoir.Bll.Services
             {
                 AccessToken = token,
                 RefreshToken = refreshtoken,
+                Role = user.Role
             };
 
             await _repo.InsertRefreshToken(refreshtoken,user.Id,DateTime.Now.AddDays(7));

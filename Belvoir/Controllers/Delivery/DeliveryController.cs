@@ -1,4 +1,5 @@
 ﻿using Belvoir.Bll.Services.DeliverySer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,6 +15,7 @@ namespace Belvoir.Controllers.Delivery
             _service = services;
         }
 
+        [Authorize(Roles = "Delivery")]
         [HttpGet("profile-delivery")]
         public async Task<IActionResult> GetDeliveryProfile()
         {
@@ -22,6 +24,7 @@ namespace Belvoir.Controllers.Delivery
             return StatusCode(response.StatusCode, response);
         }
 
+        [Authorize(Roles = "Delivery")]
         [HttpGet("dashboard")]
         public async  Task<IActionResult> GetDeliveryDashboard(string? status) {
             Guid userId = Guid.Parse(HttpContext.Items["UserId"].ToString());
