@@ -15,7 +15,7 @@ namespace Belvoir.DAL.Repositories.Tailors
         public Task<IEnumerable<TailorTask>> GetTailorTask(Guid tailorid);
         public Task<int> UpdateStatus(Guid taskId, string status);
         public Task<Dashboard> dashboard(Guid tailorId);
-        public Task<User> SingleUserwithId(Guid Tailorid);
+        public Task<string> UserPassword(Guid Tailorid);
         public Task<bool> UpdatePassword(Guid tailorid, string password);
         public Task<Tailor> SingleTailor(Guid Tailorid);
 
@@ -44,11 +44,13 @@ namespace Belvoir.DAL.Repositories.Tailors
             var dashboard = await _dbConnection.QuerySingleOrDefaultAsync("TailorDashboard", new { inputTailorID = tailorId }, commandType: CommandType.StoredProcedure);
             return dashboard;
         }
-        public async Task<User> SingleUserwithId(Guid Tailorid)
+        public async Task<string> UserPassword(Guid Tailorid)
         {
-            return await _dbConnection.QuerySingleOrDefaultAsync("SELECT PasswordHash FROM User WHERE Id = @tailorid", new { tailorid = Tailorid });
-
+            var sql = "SELECT PasswordHash FROM User WHERE Id = @tailorid";
+            return await _dbConnection.QuerySingleOrDefaultAsync<string>(sql, new { tailorid = Tailorid });
         }
+
+
         public async Task<bool> UpdatePassword(Guid Tailorid, string hashedNewPassword)
         {
             return await _dbConnection.ExecuteAsync("UPDATE User SET PasswordHash = @newpassword WHERE Id = @tailorid", new { newpassword = hashedNewPassword, tailorid = Tailorid }) == 1;

@@ -52,6 +52,21 @@ namespace Belvoir.Controllers.Admin
             return StatusCode(response.StatusCode, response);
         }
 
+        [HttpPut("update")]
+        public async Task<IActionResult> UpdateDesign([FromForm] UpdateDesignDto dto)
+        {
+            var result = await _designService.UpdateDesignAsync(dto);
+            return StatusCode(result.StatusCode, result);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> SoftDeleteDesign(Guid id)
+        {
+            var response = await _designService.SoftDeleteDesignAsync(id);
+            return StatusCode(response.StatusCode, response);
+        }
+
+
         [HttpPost("add/mesurment")]
         public async Task<IActionResult> AddMesurementGuide(Mesurment_Guides mesurment_Guides)
         {
