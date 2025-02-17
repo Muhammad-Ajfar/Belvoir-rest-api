@@ -32,7 +32,7 @@ namespace Belvoir.Controllers.Admin
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Admin,user")]
         [HttpGet("{designId}")]
         public async Task<IActionResult> GetDesignById(Guid designId)
         {
