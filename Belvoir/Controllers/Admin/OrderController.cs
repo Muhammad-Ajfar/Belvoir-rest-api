@@ -18,14 +18,22 @@ namespace Belvoir.Controllers.Admin
         {
             _orderServices = orderServices;
         }
-
+        [Authorize]
         [HttpPost("add/tailorProduct")]
         public  async Task<IActionResult> CreateTailorProduct(TailorProductDTO tailorProductDTO)
         {
-            //string user = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier).ToString();
-            //Guid userId = Guid.TryParse(user, out Guid parsedGuid) ? parsedGuid : Guid.Empty;
+            var user_id = Guid.Parse(HttpContext.Items["UserId"]?.ToString());
             var response = await _orderServices.AddTailorProducts(tailorProductDTO);
             return StatusCode(statusCode: response.StatusCode, response);
+        }
+
+        [Authorize]
+        [HttpDelete("remove/tailorproduct")]
+        public async Task<IActionResult> RemoveTailorProduct(Guid product_id)
+        {
+            var user_id = Guid.Parse(HttpContext.Items["UserId"]?.ToString());
+            var response = await _orderServices.RemoveTailorProduct(product_id,user_id);
+            return StatusCode(statusCode: response.StatusCode,response);
         }
 
         [Authorize]
@@ -49,7 +57,6 @@ namespace Belvoir.Controllers.Admin
 
         [Authorize]
         [HttpGet("user/tailor")]
-
         public async Task<IActionResult> getUserOrder(string? status)
         {
             var user_id = Guid.Parse(HttpContext.Items["UserId"]?.ToString());
