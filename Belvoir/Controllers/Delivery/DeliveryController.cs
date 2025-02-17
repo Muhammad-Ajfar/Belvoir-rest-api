@@ -32,5 +32,12 @@ namespace Belvoir.Controllers.Delivery
             return StatusCode(response.StatusCode, response);
         }
 
+        [Authorize(Roles = "Delivery")]
+        [HttpGet("change/status")]
+        public async Task<IActionResult> ChangeStatus(Guid id,string status)
+        {
+            var response = await _service.ChangeStatus(id, status);
+            return StatusCode(response.StatusCode, response);
+        }
     }
 }

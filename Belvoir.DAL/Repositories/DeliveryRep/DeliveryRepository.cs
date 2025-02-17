@@ -15,6 +15,7 @@ namespace Belvoir.DAL.Repositories.DeliveryRep
     {
         public Task<Delivery> SingleProfile(Guid id);
         public Task<DeliveryDashboard> GetDeliveryDashboard(Guid id, string? status);
+        public Task<bool> ChangeStatus(Guid id, string status);
 
     }
     public class DeliveryRepository : IDeliveryRepository
@@ -54,13 +55,19 @@ namespace Belvoir.DAL.Repositories.DeliveryRep
                        JOIN order_items oi ON da.order_id = oi.order_item_id 
                        JOIN orders os ON os.order_id = oi.order_id 
                        JOIN Address ad ON os.shipping_address = ad.Id 
-                       WHERE delivery_boy_id = @delivery_id AND (@status = @status OR @status IS NULL)";
+                       WHERE delivery_boy_id = @delivery_id AND (delivery_assignments.status = @status OR @status IS NULL)";
 
                 response.DeliveryOrders = (await _dbConnection.QueryAsync<OrderDeliveryGet>(orderQuery, new { delivery_id = id ,status = status})).ToList();
 
                 return response;
             }
 
+        }
+
+        public async Task<bool> ChangeStatus(Guid id,string status)
+        {
+            string query = @"UPDATE delivery_assignments SET status = @status WHERE id = @id";
+            return await _dbConnection.ExecuteAsync(query, new { status = status,id = id })>0;
         }
 
     }
