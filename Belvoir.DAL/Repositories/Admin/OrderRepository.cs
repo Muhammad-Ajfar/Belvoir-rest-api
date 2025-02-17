@@ -24,7 +24,7 @@ namespace Belvoir.DAL.Repositories.Admin
         public Task<int> CheckoutRentalCartAsync(Guid userId, string paymentMethod, Guid shippingAddress, bool fastShipping, string trackingNumber);
 
         public Task<IEnumerable<OrderTailorGet>> orderTailorGets();
-        public Task<IEnumerable<OrderAdminGet>> orderAdminGets(string? status);
+        public Task<IEnumerable<AdminTailorOrderGet>> AdminGetTailorOrder(string? status);
         public Task<IEnumerable<OrderDeliveryGet>> orderDeliveryGets();
         public Task<IEnumerable<OrderUserGet>> orderUserGets(Guid userid, string? status);
         public Task<IEnumerable<OrderUserRentalGet>> orderRentalUserGets(Guid userid, string? status);
@@ -125,12 +125,12 @@ namespace Belvoir.DAL.Repositories.Admin
             string query = "SELECT orders.order_id,User.Name as customerName,order_date,order_status,Cloths.Title as clothTitle,DressDesign.Name as DesignName FROM orders join order_items on orders.order_id = order_items.order_id join User on User.Id = orders.customer_id join tailor_products ON tailor_products.product_id = order_items.tailor_product_id join Cloths on Cloths.Id = tailor_products.cloth_id join DressDesign on DressDesign.Id = tailor_products.design_id where order_status ='pending';";
             return await _dbConnection.QueryAsync<OrderTailorGet>(query);
         }
-        public async Task<IEnumerable<OrderAdminGet>> orderAdminGets(string? status)
+        public async Task<IEnumerable<AdminTailorOrderGet>> AdminGetTailorOrder(string? status)
         {
-            string spname = "GetOrdersByStatus";
+            string spname = "GetTailorOrdersByStatus";
             var parameters = new DynamicParameters();
             parameters.Add("@p_order_status", status);
-            return await _dbConnection.QueryAsync<OrderAdminGet>(spname,parameters,commandType:CommandType.StoredProcedure);
+            return await _dbConnection.QueryAsync<AdminTailorOrderGet>(spname,parameters,commandType:CommandType.StoredProcedure);
         }
         public async Task<IEnumerable<OrderDeliveryGet>> orderDeliveryGets()
         {

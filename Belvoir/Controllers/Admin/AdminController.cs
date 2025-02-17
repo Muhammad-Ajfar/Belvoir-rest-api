@@ -8,6 +8,7 @@ using Dapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Belvoir.Bll.DTO.Delivery;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Belvoir.Controllers.Admin
 {
@@ -23,6 +24,7 @@ namespace Belvoir.Controllers.Admin
             _myService = myService;
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet("users/{role}")]
         public async Task<IActionResult> GetUsers(string role,[FromQuery] UserQuery userQuery)
         {
@@ -30,6 +32,8 @@ namespace Belvoir.Controllers.Admin
             return Ok(data);
         }
 
+
+        [Authorize(Roles = "Admin")]
         [HttpGet("user/id/{id}")]
         public async Task<IActionResult> GetUsersById(Guid id)
         {
@@ -37,9 +41,10 @@ namespace Belvoir.Controllers.Admin
             return Ok(data);
         }
 
-        
+
 
         // PATCH Endpoint for Blocking/Unblocking a User
+        [Authorize(Roles = "Admin")]
         [HttpPatch("{role}/block-unblock/{id}")]
         public async Task<IActionResult> BlockOrUnblockUser(Guid id,string role)
         {
@@ -50,6 +55,8 @@ namespace Belvoir.Controllers.Admin
             }
             return StatusCode(response.StatusCode, response);
         }
+
+        [Authorize(Roles = "Admin")]
         [HttpPost("add/tailor")]
         public async Task<IActionResult> AddTailor([FromBody] TailorDTO tailorDTO)
         {
@@ -60,6 +67,7 @@ namespace Belvoir.Controllers.Admin
             return StatusCode(response.StatusCode, response);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("delete/{role}")]
         public async Task<IActionResult> DeleteTailor(Guid id,string role)
         {
@@ -68,12 +76,15 @@ namespace Belvoir.Controllers.Admin
         }
 
 
+        [Authorize(Roles = "Admin")]
         [HttpPost("add/Delivery")]
         public async Task<IActionResult> AddDelivery(DeliveryDTO deliveryDTO)
         {
             var response = await _myService.AddDelivery(deliveryDTO);
             return StatusCode(response.StatusCode, response);
         }
+
+        [Authorize(Roles = "Admin")]
         [HttpPost("add/laundry")]
         public async Task<IActionResult> Register([FromBody] RegisterDTO registerDTO)
         {
@@ -84,8 +95,8 @@ namespace Belvoir.Controllers.Admin
             return StatusCode(response.StatusCode, response);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet("sales-report")]
-
         public async Task<IActionResult> SalesReport()
         {
             var respose =await _myService.GetSalesReport();
@@ -93,8 +104,8 @@ namespace Belvoir.Controllers.Admin
         }
 
 
+        [Authorize(Roles = "Admin")]
         [HttpGet("Dashboard")]
-
         public async Task<IActionResult> Dashboarddata()
         {
             var respose = await _myService.GetDasboard();

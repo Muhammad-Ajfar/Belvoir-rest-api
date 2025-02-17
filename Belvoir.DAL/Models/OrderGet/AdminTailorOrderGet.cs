@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Belvoir.DAL.Models.OrderGet
 {
-    public class OrderAdminGet
+    public class AdminTailorOrderGet
     {
         public Guid order_id { get; set; }
         public string customerName { get; set; }

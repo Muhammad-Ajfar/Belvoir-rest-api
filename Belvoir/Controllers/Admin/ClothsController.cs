@@ -1,6 +1,7 @@
 ﻿using Belvoir.Bll.DTO;
 using Belvoir.Bll.Services.Admin;
 using Belvoir.DAL.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -31,8 +32,9 @@ namespace Belvoir.Controllers.Admin
             return Ok(data);
         }
 
-        
 
+
+        [Authorize(Roles = "Admin")]
         [HttpPut("update/{id}")]
         public async Task<IActionResult> UpdateCloths(Guid id,IFormFile file, [FromForm]ClothDTO cloth)
         {
@@ -40,6 +42,7 @@ namespace Belvoir.Controllers.Admin
             return Ok(data);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost("Add")]
         public async Task<IActionResult> AddCloths(IFormFile file,[FromForm] ClothDTO cloth)
         {
@@ -47,6 +50,7 @@ namespace Belvoir.Controllers.Admin
             return Ok(data);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeleteCloths(Guid id)
         {
@@ -55,6 +59,7 @@ namespace Belvoir.Controllers.Admin
         }
 
 
+        [Authorize(Roles = "User")]
         [HttpPost("whishlist")]
         public async Task<IActionResult> AddToWhisList(Guid productid)
         {
@@ -63,6 +68,7 @@ namespace Belvoir.Controllers.Admin
             return StatusCode(data.StatusCode,data.Message);
         }
 
+        [Authorize(Roles = "User")]
         [HttpGet("whishlist")]
         public async Task<IActionResult> GetWhistList()
         {
@@ -78,6 +84,7 @@ namespace Belvoir.Controllers.Admin
             return StatusCode(data.StatusCode, data);
         }
 
+        [Authorize(Roles = "User")]
         [HttpPost("cloth-rating")]
         public async Task<IActionResult> AddRatings(Guid clothid, [FromBody] RatingItem ratings)
         {
@@ -86,6 +93,7 @@ namespace Belvoir.Controllers.Admin
             return StatusCode(data.StatusCode, data);
         }
 
+        [Authorize(Roles = "User")]
         [HttpDelete("cloth-rating")]
         public async Task<IActionResult> Removerating(Guid ratingid)
         {
@@ -93,6 +101,7 @@ namespace Belvoir.Controllers.Admin
             return StatusCode(data.StatusCode, data);
         }
 
+        [Authorize(Roles = "User")]
         [HttpPut("cloth-rating")]
         public async Task<IActionResult> UpdateRating(Guid raingid, [FromBody] RatingItem ratings)
         {
