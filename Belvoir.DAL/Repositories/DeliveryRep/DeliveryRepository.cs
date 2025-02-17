@@ -14,7 +14,7 @@ namespace Belvoir.DAL.Repositories.DeliveryRep
     public interface IDeliveryRepository
     {
         public Task<Delivery> SingleProfile(Guid id);
-        public Task<DeliveryDashboard> GetDeliveryDashboard(Guid id);
+        public Task<DeliveryDashboard> GetDeliveryDashboard(Guid id, string? status);
 
     }
     public class DeliveryRepository : IDeliveryRepository
@@ -30,7 +30,7 @@ namespace Belvoir.DAL.Repositories.DeliveryRep
             return await _dbConnection.QueryFirstOrDefaultAsync<Delivery>("select * from User left join DeliveryProfile on User.id=DeliveryProfile.Userid where User.id=@id", new { id = userid });
 
         }
-        public async Task<DeliveryDashboard> GetDeliveryDashboard(Guid id)
+        public async Task<DeliveryDashboard> GetDeliveryDashboard(Guid id,string? status)
         {
             var query = @"SELECT count(id) * 10 as totalRevenue FROM delivery_assignments WHERE status = 'delivered' AND delivery_boy_id = @del;
               SELECT count(id) as totalOrderCount FROM delivery_assignments WHERE delivery_boy_id = @del;
@@ -54,7 +54,7 @@ namespace Belvoir.DAL.Repositories.DeliveryRep
                        JOIN order_items oi ON da.order_id = oi.order_item_id 
                        JOIN orders os ON os.order_id = oi.order_id 
                        JOIN Address ad ON os.shipping_address = ad.Id 
-                       WHERE delivery_boy_id = @delivery_id and status = 'picked'";
+                       WHERE delivery_boy_id = @delivery_id AND (status = @status OR status IS NULL)";
 
                 response.DeliveryOrders = (await _dbConnection.QueryAsync<OrderDeliveryGet>(orderQuery, new { delivery_id = id })).ToList();
 
