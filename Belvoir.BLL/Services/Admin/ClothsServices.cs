@@ -1,6 +1,7 @@
 ﻿using Belvoir.Bll.DTO;
 using Belvoir.Bll.Helpers;
 using Belvoir.DAL.Models;
+using Belvoir.DAL.Models.Query;
 using Belvoir.DAL.Repositories.Admin;
 using Dapper;
 using Microsoft.AspNetCore.Http;

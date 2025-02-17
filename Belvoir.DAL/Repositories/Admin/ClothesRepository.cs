@@ -1,4 +1,5 @@
 ﻿using Belvoir.DAL.Models;
+using Belvoir.DAL.Models.Query;
 using Dapper;
 using System;
 using System.Collections.Generic;
