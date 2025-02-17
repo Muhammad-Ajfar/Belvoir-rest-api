@@ -12,5 +12,6 @@ namespace Belvoir.DAL.Models.OrderGet
         public string customerName { get; set; }
         public DateTime order_date { get; set; }
         public string order_status { get; set; }
+        public DateTime deadline { get; set; }
     }
 }

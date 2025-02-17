@@ -10,7 +10,7 @@ namespace Belvoir.Bll.Services
 
     public interface ITailorservice
     {
-        public Task<Response<IEnumerable<TailorTask>>> GET_ALL_TASK(Guid user);
+        public Task<Response<IEnumerable<TailorTask>>> GetAllTasks(Guid user);
         public Task<Response<object>> UpdateStatus(Guid taskId, string status);
 
         public Task<Response<Dashboard>> GetDashboardapi(Guid tailorid);
@@ -32,7 +32,7 @@ namespace Belvoir.Bll.Services
         }
 
 
-        public async Task<Response<IEnumerable<TailorTask>>> GET_ALL_TASK(Guid tailorid)
+        public async Task<Response<IEnumerable<TailorTask>>> GetAllTasks(Guid tailorid)
         {
           
             var response = await _repo.GetTailorTask(tailorid);

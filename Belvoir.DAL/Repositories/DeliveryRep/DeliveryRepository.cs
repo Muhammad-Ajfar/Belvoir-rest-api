@@ -50,7 +50,7 @@ namespace Belvoir.DAL.Repositories.DeliveryRep
                 if (response == null)
                     return null; // Avoid null reference exceptions
 
-                var orderQuery = @"SELECT da.id as order_id, ContactName as customerName, order_date, status as order_status 
+                var orderQuery = @"SELECT da.id as order_id, ContactName as customerName, order_date, status as order_status ,deadline
                        FROM delivery_assignments da 
                        JOIN order_items oi ON da.order_id = oi.order_item_id 
                        JOIN orders os ON os.order_id = oi.order_id 

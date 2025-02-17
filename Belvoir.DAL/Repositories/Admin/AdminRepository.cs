@@ -31,7 +31,8 @@ namespace Belvoir.DAL.Repositories.Admin
         
 
         public Task<AdminDashboard> Dashboard();
-        public Task<bool> AssaignOrdersByPinCode(string pincode, Guid delivery_id);
+        public Task<bool> AssaignOrdersByPinCode(string pincode, Guid delivery_id,DateTime deadline);
+        public Task<bool> AssaignOrdersByOrderId(Guid order_id, Guid delivery_id, DateTime deadline);
 
     }
     public class AdminRepository : IAdminRepository
@@ -160,9 +161,9 @@ namespace Belvoir.DAL.Repositories.Admin
             return dashboard;
             
         }
-        public async Task<bool> AssaignOrdersByPinCode(string pincode,Guid delivery_id)
+        public async Task<bool> AssaignOrdersByPinCode(string pincode,Guid delivery_id,DateTime deadline)
         {
-            string insertQuery = @"INSERT INTO `belvoir`.`delivery_assignments`(`id`,`order_id`,`delivery_boy_id`,`status`) VALUES (UUID(),@order_id,@delivery_id,'Assigned');";
+            string insertQuery = @"INSERT INTO `belvoir`.`delivery_assignments`(`id`,`order_id`,`delivery_boy_id`,`status`,`deadline`) VALUES (UUID(),@order_id,@delivery_id,'Assigned',@deadline);";
             string query = @"SELECT order_item_id FROM order_items JOIN orders ON orders.order_id = order_items.order_id JOIN Address ON Address.Id = orders.shipping_address WHERE Address.PostalCode = @pin";
             string updateQuery = "UPDATE delivery_assignments SET delivery_boy_id = @delivery_id WHERE order_id = @order_id";
             var orders =  await _dbConnection.QueryAsync<Guid>(query, new { pin = pincode });
@@ -175,7 +176,7 @@ namespace Belvoir.DAL.Repositories.Admin
                     {
                         if (await _dbConnection.QueryFirstOrDefaultAsync("SELECT * FROM delivery_assignments WHERE order_id = @order_id;",new {order_id = order}) == null)
                         {
-                            await _dbConnection.ExecuteAsync(insertQuery, new { order_id = order, delivery_id = delivery_id });
+                            await _dbConnection.ExecuteAsync(insertQuery, new { order_id = order, delivery_id = delivery_id , deadline = deadline});
                         }
                         else
                         {
@@ -196,6 +197,24 @@ namespace Belvoir.DAL.Repositories.Admin
                 }
             }
         }
-        
+
+        public async Task<bool> AssaignOrdersByOrderId(Guid order_id, Guid delivery_id, DateTime deadline)
+        {
+            string insertQuery = @"INSERT INTO `belvoir`.`delivery_assignments`(`id`,`order_id`,`delivery_boy_id`,`status`,`deadline`) VALUES (UUID(),@order_id,@delivery_id,'Assigned',@deadline);";
+            
+            string updateQuery = "UPDATE delivery_assignments SET delivery_boy_id = @delivery_id WHERE order_id = @order_id";
+         
+            if (await _dbConnection.QueryFirstOrDefaultAsync("SELECT * FROM delivery_assignments WHERE order_id = @order_id;", new { order_id = order_id }) == null)
+            {
+                await _dbConnection.ExecuteAsync(insertQuery, new { order_id = order_id, delivery_id = delivery_id, deadline = deadline });
+            }
+            else
+            {
+                await _dbConnection.ExecuteAsync(updateQuery, new { order_id = order_id, delivery_id = delivery_id });
+            } 
+            return true;
+   
+        }
+
     }
 }

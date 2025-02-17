@@ -113,9 +113,15 @@ namespace Belvoir.Controllers.Admin
         }
 
         [HttpPost("Add/Task/delivery")]
-        public async Task<IActionResult> AssaignOrdersByPinCode(string pin,Guid delivery_id)
+        public async Task<IActionResult> AssaignOrdersByPinCode(string pin,Guid delivery_id,DateTime deadline)
         {
-            var response = await _myService.AssaignOrdersByPinCode(pin, delivery_id);
+            var response = await _myService.AssaignOrdersByPinCode(pin, delivery_id,deadline);
+            return StatusCode(response.StatusCode, response);
+        }
+        [HttpPost("Add/Task/delivery{order_id}")]
+        public async Task<IActionResult> AssaignOrdersByOrderId(Guid order_id, Guid delivery_id, DateTime deadline)
+        {
+            var response = await _myService.AssaignOrderByOrderId(order_id, delivery_id, deadline);
             return StatusCode(response.StatusCode, response);
         }
     }
