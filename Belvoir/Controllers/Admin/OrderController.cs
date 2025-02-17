@@ -73,7 +73,7 @@ namespace Belvoir.Controllers.Admin
             return StatusCode(response.StatusCode, response);
         }
 
-        [Authorize(Roles = "User")]
+        [Authorize(Roles = "User,Admin")]
         [HttpGet("user/tailor")]
         public async Task<IActionResult> getUserOrder(string? status)
         {
@@ -82,11 +82,7 @@ namespace Belvoir.Controllers.Admin
             return StatusCode(response.StatusCode, response);
         }
 
-
-
-        
-
-        [Authorize(Roles = "User")]
+        [Authorize(Roles = "User,Admin")]
 
         [HttpGet("user/rental")]
         public async Task<IActionResult> getRentalUserOrder(string? status)
