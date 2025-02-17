@@ -33,7 +33,7 @@ namespace Belvoir.Controllers.Delivery
         }
 
         [Authorize(Roles = "Delivery")]
-        [HttpGet("change/status")]
+        [HttpPatch("change/status")]
         public async Task<IActionResult> ChangeStatus(Guid id,string status)
         {
             var response = await _service.ChangeStatus(id, status);
