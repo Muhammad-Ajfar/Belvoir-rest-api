@@ -31,6 +31,7 @@ namespace Belvoir.DAL.Repositories.Admin
         
 
         public Task<AdminDashboard> Dashboard();
+        public Task<bool> AssaignOrdersByPinCode(string pincode, Guid delivery_id);
 
     }
     public class AdminRepository : IAdminRepository
@@ -159,7 +160,33 @@ namespace Belvoir.DAL.Repositories.Admin
             return dashboard;
             
         }
+        public async Task<bool> AssaignOrdersByPinCode(string pincode,Guid delivery_id)
+        {
+            string insertQuery = @"INSERT INTO `belvoir`.`delivery_assignments`(`id`,`order_id`,`delivery_boy_id`,`status`) VALUES (UUID(),@order_id,@delivery_id,'Assigned');";
+            string query = @"SELECT order_item_id FROM order_items JOIN orders ON orders.order_id = order_items.order_id JOIN Address ON Address.Id = orders.shipping_address WHERE Address.PostalCode = @pin";
+            var orders =  await _dbConnection.QueryAsync<Guid>(query, new { pin = pincode });
+            _dbConnection.Open();
+            using (var transaction = _dbConnection.BeginTransaction())
+            {
+                try
+                {
+                    foreach (Guid order in orders)
+                    {
+                        await _dbConnection.ExecuteAsync(insertQuery, new { order_id = order, delivery_id = delivery_id });
+                    }
+                    transaction.Commit();
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    {
+                        transaction.Rollback();
+                        throw ex;
 
-
+                    }
+                }
+            }
+        }
+        
     }
 }

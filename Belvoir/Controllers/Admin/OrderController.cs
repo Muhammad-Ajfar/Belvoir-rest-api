@@ -23,7 +23,7 @@ namespace Belvoir.Controllers.Admin
         public  async Task<IActionResult> CreateTailorProduct(TailorProductDTO tailorProductDTO)
         {
             var user_id = Guid.Parse(HttpContext.Items["UserId"]?.ToString());
-            var response = await _orderServices.AddTailorProducts(tailorProductDTO);
+            var response = await _orderServices.AddTailorProducts(tailorProductDTO,user_id);
             return StatusCode(statusCode: response.StatusCode, response);
         }
 
