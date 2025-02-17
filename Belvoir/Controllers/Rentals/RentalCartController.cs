@@ -18,7 +18,8 @@ namespace Belvoir.Controllers.Rentals
         {
             _service = service;
         }
-        [Authorize]
+
+        [Authorize(Roles = "User")]
         [HttpGet("my-cart")]
         public async Task<IActionResult> GetCart()
         {
@@ -30,8 +31,8 @@ namespace Belvoir.Controllers.Rentals
                 return StatusCode(response.StatusCode, response);
         }
 
+        [Authorize(Roles = "User")]
         [HttpPost("AddToCart")]
-        [Authorize]
         public async Task<IActionResult> AddToCart([FromBody] AddToCartDTO cartDTO)
         {
             if (!ModelState.IsValid)
@@ -63,6 +64,7 @@ namespace Belvoir.Controllers.Rentals
             return StatusCode(response.StatusCode, response);
         }
 
+        [Authorize(Roles = "User")]
         [HttpPut("update-quantity/{cartItemId}")]
         public async Task<IActionResult> UpdateCartItemQuantity(Guid cartItemId, [FromQuery] int newQuantity)
         {
@@ -70,6 +72,7 @@ namespace Belvoir.Controllers.Rentals
             return StatusCode(response.StatusCode, response);
         }
 
+        [Authorize(Roles = "User")]
         [HttpDelete("remove-item/{cartItemId}")]
         public async Task<IActionResult> RemoveCartItem(Guid cartItemId)
         {

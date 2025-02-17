@@ -19,6 +19,7 @@ namespace Belvoir.Controllers.Tailor
             _tailorService = tailorService;
         }
 
+        [Authorize(Roles = "Tailor")]
         [HttpGet("tasks")]
         public async Task<IActionResult> GetAllTasks()
         {
@@ -31,13 +32,15 @@ namespace Belvoir.Controllers.Tailor
         }
 
 
+        [Authorize(Roles = "Tailor")]
         [HttpPut("tasks/{taskId}/status")]
         public async Task<IActionResult> UpdateTaskStatus(Guid taskId, [FromBody] string status)
         {
             var response = await _tailorService.UpdateStatus(taskId, status);
             return StatusCode(response.StatusCode, response);
         }
-        [Authorize]
+
+        [Authorize(Roles = "Tailor")]
         [HttpGet("tailordashboard")]
         public async Task<IActionResult> GetDashboard()
         {
@@ -45,7 +48,8 @@ namespace Belvoir.Controllers.Tailor
             var response = await _tailorService.GetDashboardapi(userId);
             return StatusCode(response.StatusCode, response);
         }
-        [Authorize]
+
+        [Authorize(Roles = "Tailor")]
         [HttpGet("tailorprofile")]
         public async Task<IActionResult> GetTailorProfile()
         {
