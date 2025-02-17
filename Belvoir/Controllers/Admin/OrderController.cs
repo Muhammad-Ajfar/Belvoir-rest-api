@@ -130,8 +130,7 @@ namespace Belvoir.Controllers.Admin
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize(Roles = "Admin")]
         [HttpGet("admin")]
-        public async Task<IActionResult> AdminGetTailorOrder(string? status)
-
+        public async Task<IActionResult> AdminGetTailorOrder(Guid? userId,string? status)
         {
             var response = await _orderServices.AdminGetTailorOrder(userId, status);
             return StatusCode(response.StatusCode, response);
