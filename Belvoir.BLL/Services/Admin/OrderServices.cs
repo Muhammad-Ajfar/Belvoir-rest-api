@@ -14,16 +14,19 @@ namespace Belvoir.Bll.Services.Admin
 {
     public interface IOrderServices
     {
+        public Task<Response<IEnumerable<TailorProduct>>> GetAllTailorProducts(Guid user_id);
+        public Task<Response<TailorProduct>> TailorProductsById(Guid product_id, Guid user_id);
         public Task<Response<object>> AddTailorProducts(TailorProductDTO tailorProductDTO);
+        public Task<Response<object>> RemoveTailorProduct(Guid product_id, Guid user_id);
         public Task<Response<object>> AddOrder(PlaceOrderDTO orderDto, Guid user_id);
         public Task<Response<int>> CheckoutRentalCartAsync(Guid userId, CheckoutRentalCartDTO checkoutDto);
-
         public Task<Response<IEnumerable<OrderAdminGet>>> orderAdminGets(string? status);
         public Task<Response<IEnumerable<OrderUserGet>>> orderUserGets(Guid userid, string? status);
         public Task<Response<IEnumerable<OrderUserRentalGet>>> orderRentalUserGets(Guid userid, string? status);
         public Task<Response<IEnumerable<OrderDeliveryGet>>> orderDeliveryGets();
         public Task<Response<IEnumerable<OrderTailorGet>>> orderTailorGets();
         public Task<Response<SingleOrderTailoring>> SingleOrder(Guid order_id);
+        public Task<Response<object>> OrderStatusUpdate(Guid order_id, string status);
     }
     public class OrderServices:IOrderServices
     {
@@ -35,6 +38,24 @@ namespace Belvoir.Bll.Services.Admin
             _mapper = mapper;
         }
 
+        public async Task<Response<IEnumerable<TailorProduct>>> GetAllTailorProducts(Guid user_id)
+        {
+            var res = await _repo.GetAllTailorProducts(user_id);
+            if(res == null)
+            {
+                return new Response<IEnumerable<TailorProduct>> { StatusCode = 200, Message = "No products to show" };
+            }
+            return new Response<IEnumerable<TailorProduct>> { StatusCode = 200, Message = "Success", Data = res };
+        }
+        public async Task<Response<TailorProduct>> TailorProductsById(Guid product_id,Guid user_id)
+        {
+            var res = await _repo.TailorProductById(product_id,user_id);
+            if (res == null)
+            {
+                return new Response<TailorProduct> { StatusCode = 200, Message = "No products to show" };
+            }
+            return new Response<TailorProduct> { StatusCode = 200, Message = "Success", Data = res };
+        }
         public async Task<Response<object>> AddTailorProducts(TailorProductDTO tailorProductDTO) {
 
             Guid id = Guid.NewGuid();
@@ -53,16 +74,25 @@ namespace Belvoir.Bll.Services.Admin
             }
             return new Response<object> { StatusCode = 500, Message = "failed" };
         }
-
-
+        public async Task<Response<object>> RemoveTailorProduct(Guid product_id,Guid user_id)
+        {
+            var res = await _repo.TailorProductById(product_id, user_id);
+            if (res == null) { return new Response<object> { StatusCode = 404, Message = "Not Found" }; }
+            bool ans = await _repo.RemoveTailorProduct(product_id,user_id);
+            if (ans)
+            {
+                return new Response<object> { StatusCode = 200, Message = "Removed Successfully" };
+            }
+            return new Response<object> { StatusCode = 500, Message = "internal server error" };
+        }
         private string GenerateFedExTrackingNumber()
         {
             Random random = new Random();
             return string.Concat(Enumerable.Range(0, 12).Select(_ => random.Next(0, 10).ToString()));
         }
-
         public async Task<Response<object>> AddOrder(PlaceOrderDTO orderDto, Guid userId)
         {
+            var addressCheck = await _repo.IsAddressExists(orderDto.shippingAddress);
             var order = _mapper.Map<Order>(orderDto);
             order.shippingCost = orderDto.FastShipping? 10 : 60;
             order.trackingNumber = GenerateFedExTrackingNumber(); // Generate tracking number
@@ -83,7 +113,6 @@ namespace Belvoir.Bll.Services.Admin
             }
             return new Response<object> { StatusCode = 500, Message = "error" };
         }
-
         public async Task<Response<int>> CheckoutRentalCartAsync(Guid userId, CheckoutRentalCartDTO checkoutDto)
         {
             string trackingNumber = GenerateFedExTrackingNumber();
@@ -97,9 +126,6 @@ namespace Belvoir.Bll.Services.Admin
             }
             return new Response<int> { StatusCode = 500, Message = "Checkout failed", Error = "Database operation failed" };
         }
-
-
-
         public async Task<Response<IEnumerable<OrderUserGet>>> orderUserGets(Guid userid, string? status)
         {
             var result = await _repo.orderUserGets(userid, status);
@@ -109,7 +135,6 @@ namespace Belvoir.Bll.Services.Admin
             }
             return new Response<IEnumerable<OrderUserGet>> { StatusCode = 200, Message = "success", Data = result };
         }
-
         public async Task<Response<IEnumerable<OrderUserRentalGet>>> orderRentalUserGets(Guid userid, string? status)
         {
             var result = await _repo.orderRentalUserGets(userid, status);
@@ -119,8 +144,6 @@ namespace Belvoir.Bll.Services.Admin
             }
             return new Response<IEnumerable<OrderUserRentalGet>> { StatusCode = 200, Message = "success", Data = result };
         }
-
-
         public async Task<Response<IEnumerable<OrderTailorGet>>> orderTailorGets()
         {
             var result = await _repo.orderTailorGets();
@@ -134,8 +157,6 @@ namespace Belvoir.Bll.Services.Admin
             }
             return new Response<IEnumerable<OrderTailorGet>> { StatusCode = 200, Message = "success", Data = result };
         }
-
-
         public async Task<Response<IEnumerable<OrderDeliveryGet>>> orderDeliveryGets()
         {
             var result = await _repo.orderDeliveryGets(); 
@@ -146,8 +167,6 @@ namespace Belvoir.Bll.Services.Admin
 
             return new Response<IEnumerable<OrderDeliveryGet>> { StatusCode = 200, Message = "success", Data = result };
         }
-
-
         public async Task<Response<IEnumerable<OrderAdminGet>>> orderAdminGets(string? status)
         {
             var result = await _repo.orderAdminGets( status);
@@ -166,6 +185,14 @@ namespace Belvoir.Bll.Services.Admin
             }
             return new Response<SingleOrderTailoring> { StatusCode = 200, Message = "success", Data = result };
         }
-
+        public async Task<Response<object>> OrderStatusUpdate(Guid order_id, string status)
+        {
+            bool res = await _repo.UpdateStatus(order_id, status);
+            if (!res)
+            {
+                return new Response<object> { StatusCode = 500, Message = "failed", Error = "status not updated " };
+            }
+            return new Response<object> { StatusCode = 200, Message = "success" };
+        }
     }
 }

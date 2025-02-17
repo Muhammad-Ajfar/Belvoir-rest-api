@@ -13,9 +13,13 @@ namespace Belvoir.DAL.Repositories.Admin
 {
     public interface IOrderRepository
     {
+        public Task<IEnumerable<TailorProduct>> GetAllTailorProducts(Guid user_id);
         public Task<bool> AddTailorProduct(TailorProduct tailorProduct,Guid id);
-        public Task<bool> IsClothExists(Guid Id);
+        public Task<TailorProduct> TailorProductById(Guid product_id, Guid user_id);
+        public Task<bool> RemoveTailorProduct(Guid product_id, Guid user_id );
+        public Task<bool> IsClothExists(Guid Id);   
         public Task<bool> IsDesignExists(Guid Id);
+        public Task<bool> IsAddressExists(Guid Id);
         public Task<bool> AddOrder(Order order );
         public Task<int> CheckoutRentalCartAsync(Guid userId, string paymentMethod, Guid shippingAddress, bool fastShipping, string trackingNumber);
 
@@ -34,10 +38,26 @@ namespace Belvoir.DAL.Repositories.Admin
         {
             _dbConnection = dbConnection;
         }
+
+        public async Task<IEnumerable<TailorProduct>> GetAllTailorProducts(Guid user_id)
+        {
+            string query = @"SELECT * FROM tailor_products WHERE customer_id = @id AND IsDeleted = false";
+            return await _dbConnection.QueryAsync<TailorProduct>(query, new { id = user_id });
+        }
         public async Task<bool> AddTailorProduct(TailorProduct tailorProduct,Guid id)
         {
             string query = "INSERT INTO `belvoir`.`tailor_products` (`product_id`,`customer_id`,`design_id`,`cloth_id`,`product_name`,`price`) VALUES (@id,'918eab05-0a0b-42a9-9ce6-2cc973c9eb3a',@designid,@clothid,@productname,@price)";
             return await _dbConnection.ExecuteAsync(query, new {id = id, clothid = tailorProduct.ClothId, userid = tailorProduct.UserId,designid = tailorProduct.DesignId,productname = tailorProduct.product_name,price = tailorProduct.price })>0;
+        }
+        public async Task<bool> RemoveTailorProduct(Guid product_id,Guid user_id)
+        {
+            string query = @"UPDATE tailor_products SET IsDeleted = true WHERE product_id = @id AND IsDeleted = false AND customer_id = @user_id";
+            return await _dbConnection.ExecuteAsync(query, new { id = product_id , user_id = user_id})>0;
+        }
+        public async Task<TailorProduct> TailorProductById(Guid product_id,Guid user_id)
+        {
+            string query = @"SELECT * FROM tailor_products WHERE product_id = @id AND IsDeleted = false AND customer_id = @user_id";
+            return await _dbConnection.QueryFirstOrDefaultAsync<TailorProduct>(query, new { id = product_id ,user_id  =user_id}) ;
         }
         public async Task<bool> IsClothExists(Guid Id)
         {
@@ -47,6 +67,11 @@ namespace Belvoir.DAL.Repositories.Admin
         public async Task<bool> IsDesignExists(Guid Id)
         {
             string query = "SELECT Count(*) FROM DressDesign WHERE Id = @Id";
+            return await _dbConnection.ExecuteScalarAsync<int>(query, new { Id }) > 0;
+        }
+        public async Task<bool> IsAddressExists(Guid Id)
+        {
+            string query = "SELECT Count(*) FROM Address WHERE Id = @Id";
             return await _dbConnection.ExecuteScalarAsync<int>(query, new { Id }) > 0;
         }
         public async Task<bool> AddOrder(Order order)
@@ -175,7 +200,7 @@ namespace Belvoir.DAL.Repositories.Admin
         
         public async Task<bool> UpdateStatus(Guid order_id,string status)
         {
-            string query = @"UPDATE orders SET status = @NewStatus WHERE id = @OrderId;";
+            string query = @"UPDATE order_items SET order_status = @NewStatus WHERE order_item_id = @OrderId;";
             return await _dbConnection.ExecuteAsync(query, new { OrderId = order_id, NewStatus = status }) > 0;
         }
         
