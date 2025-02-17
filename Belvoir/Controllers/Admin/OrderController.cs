@@ -82,7 +82,20 @@ namespace Belvoir.Controllers.Admin
             return StatusCode(response.StatusCode, response);
         }
 
+
+        [Authorize(Roles= "Admin")]
+        [HttpGet("user/tailor/{user_id}")]
+        public async Task<IActionResult> getUserOrderAdmin(string? status,Guid user_id)
+        {
+            
+            var response = await _orderServices.orderUserGets(user_id, status);
+            return StatusCode(response.StatusCode, response);
+        }
+
+        
+
         [Authorize(Roles = "User")]
+
         [HttpGet("user/rental")]
         public async Task<IActionResult> getRentalUserOrder(string? status)
         {
@@ -92,7 +105,21 @@ namespace Belvoir.Controllers.Admin
         }
 
         [Authorize(Roles = "Admin")]
+
         [HttpGet("admin/tailor")]
+
+
+        [HttpGet("user/rental/{user_id}")]
+        public async Task<IActionResult> getRentalUserOrderAdmin(string? status,Guid user_id)
+        {
+            
+            var response = await _orderServices.orderRentalUserGets(user_id, status);
+            return StatusCode(response.StatusCode, response);
+        }
+
+
+        [HttpGet("admin")]
+
         public async Task<IActionResult> AdminGetTailorOrder(string? status)
         {
             var response = await _orderServices.AdminGetTailorOrder(status);
