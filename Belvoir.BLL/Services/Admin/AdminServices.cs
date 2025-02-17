@@ -18,14 +18,14 @@ namespace Belvoir.Bll.Services.Admin
         public Task<Response<object>> GetUserById(Guid id);
         public Task<Response<object>> BlockOrUnblock(Guid id,string role);
         public Task<Response<IEnumerable<SalesReport>>> GetSalesReport();
-
         public  Task<Response<AdminDashboard>> GetDasboard();
         public Task<Response<object>> AddTailor(TailorDTO tailorDTO);
         public Task<Response<object>> AddDelivery(DeliveryDTO deliveryDTO);
         public Task<Response<object>> AddLaundry(RegisterDTO registerDTO);
 
         public Task<Response<object>> DeleteTailor(Guid id,string role);
-        public Task<Response<object>> AssaignOrdersByPinCode(string pincode, Guid delivery_id);
+        public Task<Response<object>> AssaignOrdersByPinCode(string pincode, Guid delivery_id, DateTime deadline);
+        public Task<Response<object>> AssaignOrderByOrderId(Guid order_id, Guid delivery_id, DateTime deadline);
     }
     public class AdminServices : IAdminServices
     {
@@ -260,15 +260,24 @@ namespace Belvoir.Bll.Services.Admin
                     Data=response
                 };
         }
-        public async Task<Response<object>> AssaignOrdersByPinCode(string pincode,Guid delivery_id)
+        public async Task<Response<object>> AssaignOrdersByPinCode(string pincode,Guid delivery_id,DateTime deadline)
         {
-            var result = await _repo.AssaignOrdersByPinCode(pincode,delivery_id);
+            var result = await _repo.AssaignOrdersByPinCode(pincode,delivery_id,deadline);
             if (result)
             {
                 return new Response<object>() { StatusCode = 200, Message = "Success" };
             }
             return new Response<object>() { StatusCode = 500, Message = "Internal Server Error" };
 
+        }
+        public async Task<Response<object>> AssaignOrderByOrderId(Guid order_id, Guid delivery_id, DateTime deadline)
+        {
+            var result = await _repo.AssaignOrdersByOrderId(order_id, delivery_id, deadline);
+            if (result)
+            {
+                return new Response<object>() { StatusCode = 200, Message = "Success" };
+            }
+            return new Response<object>() { StatusCode = 500, Message = "Internal Server Error" };
         }
 
     }

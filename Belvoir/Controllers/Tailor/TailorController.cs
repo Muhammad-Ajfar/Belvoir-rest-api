@@ -22,14 +22,8 @@ namespace Belvoir.Controllers.Tailor
         [HttpGet("tasks")]
         public async Task<IActionResult> GetAllTasks()
         {
-            var user =User.Claims.FirstOrDefault(x=>x.Type==ClaimTypes.NameIdentifier);
-
-            if (user== null)
-            {
-                return Unauthorized("Please login"); 
-            }
-
-            var response = await _tailorService.GET_ALL_TASK(Guid.Parse(user.Value));
+            var userId = Guid.Parse(HttpContext.Items["UserId"].ToString());
+            var response = await _tailorService.GetAllTasks(userId);
             if (response.StatusCode == 200)
                 return Ok(response);
 
@@ -40,8 +34,6 @@ namespace Belvoir.Controllers.Tailor
         [HttpPut("tasks/{taskId}/status")]
         public async Task<IActionResult> UpdateTaskStatus(Guid taskId, [FromBody] string status)
         {
-            
-
             var response = await _tailorService.UpdateStatus(taskId, status);
             return StatusCode(response.StatusCode, response);
         }
@@ -49,24 +41,16 @@ namespace Belvoir.Controllers.Tailor
         [HttpGet("tailordashboard")]
         public async Task<IActionResult> GetDashboard()
         {
-
-            var user = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
-
-            if (user == null)
-            {
-                return Unauthorized("Please login");
-            }
-            var response = await _tailorService.GetDashboardapi(Guid.Parse(user.Value));
+            var userId = Guid.Parse(HttpContext.Items["UserId"].ToString());
+            var response = await _tailorService.GetDashboardapi(userId);
             return StatusCode(response.StatusCode, response);
         }
         [Authorize]
         [HttpGet("tailorprofile")]
         public async Task<IActionResult> GetTailorProfile()
         {
-            var user = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
-
-
-            var response = await _tailorService.GetTailorprofile(Guid.Parse(user.Value));
+            var userId = Guid.Parse(HttpContext.Items["UserId"].ToString());
+            var response = await _tailorService.GetTailorprofile(userId);
             return StatusCode(response.StatusCode, response);
         }
 
@@ -74,8 +58,7 @@ namespace Belvoir.Controllers.Tailor
         [HttpPost("resetpassword")]
         public async Task<IActionResult> ResetTailorPassword([FromBody] PasswordResetDTO data)
         {
-            var userId = Guid.Parse(HttpContext.Items["UserId"].ToString()); // Fetch userId from HttpContext
-
+            var userId = Guid.Parse(HttpContext.Items["UserId"].ToString()); 
             var response = await _tailorService.ResetPassword(userId, data);
             return StatusCode(response.StatusCode, response);
         }
