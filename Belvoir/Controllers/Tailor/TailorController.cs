@@ -71,7 +71,7 @@ namespace Belvoir.Controllers.Tailor
         }
 
         [Authorize]
-        [HttpPost("/tailor/resetpassword")]
+        [HttpPost("resetpassword")]
         public async Task<IActionResult> ResetTailorPassword([FromBody] PasswordResetDTO data)
         {
             var userId = Guid.Parse(HttpContext.Items["UserId"].ToString()); // Fetch userId from HttpContext
