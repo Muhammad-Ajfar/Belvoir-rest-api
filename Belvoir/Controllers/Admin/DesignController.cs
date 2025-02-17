@@ -26,6 +26,7 @@ namespace Belvoir.Controllers.Admin
             return Ok(result);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet("{designId}")]
         public async Task<IActionResult> GetDesignById(Guid designId)
         {
@@ -34,6 +35,7 @@ namespace Belvoir.Controllers.Admin
         }
 
 
+        [Authorize(Roles = "Admin,Tailor")]
         [HttpPost("add")]
         public async Task<IActionResult> AddDesign([FromForm] AddDesignDTO designDTO)
         {
@@ -52,6 +54,7 @@ namespace Belvoir.Controllers.Admin
             return StatusCode(response.StatusCode, response);
         }
 
+        [Authorize(Roles = "Admin,Tailor")]
         [HttpPut("update")]
         public async Task<IActionResult> UpdateDesign([FromForm] UpdateDesignDto dto)
         {
@@ -59,6 +62,7 @@ namespace Belvoir.Controllers.Admin
             return StatusCode(result.StatusCode, result);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> SoftDeleteDesign(Guid id)
         {
@@ -67,6 +71,7 @@ namespace Belvoir.Controllers.Admin
         }
 
 
+        [Authorize(Roles = "Admin,Tailor")]
         [HttpPost("add/mesurment")]
         public async Task<IActionResult> AddMesurementGuide(Mesurment_Guides mesurment_Guides)
         {
@@ -74,6 +79,7 @@ namespace Belvoir.Controllers.Admin
             return StatusCode(result.StatusCode, result);
         }
 
+        [Authorize(Roles = "Admin,Tailor")]
         [HttpPost("add/dis-mes")]
         public async Task<IActionResult> AddDesignMesurement(List<Design_Mesurment> disign_mesurement)
         {
@@ -97,6 +103,7 @@ namespace Belvoir.Controllers.Admin
             var result = await _designService.AddMesurmentValues(mesurement,user_id);
             return StatusCode(result.StatusCode, result);   
         }
+
         [HttpGet("get/mesurments")]
         public async Task<IActionResult> GetMesurment()
         {
