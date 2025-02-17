@@ -18,7 +18,7 @@ namespace Belvoir.Controllers.Admin
         {
             _orderServices = orderServices;
         }
-        [Authorize]
+        [Authorize(Roles = "User")]
         [HttpPost("add/tailorProduct")]
         public  async Task<IActionResult> CreateTailorProduct(TailorProductDTO tailorProductDTO)
         {
@@ -42,7 +42,10 @@ namespace Belvoir.Controllers.Admin
             var response = await _orderServices.TailorProductsById(product_id,user_id);
             return StatusCode(statusCode: response.StatusCode, response);
         }
-        [Authorize]
+
+
+        [Authorize(Roles = "User")]
+
         [HttpDelete("remove/tailorproduct")]
         public async Task<IActionResult> RemoveTailorProduct(Guid product_id)
         {
@@ -51,7 +54,7 @@ namespace Belvoir.Controllers.Admin
             return StatusCode(statusCode: response.StatusCode,response);
         }
 
-        [Authorize]
+        [Authorize(Roles = "User")]
         [HttpPost("PlaceOrder")]
         public async Task<IActionResult> AddOrder(PlaceOrderDTO orderDto)
         {
@@ -60,7 +63,7 @@ namespace Belvoir.Controllers.Admin
             return StatusCode(response.StatusCode, response);
         }
 
-        [Authorize]
+        [Authorize(Roles = "User")]
         [HttpPost("checkout/rental")]
         public async Task<IActionResult> CheckoutRentalCart([FromBody] CheckoutRentalCartDTO checkoutDto)
         {
@@ -70,7 +73,7 @@ namespace Belvoir.Controllers.Admin
             return StatusCode(response.StatusCode, response);
         }
 
-        [Authorize]
+        [Authorize(Roles = "User")]
         [HttpGet("user/tailor")]
         public async Task<IActionResult> getUserOrder(string? status)
         {
@@ -79,7 +82,7 @@ namespace Belvoir.Controllers.Admin
             return StatusCode(response.StatusCode, response);
         }
 
-        [Authorize]
+        [Authorize(Roles = "User")]
         [HttpGet("user/rental")]
         public async Task<IActionResult> getRentalUserOrder(string? status)
         {
@@ -88,13 +91,15 @@ namespace Belvoir.Controllers.Admin
             return StatusCode(response.StatusCode, response);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet("admin")]
-        public async Task<IActionResult> getAdminOrder(string? status)
+        public async Task<IActionResult> AdminGetTailorOrder(string? status)
         {
-            var response = await _orderServices.orderAdminGets(status);
+            var response = await _orderServices.AdminGetTailorOrder(status);
             return StatusCode(response.StatusCode, response);
         }
 
+        [Authorize(Roles = "Delivery")]
         [HttpGet("delivery")]
         public async Task<IActionResult> getDeliveryOrder()
         {
@@ -102,12 +107,15 @@ namespace Belvoir.Controllers.Admin
             return StatusCode(response.StatusCode, response);
         }
 
+        [Authorize(Roles = "Tailor")]
         [HttpGet("tailor")]
         public async Task<IActionResult> getTailorOrder()
         {
             var response = await _orderServices.orderTailorGets();
             return StatusCode(response.StatusCode, response);
         }
+
+        [Authorize]
         [HttpGet("{order_id}")]
         public async Task<IActionResult> SingleOrder(Guid order_id)
         {
@@ -115,6 +123,7 @@ namespace Belvoir.Controllers.Admin
             return StatusCode(response.StatusCode, response);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost("update/status/{order_id}")]
         public async Task<IActionResult> OrderStatusUpdate(Guid order_id,string status)
         {
