@@ -98,21 +98,19 @@ namespace Belvoir.Controllers.Admin
 
 
 
-
-
         [HttpGet("admin")]
 
-        public async Task<IActionResult> AdminGetTailorOrder(string? status)
+        public async Task<IActionResult> AdminGetTailorOrder(Guid? userId, string? status)
         {
-            var response = await _orderServices.AdminGetTailorOrder(status);
+            var response = await _orderServices.AdminGetTailorOrder(userId, status);
             return StatusCode(response.StatusCode, response);
         }
 
         [Authorize(Roles = "Admin")]
         [HttpGet("admin/rental")]
-        public async Task<IActionResult> AdminGetRentalOrder(string? status)
+        public async Task<IActionResult> AdminGetRentalOrder(Guid? userId, string? status)
         {
-            var response = await _orderServices.AdminGetRentalOrder(status);
+            var response = await _orderServices.AdminGetRentalOrder(userId, status);
             return StatusCode(response.StatusCode, response);
         }
 

@@ -22,8 +22,8 @@ namespace Belvoir.Bll.Services.Admin
         public Task<Response<object>> RemoveTailorProduct(Guid product_id, Guid user_id);
         public Task<Response<object>> AddOrder(PlaceOrderDTO orderDto, Guid user_id);
         public Task<Response<int>> CheckoutRentalCartAsync(Guid userId, CheckoutRentalCartDTO checkoutDto);
-        public Task<Response<IEnumerable<AdminTailorOrderGet>>> AdminGetTailorOrder(string? status);
-        public Task<Response<IEnumerable<AdminRentalOrderGet>>> AdminGetRentalOrder(string? status);
+        public Task<Response<IEnumerable<AdminTailorOrderGet>>> AdminGetTailorOrder(Guid? userId, string? status);
+        public Task<Response<IEnumerable<AdminRentalOrderGet>>> AdminGetRentalOrder(Guid? userId, string? status);
 
         public Task<Response<IEnumerable<OrderUserGet>>> orderUserGets(Guid userid, string? status);
         public Task<Response<IEnumerable<OrderUserRentalGet>>> orderRentalUserGets(Guid userid, string? status);
@@ -172,9 +172,9 @@ namespace Belvoir.Bll.Services.Admin
             return new Response<IEnumerable<OrderDeliveryGet>> { StatusCode = 200, Message = "success", Data = result };
         }
 
-        public async Task<Response<IEnumerable<AdminTailorOrderGet>>> AdminGetTailorOrder(string? status)
+        public async Task<Response<IEnumerable<AdminTailorOrderGet>>> AdminGetTailorOrder(Guid? userId, string? status)
         {
-            var result = await _repo.AdminGetTailorOrder( status);
+            var result = await _repo.AdminGetTailorOrder(userId, status);
             if (result == null)
             {
                 return new Response<IEnumerable<AdminTailorOrderGet>> { StatusCode = 404, Message = " no orders" };
@@ -182,9 +182,9 @@ namespace Belvoir.Bll.Services.Admin
             return new Response<IEnumerable<AdminTailorOrderGet>> { StatusCode = 200, Message = "success", Data = result };
         }
 
-        public async Task<Response<IEnumerable<AdminRentalOrderGet>>> AdminGetRentalOrder(string? status)
+        public async Task<Response<IEnumerable<AdminRentalOrderGet>>> AdminGetRentalOrder(Guid? userId, string? status)
         {
-            var result = await _repo.AdminGetRentalOrder(status);
+            var result = await _repo.AdminGetRentalOrder(userId, status);
             if (result == null)
             {
                 return new Response<IEnumerable<AdminRentalOrderGet>> { StatusCode = 404, Message = " no orders" };
