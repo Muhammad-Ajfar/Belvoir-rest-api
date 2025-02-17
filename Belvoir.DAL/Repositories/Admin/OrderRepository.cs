@@ -44,6 +44,7 @@ namespace Belvoir.DAL.Repositories.Admin
         public async Task<IEnumerable<GetTailorProductUser>> GetAllTailorProducts(Guid user_id)
         {
             string query = @"SELECT 
+                                tailor_products.product_id,
 	                            Name as DesignName,
                                 Title as ClothName,
                                 product_name,
@@ -69,6 +70,7 @@ namespace Belvoir.DAL.Repositories.Admin
         public async Task<GetTailorProductId> TailorProductById(Guid product_id,Guid user_id)
         {
             string query = @"SELECT 
+                                tailor_products.product_id,
 	                            Name as DesignName,
                                 Cloths.ImageUrl as ClothImage,
                                 DesignImages.ImageUrl as DesignImage,
