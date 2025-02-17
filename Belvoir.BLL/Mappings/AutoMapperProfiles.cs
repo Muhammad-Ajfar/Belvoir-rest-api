@@ -28,7 +28,7 @@ namespace Belvoir.Bll.Mappings
                 .ForMember(dest => dest.IsBlocked, opt => opt.MapFrom(src => false));
             
             CreateMap<Tailor, TailorDTO>().ReverseMap();
-            CreateMap<TailorProduct,TailorProductDTO>().ReverseMap();
+            CreateMap<TailorProductAdd,TailorProductDTO>().ReverseMap();
             CreateMap<User, RegisterResponseDTO>();
             CreateMap<User, TailorResponseDTO>();
             CreateMap<TailorGetDTO, Tailor>().ReverseMap();

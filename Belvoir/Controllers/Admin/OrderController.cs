@@ -23,11 +23,29 @@ namespace Belvoir.Controllers.Admin
         public  async Task<IActionResult> CreateTailorProduct(TailorProductDTO tailorProductDTO)
         {
             var user_id = Guid.Parse(HttpContext.Items["UserId"]?.ToString());
-            var response = await _orderServices.AddTailorProducts(tailorProductDTO);
+            var response = await _orderServices.AddTailorProducts(tailorProductDTO,user_id);
+            return StatusCode(statusCode: response.StatusCode, response);
+        }
+        [Authorize]
+        [HttpGet("TailorProducts/All")]
+        public async Task<IActionResult> GetTailorproduct()
+        {
+            var user_id = Guid.Parse(HttpContext.Items["UserId"]?.ToString());
+            var response = await _orderServices.GetAllTailorProducts( user_id);
+            return StatusCode(statusCode: response.StatusCode, response);
+        }
+        [Authorize]
+        [HttpGet("TailorProducts/{product_id}")]
+        public async Task<IActionResult> GetTailorproductById(Guid product_id)
+        {
+            var user_id = Guid.Parse(HttpContext.Items["UserId"]?.ToString());
+            var response = await _orderServices.TailorProductsById(product_id,user_id);
             return StatusCode(statusCode: response.StatusCode, response);
         }
 
+
         [Authorize(Roles = "User")]
+
         [HttpDelete("remove/tailorproduct")]
         public async Task<IActionResult> RemoveTailorProduct(Guid product_id)
         {

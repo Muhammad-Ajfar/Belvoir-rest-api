@@ -3,6 +3,8 @@ using Belvoir.Bll.DTO.Order;
 using Belvoir.DAL.Models;
 using Belvoir.DAL.Models.NewFolder;
 using Belvoir.DAL.Models.OrderGet;
+using Belvoir.DAL.Models.TailorProduct;
+using Belvoir.DAL.Models.TailorProductModels;
 using Belvoir.DAL.Repositories.Admin;
 using System;
 using System.Collections.Generic;
@@ -14,9 +16,9 @@ namespace Belvoir.Bll.Services.Admin
 {
     public interface IOrderServices
     {
-        public Task<Response<IEnumerable<TailorProduct>>> GetAllTailorProducts(Guid user_id);
-        public Task<Response<TailorProduct>> TailorProductsById(Guid product_id, Guid user_id);
-        public Task<Response<object>> AddTailorProducts(TailorProductDTO tailorProductDTO);
+        public Task<Response<IEnumerable<GetTailorProductUser>>> GetAllTailorProducts(Guid user_id);
+        public Task<Response<GetTailorProductId>> TailorProductsById(Guid product_id, Guid user_id);
+        public Task<Response<object>> AddTailorProducts(TailorProductDTO tailorProductDTO,Guid user_id);
         public Task<Response<object>> RemoveTailorProduct(Guid product_id, Guid user_id);
         public Task<Response<object>> AddOrder(PlaceOrderDTO orderDto, Guid user_id);
         public Task<Response<int>> CheckoutRentalCartAsync(Guid userId, CheckoutRentalCartDTO checkoutDto);
@@ -38,28 +40,28 @@ namespace Belvoir.Bll.Services.Admin
             _mapper = mapper;
         }
 
-        public async Task<Response<IEnumerable<TailorProduct>>> GetAllTailorProducts(Guid user_id)
+        public async Task<Response<IEnumerable<GetTailorProductUser>>> GetAllTailorProducts(Guid user_id)
         {
             var res = await _repo.GetAllTailorProducts(user_id);
             if(res == null)
             {
-                return new Response<IEnumerable<TailorProduct>> { StatusCode = 200, Message = "No products to show" };
+                return new Response<IEnumerable<GetTailorProductUser>> { StatusCode = 200, Message = "No products to show" };
             }
-            return new Response<IEnumerable<TailorProduct>> { StatusCode = 200, Message = "Success", Data = res };
+            return new Response<IEnumerable<GetTailorProductUser>> { StatusCode = 200, Message = "Success", Data = res };
         }
-        public async Task<Response<TailorProduct>> TailorProductsById(Guid product_id,Guid user_id)
+        public async Task<Response<GetTailorProductId>> TailorProductsById(Guid product_id,Guid user_id)
         {
             var res = await _repo.TailorProductById(product_id,user_id);
             if (res == null)
             {
-                return new Response<TailorProduct> { StatusCode = 200, Message = "No products to show" };
+                return new Response<GetTailorProductId> { StatusCode = 200, Message = "No products to show" };
             }
-            return new Response<TailorProduct> { StatusCode = 200, Message = "Success", Data = res };
+            return new Response<GetTailorProductId> { StatusCode = 200, Message = "Success", Data = res };
         }
-        public async Task<Response<object>> AddTailorProducts(TailorProductDTO tailorProductDTO) {
+        public async Task<Response<object>> AddTailorProducts(TailorProductDTO tailorProductDTO, Guid user_id) {
 
             Guid id = Guid.NewGuid();
-            var tailorProduct = _mapper.Map<TailorProduct>(tailorProductDTO);
+            var tailorProduct = _mapper.Map<TailorProductAdd>(tailorProductDTO);
             if (!await _repo.IsClothExists(tailorProduct.ClothId))
             {
                 return new Response<object> { StatusCode = 404, Message = "cloth not exist" };
@@ -68,7 +70,7 @@ namespace Belvoir.Bll.Services.Admin
             {
                 return new Response<object> { StatusCode = 404, Message = "DressDesign not exist" };
             }
-            if (await _repo.AddTailorProduct(tailorProduct,id))
+            if (await _repo.AddTailorProduct(tailorProduct,id, user_id))
             {
                 return new Response<object> { StatusCode = 200, Message = "success" ,Data = new  {tailor_product_id = id } };
             }

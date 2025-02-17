@@ -111,5 +111,12 @@ namespace Belvoir.Controllers.Admin
             var respose = await _myService.GetDasboard();
             return StatusCode(respose.StatusCode, respose);
         }
+
+        [HttpPost("Add/Task/delivery")]
+        public async Task<IActionResult> AssaignOrdersByPinCode(string pin,Guid delivery_id)
+        {
+            var response = await _myService.AssaignOrdersByPinCode(pin, delivery_id);
+            return StatusCode(response.StatusCode, response);
+        }
     }
 }
