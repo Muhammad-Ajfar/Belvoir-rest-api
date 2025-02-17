@@ -1,6 +1,8 @@
 ﻿using Belvoir.DAL.Models;
 using Belvoir.DAL.Models.NewFolder;
 using Belvoir.DAL.Models.OrderGet;
+using Belvoir.DAL.Models.TailorProduct;
+using Belvoir.DAL.Models.TailorProductModels;
 using Dapper;
 using System;
 using System.Collections.Generic;
@@ -13,9 +15,9 @@ namespace Belvoir.DAL.Repositories.Admin
 {
     public interface IOrderRepository
     {
-        public Task<IEnumerable<TailorProduct>> GetAllTailorProducts(Guid user_id);
-        public Task<bool> AddTailorProduct(TailorProduct tailorProduct,Guid id);
-        public Task<TailorProduct> TailorProductById(Guid product_id, Guid user_id);
+        public Task<IEnumerable<GetTailorProductUser>> GetAllTailorProducts(Guid user_id);
+        public Task<bool> AddTailorProduct(TailorProductAdd tailorProduct,Guid id,Guid user_id);
+        public Task<GetTailorProductId> TailorProductById(Guid product_id, Guid user_id);
         public Task<bool> RemoveTailorProduct(Guid product_id, Guid user_id );
         public Task<bool> IsClothExists(Guid Id);   
         public Task<bool> IsDesignExists(Guid Id);
@@ -39,25 +41,44 @@ namespace Belvoir.DAL.Repositories.Admin
             _dbConnection = dbConnection;
         }
 
-        public async Task<IEnumerable<TailorProduct>> GetAllTailorProducts(Guid user_id)
+        public async Task<IEnumerable<GetTailorProductUser>> GetAllTailorProducts(Guid user_id)
         {
-            string query = @"SELECT * FROM tailor_products WHERE customer_id = @id AND IsDeleted = false";
-            return await _dbConnection.QueryAsync<TailorProduct>(query, new { id = user_id });
+            string query = @"SELECT 
+	                            Name as DesignName,
+                                Title as ClothName,
+                                product_name,
+                                tailor_products.price
+                            FROM tailor_products 
+                            JOIN Cloths ON tailor_products.cloth_id = Cloths.Id
+                            JOIN DressDesign ON tailor_products.design_id = DressDesign.Id
+                            WHERE customer_id = @id AND tailor_products.IsDeleted = false";
+            return await _dbConnection.QueryAsync<GetTailorProductUser>(query, new { id = user_id });
         }
-        public async Task<bool> AddTailorProduct(TailorProduct tailorProduct,Guid id)
+        public async Task<bool> AddTailorProduct(TailorProductAdd tailorProduct,Guid id, Guid user_id)
         {
-            string query = "INSERT INTO `belvoir`.`tailor_products` (`product_id`,`customer_id`,`design_id`,`cloth_id`,`product_name`,`price`) VALUES (id,'918eab05-0a0b-42a9-9ce6-2cc973c9eb3a',@designid,@clothid,@productname,@price)";
-            return await _dbConnection.ExecuteAsync(query, new {id = id, clothid = tailorProduct.ClothId, userid = tailorProduct.UserId,designid = tailorProduct.DesignId,productname = tailorProduct.product_name,price = tailorProduct.price })>0;
+            string query = "INSERT INTO `belvoir`.`tailor_products` (`product_id`,`customer_id`,`design_id`,`cloth_id`,`product_name`,`price`) VALUES (@id,@user_id,@designid,@clothid,@productname,@price)";
+            return await _dbConnection.ExecuteAsync(query, new {id = id, clothid = tailorProduct.ClothId, user_id = user_id,designid = tailorProduct.DesignId,productname = tailorProduct.product_name,price = tailorProduct.price })>0;
         }
         public async Task<bool> RemoveTailorProduct(Guid product_id,Guid user_id)
         {
             string query = @"UPDATE tailor_products SET IsDeleted = true WHERE product_id = @id AND IsDeleted = false AND customer_id = @user_id";
             return await _dbConnection.ExecuteAsync(query, new { id = product_id , user_id = user_id})>0;
         }
-        public async Task<TailorProduct> TailorProductById(Guid product_id,Guid user_id)
+        public async Task<GetTailorProductId> TailorProductById(Guid product_id,Guid user_id)
         {
-            string query = @"SELECT * FROM tailor_products WHERE product_id = @id AND IsDeleted = false AND customer_id = @user_id";
-            return await _dbConnection.QueryFirstOrDefaultAsync<TailorProduct>(query, new { id = product_id ,user_id  =user_id}) ;
+            string query = @"SELECT 
+	                            Name as DesignName,
+                                Cloths.ImageUrl as ClothImage,
+                                DesignImages.ImageUrl as DesignImage,
+                                Title as ClothName,
+                                product_name,
+                                tailor_products.price
+                            FROM tailor_products 
+                            JOIN Cloths ON tailor_products.cloth_id = Cloths.Id
+                            JOIN DressDesign ON tailor_products.design_id = DressDesign.Id
+                            JOIN DesignImages ON DesignImages.DesignId = DressDesign.Id
+                            WHERE product_id = @id AND IsDeleted = false AND customer_id = @user_id";
+            return await _dbConnection.QueryFirstOrDefaultAsync<GetTailorProductId>(query, new { id = product_id ,user_id  =user_id}) ;
         }
         public async Task<bool> IsClothExists(Guid Id)
         {

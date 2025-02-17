@@ -6,6 +6,7 @@ using Belvoir.DAL.Models;
 using Belvoir.DAL.Repositories.Admin;
 using CloudinaryDotNet.Actions;
 using Dapper;
+using Razorpay.Api;
 using System.Data;
 using System.Data.Common;
 
@@ -16,8 +17,6 @@ namespace Belvoir.Bll.Services.Admin
         public Task<Response<UserAndCount>> GetAllUsers(string role,UserQuery userQuery);
         public Task<Response<object>> GetUserById(Guid id);
         public Task<Response<object>> BlockOrUnblock(Guid id,string role);
-   
-
         public Task<Response<IEnumerable<SalesReport>>> GetSalesReport();
 
         public  Task<Response<AdminDashboard>> GetDasboard();
@@ -26,6 +25,7 @@ namespace Belvoir.Bll.Services.Admin
         public Task<Response<object>> AddLaundry(RegisterDTO registerDTO);
 
         public Task<Response<object>> DeleteTailor(Guid id,string role);
+        public Task<Response<object>> AssaignOrdersByPinCode(string pincode, Guid delivery_id);
     }
     public class AdminServices : IAdminServices
     {
@@ -259,6 +259,16 @@ namespace Belvoir.Bll.Services.Admin
                     Message = "success",    
                     Data=response
                 };
+        }
+        public async Task<Response<object>> AssaignOrdersByPinCode(string pincode,Guid delivery_id)
+        {
+            var result = await _repo.AssaignOrdersByPinCode(pincode,delivery_id);
+            if (result)
+            {
+                return new Response<object>() { StatusCode = 200, Message = "Success" };
+            }
+            return new Response<object>() { StatusCode = 500, Message = "Internal Server Error" };
+
         }
 
     }
