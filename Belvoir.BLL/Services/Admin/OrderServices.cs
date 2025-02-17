@@ -74,7 +74,7 @@ namespace Belvoir.Bll.Services.Admin
             }
             if (await _repo.AddTailorProduct(tailorProduct,id, user_id))
             {
-                return new Response<object> { StatusCode = 200, Message = "success" ,Data = new  {tailor_product_id = id } };
+                return new Response<object> { StatusCode = 201, Message = "success" ,Data = new  {tailor_product_id = id } };
             }
             return new Response<object> { StatusCode = 500, Message = "failed" };
         }
@@ -113,7 +113,7 @@ namespace Belvoir.Bll.Services.Admin
 
             if (await _repo.AddOrder(order))
             {
-                return new Response<object> { StatusCode = 200, Message = "success" };
+                return new Response<object> { StatusCode = 201, Message = "success" };
             }
             return new Response<object> { StatusCode = 500, Message = "error" };
         }

@@ -43,6 +43,10 @@ namespace Belvoir.Controllers.Admin
             return Ok(data);
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize(Roles = "Admin")]
         [HttpPost("Add")]
         public async Task<IActionResult> AddCloths(IFormFile file,[FromForm] ClothDTO cloth)
@@ -51,6 +55,10 @@ namespace Belvoir.Controllers.Admin
             return Ok(data);
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize(Roles = "Admin")]
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeleteCloths(Guid id)
@@ -59,7 +67,10 @@ namespace Belvoir.Controllers.Admin
             return Ok(data);
         }
 
-
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize(Roles = "User")]
         [HttpPost("whishlist")]
         public async Task<IActionResult> AddToWhisList(Guid productid)
@@ -69,6 +80,10 @@ namespace Belvoir.Controllers.Admin
             return StatusCode(data.StatusCode,data.Message);
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize(Roles = "User")]
         [HttpGet("whishlist")]
         public async Task<IActionResult> GetWhistList()
@@ -85,6 +100,10 @@ namespace Belvoir.Controllers.Admin
             return StatusCode(data.StatusCode, data);
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize(Roles = "User")]
         [HttpPost("cloth-rating")]
         public async Task<IActionResult> AddRatings(Guid clothid, [FromBody] RatingItem ratings)
@@ -102,6 +121,10 @@ namespace Belvoir.Controllers.Admin
             return StatusCode(data.StatusCode, data);
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize(Roles = "User")]
         [HttpPut("cloth-rating")]
         public async Task<IActionResult> UpdateRating(Guid raingid, [FromBody] RatingItem ratings)
