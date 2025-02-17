@@ -19,7 +19,8 @@ namespace Belvoir.Controllers.Admin
         {
             _designService = designService;
         }
-
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpGet]
         public async Task<IActionResult> GetDesigns([FromQuery] DesignQueryParameters queryParams)
         {
@@ -27,6 +28,10 @@ namespace Belvoir.Controllers.Admin
             return Ok(result);
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize(Roles = "Admin")]
         [HttpGet("{designId}")]
         public async Task<IActionResult> GetDesignById(Guid designId)
@@ -35,7 +40,10 @@ namespace Belvoir.Controllers.Admin
             return StatusCode(response.StatusCode, response);
         }
 
-
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize(Roles = "Admin,Tailor")]
         [HttpPost("add")]
         public async Task<IActionResult> AddDesign([FromForm] AddDesignDTO designDTO)
@@ -55,6 +63,10 @@ namespace Belvoir.Controllers.Admin
             return StatusCode(response.StatusCode, response);
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize(Roles = "Admin,Tailor")]
         [HttpPut("update")]
         public async Task<IActionResult> UpdateDesign([FromForm] UpdateDesignDto dto)
@@ -63,6 +75,10 @@ namespace Belvoir.Controllers.Admin
             return StatusCode(result.StatusCode, result);
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> SoftDeleteDesign(Guid id)
@@ -71,7 +87,10 @@ namespace Belvoir.Controllers.Admin
             return StatusCode(response.StatusCode, response);
         }
 
-
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize(Roles = "Admin,Tailor")]
         [HttpPost("add/mesurment")]
         public async Task<IActionResult> AddMesurementGuide(Mesurment_Guides mesurment_Guides)
@@ -80,6 +99,10 @@ namespace Belvoir.Controllers.Admin
             return StatusCode(result.StatusCode, result);
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize(Roles = "Admin,Tailor")]
         [HttpPost("add/dis-mes")]
         public async Task<IActionResult> AddDesignMesurement(List<Design_Mesurment> disign_mesurement)
@@ -88,6 +111,8 @@ namespace Belvoir.Controllers.Admin
             return StatusCode(result.StatusCode, result);
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpGet("get/mesurments/{design_id}")]
         public async Task<IActionResult> GetMesurmentList(Guid design_id)
         {
@@ -95,7 +120,10 @@ namespace Belvoir.Controllers.Admin
             return StatusCode(result.StatusCode, result);
         }
 
-
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize]
         [HttpPost("add/mesurment/values")]
         public async Task<IActionResult> AddMesurmentValues(MesurementSet mesurement)
@@ -105,6 +133,8 @@ namespace Belvoir.Controllers.Admin
             return StatusCode(result.StatusCode, result);   
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpGet("get/mesurments")]
         public async Task<IActionResult> GetMesurment()
         {

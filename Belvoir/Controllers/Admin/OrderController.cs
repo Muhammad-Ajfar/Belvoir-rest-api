@@ -18,6 +18,12 @@ namespace Belvoir.Controllers.Admin
         {
             _orderServices = orderServices;
         }
+
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [Authorize(Roles = "User")]
         [HttpPost("add/tailorProduct")]
         public  async Task<IActionResult> CreateTailorProduct(TailorProductDTO tailorProductDTO)
@@ -26,7 +32,11 @@ namespace Belvoir.Controllers.Admin
             var response = await _orderServices.AddTailorProducts(tailorProductDTO,user_id);
             return StatusCode(statusCode: response.StatusCode, response);
         }
-        [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [Authorize(Roles = "user")]
         [HttpGet("TailorProducts/All")]
         public async Task<IActionResult> GetTailorproduct()
         {
@@ -34,7 +44,12 @@ namespace Belvoir.Controllers.Admin
             var response = await _orderServices.GetAllTailorProducts( user_id);
             return StatusCode(statusCode: response.StatusCode, response);
         }
-        [Authorize]
+
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [Authorize(Roles ="user")]
         [HttpGet("TailorProducts/{product_id}")]
         public async Task<IActionResult> GetTailorproductById(Guid product_id)
         {
@@ -43,9 +58,11 @@ namespace Belvoir.Controllers.Admin
             return StatusCode(statusCode: response.StatusCode, response);
         }
 
-
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize(Roles = "User")]
-
         [HttpDelete("remove/tailorproduct")]
         public async Task<IActionResult> RemoveTailorProduct(Guid product_id)
         {
@@ -54,6 +71,10 @@ namespace Belvoir.Controllers.Admin
             return StatusCode(statusCode: response.StatusCode,response);
         }
 
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize(Roles = "User")]
         [HttpPost("PlaceOrder")]
         public async Task<IActionResult> AddOrder(PlaceOrderDTO orderDto)
@@ -63,6 +84,10 @@ namespace Belvoir.Controllers.Admin
             return StatusCode(response.StatusCode, response);
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize(Roles = "User")]
         [HttpPost("checkout/rental")]
         public async Task<IActionResult> CheckoutRentalCart([FromBody] CheckoutRentalCartDTO checkoutDto)
@@ -73,6 +98,10 @@ namespace Belvoir.Controllers.Admin
             return StatusCode(response.StatusCode, response);
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize(Roles = "User,Admin")]
         [HttpGet("user/tailor")]
         public async Task<IActionResult> getUserOrder(string? status)
@@ -82,8 +111,10 @@ namespace Belvoir.Controllers.Admin
             return StatusCode(response.StatusCode, response);
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize(Roles = "User,Admin")]
-
         [HttpGet("user/rental")]
         public async Task<IActionResult> getRentalUserOrder(string? status)
         {
@@ -92,18 +123,22 @@ namespace Belvoir.Controllers.Admin
             return StatusCode(response.StatusCode, response);
         }
 
-
-
-
-
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [Authorize(Roles = "Admin")]
         [HttpGet("admin")]
-
         public async Task<IActionResult> AdminGetTailorOrder(string? status)
         {
             var response = await _orderServices.AdminGetTailorOrder(status);
             return StatusCode(response.StatusCode, response);
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize(Roles = "Admin")]
         [HttpGet("admin/rental")]
         public async Task<IActionResult> AdminGetRentalOrder(string? status)
@@ -112,6 +147,10 @@ namespace Belvoir.Controllers.Admin
             return StatusCode(response.StatusCode, response);
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize(Roles = "Delivery")]
         [HttpGet("delivery")]
         public async Task<IActionResult> getDeliveryOrder()
@@ -120,6 +159,10 @@ namespace Belvoir.Controllers.Admin
             return StatusCode(response.StatusCode, response);
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize(Roles = "Tailor")]
         [HttpGet("tailor")]
         public async Task<IActionResult> getTailorOrder()
@@ -128,6 +171,9 @@ namespace Belvoir.Controllers.Admin
             return StatusCode(response.StatusCode, response);
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize]
         [HttpGet("{order_id}")]
         public async Task<IActionResult> SingleOrder(Guid order_id)
@@ -136,6 +182,10 @@ namespace Belvoir.Controllers.Admin
             return StatusCode(response.StatusCode, response);
         }
 
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize(Roles = "Admin")]
         [HttpPost("update/status/{order_id}")]
         public async Task<IActionResult> OrderStatusUpdate(Guid order_id,string status)

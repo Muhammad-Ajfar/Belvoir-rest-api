@@ -16,6 +16,9 @@ namespace Belvoir.Controllers.Auth
             _authServices = authServices;
         }
 
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDTO registerDTO)
         {
@@ -26,6 +29,10 @@ namespace Belvoir.Controllers.Auth
             return StatusCode(response.StatusCode, response);
         }
 
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDTO loginDTO)
         {
@@ -36,8 +43,8 @@ namespace Belvoir.Controllers.Auth
             return StatusCode(response.StatusCode, response);
         }
 
-        [HttpPost("refresh-token")]
 
+        [HttpPost("refresh-token")]
         public async Task<IActionResult> GetRefreshToken(string refreshtoken)
         {
             var response = await _authServices.RefreshTokenAsync(refreshtoken);

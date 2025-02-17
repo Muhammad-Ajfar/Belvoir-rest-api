@@ -87,7 +87,7 @@ namespace Belvoir.Bll.Services
             {
                 return new Response<Token>
                 {
-                    StatusCode = 401,
+                    StatusCode = 400,
                     Message = "Invalid credentials",
                     Error = "Email or password is incorrect",
                     
