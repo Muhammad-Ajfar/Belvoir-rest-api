@@ -15,6 +15,7 @@ namespace Belvoir.DAL.Repositories.DeliveryRep
     {
         public Task<Delivery> SingleProfile(Guid id);
         public Task<DeliveryDashboard> GetDeliveryDashboard(Guid id, string? status);
+        public Task<bool> ChangeStatus(Guid id, string status);
 
     }
     public class DeliveryRepository : IDeliveryRepository
@@ -61,6 +62,12 @@ namespace Belvoir.DAL.Repositories.DeliveryRep
                 return response;
             }
 
+        }
+
+        public async Task<bool> ChangeStatus(Guid id,string status)
+        {
+            string query = @"UPDATE delivery_assignments SET status = @status WHERE id = @id";
+            return await _dbConnection.ExecuteAsync(query, new { status = status,id = id })>0;
         }
 
     }

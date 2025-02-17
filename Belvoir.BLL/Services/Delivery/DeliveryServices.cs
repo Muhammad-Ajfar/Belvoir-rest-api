@@ -10,6 +10,7 @@ namespace Belvoir.Bll.Services.DeliverySer
     {
         public Task<Response<DeliveryResponseDTO>> GetDeliveryProfile(Guid id);
         public Task<Response<DeliveryDashboard>> GetDeliveryDashboard(Guid id, string? status);
+        public Task<Response<object>> ChangeStatus(Guid id, string status);
 
     }
     public class DeliveryServices : IDeliveryServices
@@ -42,6 +43,15 @@ namespace Belvoir.Bll.Services.DeliverySer
             }
             return new Response<DeliveryDashboard> { StatusCode = 200, Message = "success", Data = response };
 
+        }
+        public async Task<Response<object>> ChangeStatus(Guid id, string status)
+        {
+            bool response = await _repo.ChangeStatus(id, status);
+            if (response)
+            {
+                return new Response<object> { StatusCode = 200, Message = "success" };
+            }
+            return new Response<object> { StatusCode = 500, Message = "not changed" };
         }
 
     }
