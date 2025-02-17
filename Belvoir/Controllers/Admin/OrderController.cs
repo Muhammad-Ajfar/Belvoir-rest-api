@@ -27,6 +27,7 @@ namespace Belvoir.Controllers.Admin
             return StatusCode(statusCode: response.StatusCode, response);
         }
         [Authorize]
+        [HttpGet("TailorProducts/All")]
         public async Task<IActionResult> GetTailorproduct()
         {
             var user_id = Guid.Parse(HttpContext.Items["UserId"]?.ToString());
@@ -34,6 +35,7 @@ namespace Belvoir.Controllers.Admin
             return StatusCode(statusCode: response.StatusCode, response);
         }
         [Authorize]
+        [HttpGet("TailorProducts/{product_id}")]
         public async Task<IActionResult> GetTailorproductById(Guid product_id)
         {
             var user_id = Guid.Parse(HttpContext.Items["UserId"]?.ToString());
