@@ -1,6 +1,7 @@
 ﻿using Belvoir.Bll.DTO;
 using Belvoir.Bll.Services.Admin;
 using Belvoir.DAL.Models;
+using Belvoir.DAL.Models.Query;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

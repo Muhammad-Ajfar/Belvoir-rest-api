@@ -11,6 +11,7 @@ using System.Globalization;
 using System.Numerics;
 using System.Security.Cryptography;
 using System.Xml.Linq;
+using Belvoir.DAL.Models.Query;
 
 namespace Belvoir.DAL.Repositories.Admin
 {

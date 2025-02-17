@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Belvoir.DAL.Models.Mesurements;
 using Microsoft.AspNetCore.Authorization;
+using Belvoir.DAL.Models.Query;
 
 namespace Belvoir.Controllers.Admin
 {

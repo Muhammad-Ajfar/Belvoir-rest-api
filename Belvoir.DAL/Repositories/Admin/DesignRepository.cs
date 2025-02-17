@@ -1,5 +1,6 @@
 ﻿using Belvoir.DAL.Models;
 using Belvoir.DAL.Models.Mesurements;
+using Belvoir.DAL.Models.Query;
 using Dapper;
 using Newtonsoft.Json;
 using System;

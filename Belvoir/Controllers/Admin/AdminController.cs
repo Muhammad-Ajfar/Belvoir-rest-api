@@ -1,7 +1,6 @@
 ﻿
 using Belvoir.Bll.DTO.Tailor;
 using Belvoir.Bll.DTO.User;
-using Belvoir.DAL.Models;
 using Belvoir.Bll.Services.Admin;
 using CloudinaryDotNet.Actions;
 using Dapper;
@@ -9,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Belvoir.Bll.DTO.Delivery;
 using Microsoft.AspNetCore.Authorization;
+using Belvoir.DAL.Models.Query;
 
 namespace Belvoir.Controllers.Admin
 {

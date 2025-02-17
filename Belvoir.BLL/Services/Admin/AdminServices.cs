@@ -3,6 +3,7 @@ using Belvoir.Bll.DTO.Delivery;
 using Belvoir.Bll.DTO.Tailor;
 using Belvoir.Bll.DTO.User;
 using Belvoir.DAL.Models;
+using Belvoir.DAL.Models.Query;
 using Belvoir.DAL.Repositories.Admin;
 using CloudinaryDotNet.Actions;
 using Dapper;

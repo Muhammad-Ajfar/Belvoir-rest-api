@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Belvoir.DAL.Models
+namespace Belvoir.DAL.Models.Query
 {
     public class DesignQueryParameters
     {
