@@ -27,6 +27,8 @@ namespace Belvoir.DAL.Repositories.Admin
 
         public Task<IEnumerable<OrderTailorGet>> orderTailorGets();
         public Task<IEnumerable<AdminTailorOrderGet>> AdminGetTailorOrder(string? status);
+        public Task<IEnumerable<AdminRentalOrderGet>> AdminGetRentalOrder(string? status);
+
         public Task<IEnumerable<OrderDeliveryGet>> orderDeliveryGets();
         public Task<IEnumerable<OrderUserGet>> orderUserGets(Guid userid, string? status);
         public Task<IEnumerable<OrderUserRentalGet>> orderRentalUserGets(Guid userid, string? status);
@@ -157,6 +159,15 @@ namespace Belvoir.DAL.Repositories.Admin
             parameters.Add("@p_order_status", status);
             return await _dbConnection.QueryAsync<AdminTailorOrderGet>(spname,parameters,commandType:CommandType.StoredProcedure);
         }
+
+        public async Task<IEnumerable<AdminRentalOrderGet>> AdminGetRentalOrder(string? status)
+        {
+            string spname = "GetRentalOrdersByStatus";
+            var parameters = new DynamicParameters();
+            parameters.Add("@p_order_status", status);
+            return await _dbConnection.QueryAsync<AdminRentalOrderGet>(spname, parameters, commandType: CommandType.StoredProcedure);
+        }
+
         public async Task<IEnumerable<OrderDeliveryGet>> orderDeliveryGets()
         {
             string query = "SELECT orders.order_id,Name as customerName,order_date,order_status FROM orders join order_items on orders.order_id = order_items.order_id join User on User.Id = orders.customer_id  AND order_status ='out for delivery';";
