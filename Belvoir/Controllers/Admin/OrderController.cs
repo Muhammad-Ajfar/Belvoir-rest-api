@@ -123,6 +123,7 @@ namespace Belvoir.Controllers.Admin
             return StatusCode(response.StatusCode, response);
         }
 
+
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -130,8 +131,9 @@ namespace Belvoir.Controllers.Admin
         [Authorize(Roles = "Admin")]
         [HttpGet("admin")]
         public async Task<IActionResult> AdminGetTailorOrder(string? status)
+
         {
-            var response = await _orderServices.AdminGetTailorOrder(status);
+            var response = await _orderServices.AdminGetTailorOrder(userId, status);
             return StatusCode(response.StatusCode, response);
         }
 
@@ -141,9 +143,9 @@ namespace Belvoir.Controllers.Admin
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize(Roles = "Admin")]
         [HttpGet("admin/rental")]
-        public async Task<IActionResult> AdminGetRentalOrder(string? status)
+        public async Task<IActionResult> AdminGetRentalOrder(Guid? userId, string? status)
         {
-            var response = await _orderServices.AdminGetRentalOrder(status);
+            var response = await _orderServices.AdminGetRentalOrder(userId, status);
             return StatusCode(response.StatusCode, response);
         }
 
