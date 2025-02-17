@@ -82,19 +82,7 @@ namespace Belvoir.Controllers.Admin
             return StatusCode(response.StatusCode, response);
         }
 
-<<<<<<< HEAD
-        
-=======
 
-        [Authorize(Roles= "Admin")]
-        [HttpGet("user/tailor/{user_id}")]
-        public async Task<IActionResult> getUserOrderAdmin(string? status,Guid user_id)
-        {
-            
-            var response = await _orderServices.orderUserGets(user_id, status);
-            return StatusCode(response.StatusCode, response);
-        }
->>>>>>> 4e25c75e84ba36ce38dc51c7d70cd9bef80eaffe
 
         
 
@@ -108,37 +96,22 @@ namespace Belvoir.Controllers.Admin
             return StatusCode(response.StatusCode, response);
         }
 
-<<<<<<< HEAD
-       
-=======
-        [Authorize(Roles = "Admin")]
 
-        [HttpGet("admin/tailor")]
-
-
-        [HttpGet("user/rental/{user_id}")]
-        public async Task<IActionResult> getRentalUserOrderAdmin(string? status,Guid user_id)
-        {
-            
-            var response = await _orderServices.orderRentalUserGets(user_id, status);
-            return StatusCode(response.StatusCode, response);
-        }
->>>>>>> 4e25c75e84ba36ce38dc51c7d70cd9bef80eaffe
 
 
         [HttpGet("admin")]
 
-        public async Task<IActionResult> AdminGetTailorOrder(string? status)
+        public async Task<IActionResult> AdminGetTailorOrder(Guid? userId, string? status)
         {
-            var response = await _orderServices.AdminGetTailorOrder(status);
+            var response = await _orderServices.AdminGetTailorOrder(userId, status);
             return StatusCode(response.StatusCode, response);
         }
 
         [Authorize(Roles = "Admin")]
         [HttpGet("admin/rental")]
-        public async Task<IActionResult> AdminGetRentalOrder(string? status)
+        public async Task<IActionResult> AdminGetRentalOrder(Guid? userId, string? status)
         {
-            var response = await _orderServices.AdminGetRentalOrder(status);
+            var response = await _orderServices.AdminGetRentalOrder(userId, status);
             return StatusCode(response.StatusCode, response);
         }
 
