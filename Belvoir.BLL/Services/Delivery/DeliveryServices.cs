@@ -9,7 +9,7 @@ namespace Belvoir.Bll.Services.DeliverySer
     public interface IDeliveryServices
     {
         public Task<Response<DeliveryResponseDTO>> GetDeliveryProfile(Guid id);
-        public Task<Response<DeliveryDashboard>> GetDeliveryDashboard(Guid id, string status);
+        public Task<Response<DeliveryDashboard>> GetDeliveryDashboard(Guid id, string? status);
 
     }
     public class DeliveryServices : IDeliveryServices
@@ -32,7 +32,7 @@ namespace Belvoir.Bll.Services.DeliverySer
             }
             return new Response<DeliveryResponseDTO> { StatusCode = 200, Message = "success", Data = mapped };
         }
-        public async Task<Response<DeliveryDashboard>> GetDeliveryDashboard(Guid id, string status)
+        public async Task<Response<DeliveryDashboard>> GetDeliveryDashboard(Guid id, string? status)
         {
             var response = await _repo.GetDeliveryDashboard(id,status);
             

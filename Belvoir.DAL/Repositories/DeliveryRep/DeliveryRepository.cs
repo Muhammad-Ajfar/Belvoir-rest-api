@@ -14,7 +14,7 @@ namespace Belvoir.DAL.Repositories.DeliveryRep
     public interface IDeliveryRepository
     {
         public Task<Delivery> SingleProfile(Guid id);
-        public Task<DeliveryDashboard> GetDeliveryDashboard(Guid id, string status);
+        public Task<DeliveryDashboard> GetDeliveryDashboard(Guid id, string? status);
 
     }
     public class DeliveryRepository : IDeliveryRepository
@@ -30,7 +30,7 @@ namespace Belvoir.DAL.Repositories.DeliveryRep
             return await _dbConnection.QueryFirstOrDefaultAsync<Delivery>("select * from User left join DeliveryProfile on User.id=DeliveryProfile.Userid where User.id=@id", new { id = userid });
 
         }
-        public async Task<DeliveryDashboard> GetDeliveryDashboard(Guid id,string status)
+        public async Task<DeliveryDashboard> GetDeliveryDashboard(Guid id,string? status)
         {
             var query = @"SELECT count(id) * 10 as totalRevenue FROM delivery_assignments WHERE status = 'delivered' AND delivery_boy_id = @del;
               SELECT count(id) as totalOrderCount FROM delivery_assignments WHERE delivery_boy_id = @del;

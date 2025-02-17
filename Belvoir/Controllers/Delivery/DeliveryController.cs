@@ -23,7 +23,7 @@ namespace Belvoir.Controllers.Delivery
         }
 
         [HttpGet("dashboard")]
-        public async  Task<IActionResult> GetDeliveryDashboard(string status) {
+        public async  Task<IActionResult> GetDeliveryDashboard(string? status) {
             Guid userId = Guid.Parse(HttpContext.Items["UserId"].ToString());
             var response = await _service.GetDeliveryDashboard(userId, status);
             return StatusCode(response.StatusCode, response);
