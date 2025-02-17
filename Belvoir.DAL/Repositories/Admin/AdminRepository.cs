@@ -164,6 +164,7 @@ namespace Belvoir.DAL.Repositories.Admin
         {
             string insertQuery = @"INSERT INTO `belvoir`.`delivery_assignments`(`id`,`order_id`,`delivery_boy_id`,`status`) VALUES (UUID(),@order_id,@delivery_id,'Assigned');";
             string query = @"SELECT order_item_id FROM order_items JOIN orders ON orders.order_id = order_items.order_id JOIN Address ON Address.Id = orders.shipping_address WHERE Address.PostalCode = @pin";
+            string updateQuery = "";
             var orders =  await _dbConnection.QueryAsync<Guid>(query, new { pin = pincode });
             _dbConnection.Open();
             using (var transaction = _dbConnection.BeginTransaction())
@@ -172,7 +173,11 @@ namespace Belvoir.DAL.Repositories.Admin
                 {
                     foreach (Guid order in orders)
                     {
-                        await _dbConnection.ExecuteAsync(insertQuery, new { order_id = order, delivery_id = delivery_id });
+                        if (await _dbConnection.QueryFirstOrDefaultAsync("SELECT * FROM delivery_assignments WHERE order_id = @order_id;",new {order_id = order}) != null)
+                        {
+                            await _dbConnection.ExecuteAsync(insertQuery, new { order_id = order, delivery_id = delivery_id });
+                        }
+                        
                     }
                     transaction.Commit();
                     return true;
