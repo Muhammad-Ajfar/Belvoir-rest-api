@@ -98,13 +98,23 @@ namespace Belvoir.Bll.Services.Admin
         {
             var addressCheck = await _repo.IsAddressExists(orderDto.shippingAddress);
             var order = _mapper.Map<Order>(orderDto);
-            order.shippingCost = orderDto.FastShipping? 10 : 60;
+            order.shippingCost = orderDto.FastShipping? 40 : 100;
             order.trackingNumber = GenerateFedExTrackingNumber(); // Generate tracking number
             order.userId = userId;
             order.totalAmount = orderDto.price + order.shippingCost;
             if (orderDto.productType == "tailor")
             {
                 order.tailorProductId = orderDto.productId;
+                if(orderDto.SetId == null || orderDto.SetId == Guid.Empty)
+                {
+                    return new Response<object>
+                    {
+                        StatusCode = 404,
+                        Message = "A Measurement set is needed for tailor product",
+                        Error = "Set id is null or empty"
+                    };
+                }
+                order.SetId = orderDto.SetId;
             }
             else
             {

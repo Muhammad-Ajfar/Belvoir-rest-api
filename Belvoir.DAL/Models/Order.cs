@@ -19,6 +19,7 @@ namespace Belvoir.DAL.Models
         public string productType { get; set; }
         public Guid? tailorProductId { get; set; }
         public Guid? rentalProductId { get; set; }
+        public Guid? SetId { get; set; }
         public int quantity { get; set; }
         public decimal price { get; set; }
 
