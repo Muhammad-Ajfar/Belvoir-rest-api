@@ -18,10 +18,10 @@ namespace Belvoir.Controllers.User
         }
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        [HttpGet("rating/get")]
-        public async Task<IActionResult> GetRating_(Guid productid,string rating_to)
+        [HttpGet("get")]
+        public async Task<IActionResult> GetRating_(Guid entityId,string rating_to)
         {
-            var data = await _ratingService.GetRating(productid, rating_to);
+            var data = await _ratingService.GetRating(entityId, rating_to);
             return StatusCode(data.StatusCode, data);
         }
 
@@ -30,11 +30,11 @@ namespace Belvoir.Controllers.User
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize(Roles = "User")]
-        [HttpPost("rating/add")]
-        public async Task<IActionResult> AddRatings(Guid clothid, [FromBody] RatingItem ratings,string rating_to)
+        [HttpPost("add")]
+        public async Task<IActionResult> AddRatings(Guid entityId, [FromBody] RatingItem ratings,string rating_to)
         {
             Guid userId = Guid.Parse(HttpContext.Items["UserId"].ToString());
-            var data = await _ratingService.AddRating(userId, clothid, ratings, rating_to);
+            var data = await _ratingService.AddRating(userId, entityId, ratings, rating_to);
             return StatusCode(data.StatusCode, data);
         }
 
@@ -43,7 +43,7 @@ namespace Belvoir.Controllers.User
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize(Roles = "User")]
-        [HttpDelete("rating/Delete")]
+        [HttpDelete("Delete")]
         public async Task<IActionResult> Removerating(Guid ratingid, string rating_to)
         {
             var data = await _ratingService.DeleteRating(ratingid,rating_to);
@@ -55,11 +55,11 @@ namespace Belvoir.Controllers.User
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [Authorize(Roles = "User")]
-        [HttpPut("rating/Add")]
-        public async Task<IActionResult> UpdateRating(Guid raingid, [FromBody] RatingItem ratings, string rating_to)
+        [HttpPut("Add")]
+        public async Task<IActionResult> UpdateRating(Guid ratingid, [FromBody] RatingItem ratings, string rating_to)
         {
             Guid userId = Guid.Parse(HttpContext.Items["UserId"].ToString());
-            var data = await _ratingService.UpdateRating(raingid, ratings,userId,rating_to);
+            var data = await _ratingService.UpdateRating(ratingid, ratings,userId,rating_to);
             return StatusCode(data.StatusCode, data);
         }
     }
