@@ -14,8 +14,8 @@ namespace Belvoir.Bll.Services.UserSer
         public Task<Response<object>> AddRating(Guid userid, Guid entityid, RatingItem data, string rating_to);
         public Task<Response<IEnumerable<Ratings>>> GetRating(Guid entityid, string rating_to);
 
-        public Task<Response<object>> DeleteRating(Guid ratingId);
-        public Task<Response<object>> UpdateRating(Guid ratingId, RatingItem data);
+        public Task<Response<object>> DeleteRating(Guid ratingId, string rating_to);
+        public Task<Response<object>> UpdateRating(Guid ratingId, RatingItem data,Guid userId, string rating_to);
     }
     public class RatingService : IRatingService
     {
@@ -74,9 +74,9 @@ namespace Belvoir.Bll.Services.UserSer
             };
         }
 
-        public async Task<Response<object>> DeleteRating(Guid ratingId)
+        public async Task<Response<object>> DeleteRating(Guid ratingId, string rating_to)
         {
-            var response = await _ratingRepository.DeleteRating(ratingId);
+            var response = await _ratingRepository.DeleteRating(ratingId,rating_to);
 
             if (response == 0)
             {
@@ -94,9 +94,9 @@ namespace Belvoir.Bll.Services.UserSer
             };
         }
 
-        public async Task<Response<object>> UpdateRating(Guid ratingId, RatingItem data)
+        public async Task<Response<object>> UpdateRating(Guid ratingId, RatingItem data, Guid userId, string rating_to)
         {
-            var response = await _ratingRepository.UpdateRating(ratingId, data);
+            var response = await _ratingRepository.UpdateRating(ratingId, data,userId,rating_to);
 
             if (response == 0)
             {

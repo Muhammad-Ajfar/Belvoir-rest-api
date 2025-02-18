@@ -14,8 +14,8 @@ namespace Belvoir.DAL.Repositories.UserRep
     {
         public Task<int> AddRating(Guid EntityId, Guid userid, RatingItem data,string rating_to);
         public Task<IEnumerable<Ratings>> GetRating(Guid entityid, string rating_to);
-        public Task<int> DeleteRating(Guid ratingId);
-        public Task<int> UpdateRating(Guid ratingId, RatingItem data);
+        public Task<int> DeleteRating(Guid ratingId, string rating_to);
+        public Task<int> UpdateRating(Guid ratingId, RatingItem data, Guid userId, string rating_to);
     }
     public class RatingRepository : IRatingRepository
     {
@@ -72,20 +72,20 @@ namespace Belvoir.DAL.Repositories.UserRep
             return await _dbConnection.QueryAsync<Ratings>(query, new { EntityId = entityid, rating_to = rating_to});
         }
 
-        public async Task<int> DeleteRating(Guid ratingId)
+        public async Task<int> DeleteRating(Guid ratingId, string rating_to)
         {
-            var query = @"UPDATE Ratings SET isdeleted = true WHERE id = @ratingId;";
-            return await _dbConnection.ExecuteAsync(query, new { ratingId });
+            var query = @"UPDATE Ratings SET isdeleted = true WHERE id = @ratingId AND rating_to = @rating_to;";
+            return await _dbConnection.ExecuteAsync(query, new { ratingId = ratingId, rating_to = rating_to });
         }
 
-        public async Task<int> UpdateRating(Guid ratingId, RatingItem data)
+        public async Task<int> UpdateRating(Guid ratingId, RatingItem data, Guid userId, string rating_to)
         {
             var query = @" UPDATE Ratings 
                             SET ratingvalue = @ratingValue, 
                                 message = @message
-                            WHERE id = @ratingId AND isDeleted = false";
+                            WHERE id = @ratingId AND isDeleted = false AND userid = @userId AND rating_to = @rating_to";
 
-            return await _dbConnection.ExecuteAsync(query, new { ratingId = ratingId, @message = data.message, @ratingValue = data.ratingvalue });
+            return await _dbConnection.ExecuteAsync(query, new { ratingId = ratingId, @message = data.message, @ratingValue = data.ratingvalue , userId = userId, rating_to = rating_to });
         }
 
     }
