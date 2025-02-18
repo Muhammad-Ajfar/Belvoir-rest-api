@@ -113,6 +113,7 @@ namespace Belvoir.DAL.Repositories.Admin
                 parameters.Add("@p_tracking_number", order.trackingNumber);
                 parameters.Add("@p_product_type", order.productType);
                 parameters.Add("@p_tailor_product_id", order.tailorProductId);
+                parameters.Add("@p_set_id", order.SetId);
                 parameters.Add("@p_rental_product_id", order.rentalProductId);
                 parameters.Add("@p_quantity", order.quantity);
                 parameters.Add("@p_price", order.price);
