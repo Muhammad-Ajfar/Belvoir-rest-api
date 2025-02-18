@@ -33,7 +33,7 @@ namespace Belvoir.Bll.Services.UserSer
                 return new Response<object>
                 {
                     StatusCode = 400,
-                    Message = "The user has already rated this cloth "
+                    Message = "The user has already rated this entity "
                 };
             }
             if (response == 0)

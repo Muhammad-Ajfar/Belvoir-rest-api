@@ -265,7 +265,7 @@ namespace Belvoir.DAL.Repositories.Admin
         {
             Guid set_id = Guid.NewGuid();
             string query1 = @"INSERT INTO `belvoir`.`measurements` (`measurement_id`,`set_id`,`des_mes_id`,`measurement_value`) VALUES (UUID(),@set_id,@des_mes_id,@measurement_value);";
-            string query2 = @"INSERT INTO `belvoir`.`measurement_sets` (`set_id`,`set_name`,`user_id`,`design_id`) VALUES (@set_id,@set_name,@user_id,@tailor_product);";
+            string query2 = @"INSERT INTO `belvoir`.`measurement_sets` (`set_id`,`set_name`,`user_id`,`product_id`) VALUES (@set_id,@set_name,@user_id,@tailor_product);";
 
             _dbConnection.Open();
 
