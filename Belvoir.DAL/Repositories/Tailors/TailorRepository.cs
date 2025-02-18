@@ -41,7 +41,7 @@ namespace Belvoir.DAL.Repositories.Tailors
         }
         public async Task<Dashboard> dashboard(Guid tailorId)
         {
-            var dashboard = await _dbConnection.QuerySingleOrDefaultAsync("TailorDashboard", new { inputTailorID = tailorId }, commandType: CommandType.StoredProcedure);
+            var dashboard = await _dbConnection.QuerySingleOrDefaultAsync<Dashboard>("TailorDashboard", new { inputTailorID = tailorId }, commandType: CommandType.StoredProcedure);
             return dashboard;
         }
         public async Task<string> UserPassword(Guid Tailorid)

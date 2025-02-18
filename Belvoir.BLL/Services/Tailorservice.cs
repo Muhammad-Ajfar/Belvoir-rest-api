@@ -44,26 +44,18 @@ namespace Belvoir.Bll.Services
             };
         }
 
-
-
-
-
-
         public async Task<Response<object>> UpdateStatus(Guid taskId, string status)
         {
             try
             {
-
                 int rowsAffected = await _repo.UpdateStatus(taskId, status);
 
                 if (rowsAffected > 0)
                 {
-
                     return new Response<object>
                     {
                         Message = "Task status updated successfully.",
                         StatusCode = 200,
-
                     };
                 }
                 else

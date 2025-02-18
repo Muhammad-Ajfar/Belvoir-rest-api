@@ -93,47 +93,6 @@ namespace Belvoir.Controllers.Admin
             return StatusCode(data.StatusCode, data);
         }
 
-        [HttpGet("cloth-rating")]
-        public async Task<IActionResult> GetRating_(Guid productid)
-        {
-            var data = await _myService.GetRating(productid);
-            return StatusCode(data.StatusCode, data);
-        }
-
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        [Authorize(Roles = "User")]
-        [HttpPost("cloth-rating")]
-        public async Task<IActionResult> AddRatings(Guid clothid, [FromBody] RatingItem ratings)
-        {
-            Guid userId = Guid.Parse(HttpContext.Items["UserId"].ToString());
-            var data = await _myService.AddRating(userId,clothid, ratings);
-            return StatusCode(data.StatusCode, data);
-        }
-
-        [Authorize(Roles = "User")]
-        [HttpDelete("cloth-rating")]
-        public async Task<IActionResult> Removerating(Guid ratingid)
-        {
-            var data = await _myService.DeleteRating(ratingid);
-            return StatusCode(data.StatusCode, data);
-        }
-
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        [Authorize(Roles = "User")]
-        [HttpPut("cloth-rating")]
-        public async Task<IActionResult> UpdateRating(Guid raingid, [FromBody] RatingItem ratings)
-        {
-            Guid userId = Guid.Parse(HttpContext.Items["UserId"].ToString());
-            var data = await _myService.UpdateRating(raingid, ratings);
-            return StatusCode(data.StatusCode, data);
-        }
-
         [HttpGet("cloth-category")]
         public async Task<IActionResult> GetClothCategory()
         {

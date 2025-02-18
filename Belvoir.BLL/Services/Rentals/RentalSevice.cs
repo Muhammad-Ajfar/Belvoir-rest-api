@@ -33,15 +33,6 @@ namespace Belvoir.Bll.Services.Rentals
         public Task<Response<IEnumerable<RentalWhishListviewDTO>>> GetWishlist(Guid userId);
 
 
-        public Task<Response<object>> AddRating(Guid userid, Guid rentalid, RatingItem data);
-        public Task<Response<AvgRating>> GetRating(Guid rentalid);
-        public Task<Response<object>> DeleteRating(Guid ratingId);
-        public Task<Response<object>> UpdateRating(Guid ratingId, RatingItem data);
-
-
-
-
-
     }
 
     public class RentalSevice : IRentalService
@@ -70,7 +61,7 @@ namespace Belvoir.Bll.Services.Rentals
             }
 
             var categoryExists = await _repo.CetegoryExist(Data.fabrictype);
-            if (categoryExists==0)
+            if (categoryExists == 0)
             {
                 return new Response<object>
                 {
@@ -84,7 +75,7 @@ namespace Belvoir.Bll.Services.Rentals
             rentalProduct.Id = Guid.NewGuid();
             rentalProduct.CreatedAt = DateTime.UtcNow;
             rentalProduct.IsDeleted = false;
-            var result = await _repo.AddRentalProductAsync(rentalProduct,userId);
+            var result = await _repo.AddRentalProductAsync(rentalProduct, userId);
 
             for (int i = 0; i < files.Length; i++)
             {
@@ -92,7 +83,7 @@ namespace Belvoir.Bll.Services.Rentals
 
                 bool isPrimary = i == 0;
                 await _repo.AddRentalImage(rentalProduct.Id, url, isPrimary);
-               
+
 
             }
 
@@ -147,7 +138,7 @@ namespace Belvoir.Bll.Services.Rentals
                 }
                 resultDict[rentalProduct.Id.ToString()].images.Add(rentalImage);
             }
-            var result= resultDict.Values.ToList();
+            var result = resultDict.Values.ToList();
             return new Response<IEnumerable<RentalViewDTO>>
             {
                 StatusCode = 200,
@@ -158,26 +149,26 @@ namespace Belvoir.Bll.Services.Rentals
 
         public async Task<Response<object>> DeleteRental(Guid rentalId, Guid userid)
         {
-            
-                var rentalProduct = await _repo.GetRentalProductById(rentalId);
 
-                if (rentalProduct == null)
-                {
-                    return new Response<object>
-                    {
-                        StatusCode = 404,
-                        Error = "Rental product not found"
-                    };
-                }
+            var rentalProduct = await _repo.GetRentalProductById(rentalId);
 
-                await _repo.RentalProductAsDeleted(rentalId, userid);
-
+            if (rentalProduct == null)
+            {
                 return new Response<object>
                 {
-                    Message = "Rental item deleted successfully",
-                    StatusCode = 200
+                    StatusCode = 404,
+                    Error = "Rental product not found"
                 };
             }
+
+            await _repo.RentalProductAsDeleted(rentalId, userid);
+
+            return new Response<object>
+            {
+                Message = "Rental item deleted successfully",
+                StatusCode = 200
+            };
+        }
 
 
         public async Task<Response<object>> UpdateRental(Guid rentalId, IFormFile[] files, RentalSetDTO Data, Guid userId)
@@ -218,7 +209,7 @@ namespace Belvoir.Bll.Services.Rentals
                 {
                     var imagePath = await _cloudinaryService.UploadImageAsync(files[i]);
                     await _repo.AddRentalImage(rentalId, imagePath, i == 0);
-                  
+
                 }
             }
 
@@ -306,94 +297,5 @@ namespace Belvoir.Bll.Services.Rentals
 
         }
 
-        public async Task<Response<object>> AddRating(Guid userid, Guid rentalid, RatingItem data)
-        {
-            var response = await _repo.AddRating(rentalid, userid, data);
-
-            if (response == -1)
-            {
-                return new Response<object>
-                {
-                    StatusCode = 400,
-                    Message = "The user has already rated this product "
-                };
-            }
-            if (response == 0)
-            {
-                return new Response<object>
-                {
-                    StatusCode = 400,
-                    Message = "Error in adding Rating"
-                };
-            }
-            return new Response<object>
-            {
-
-                StatusCode = 200,
-                Message = "success"
-            };
-        }
-
-        public async Task<Response<AvgRating>> GetRating(Guid rentalid)
-        {
-            var ratings = await _repo.GetRating(rentalid);
-
-            if (ratings == null)
-            {
-                return new Response<AvgRating>
-                {
-                    StatusCode = 404,
-                    Message = "No ratings found",
-                    Data = null
-                };
-            }
-
-            return new Response<AvgRating>
-            {
-                StatusCode = 200,
-                Message = "Ratings retrieved successfully",
-                Data = ratings
-            };
-        }
-
-        public async Task<Response<object>> DeleteRating(Guid ratingId)
-        {
-            var response = await _repo.DeleteRating(ratingId);
-
-            if (response == 0)
-            {
-                return new Response<object>
-                {
-                    StatusCode = 400,
-                    Message = "Error deleting rating"
-                };
-            }
-
-            return new Response<object>
-            {
-                StatusCode = 200,
-                Message = "Rating deleted successfully"
-            };
-        }
-
-        public async Task<Response<object>> UpdateRating(Guid ratingId, RatingItem data)
-        {
-            var response = await _repo.UpdateRating(ratingId, data);
-
-            if (response == 0)
-            {
-                return new Response<object>
-                {
-                    StatusCode = 400,
-                    Message = "Error updating rating"
-                };
-            }
-
-            return new Response<object>
-            {
-                StatusCode = 200,
-                Message = "Rating updated successfully"
-            };
-        }
     }
 }
