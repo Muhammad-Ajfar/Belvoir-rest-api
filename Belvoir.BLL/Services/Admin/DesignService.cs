@@ -23,8 +23,6 @@ namespace Belvoir.Bll.Services.Admin
         Task<Response<string>> AddDesignAsync(Design design, List<IFormFile> imageFiles);
         Task<Response<string>> UpdateDesignAsync(UpdateDesignDto dto);
         public Task<Response<string>> SoftDeleteDesignAsync(Guid designId);
-
-
         Task<Response<object>> AddMesurementGuide(Mesurment_Guides design_Mesurments);
         Task<Response<object>> AddDesignMesurement(List<Design_Mesurment> mesurement);
         Task<Response<IEnumerable<MesurementListGet>>> GetDesignMesurment(Guid design_id);

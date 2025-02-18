@@ -265,7 +265,7 @@ namespace Belvoir.DAL.Repositories.Admin
         {
             Guid set_id = Guid.NewGuid();
             string query1 = @"INSERT INTO `belvoir`.`measurements` (`measurement_id`,`set_id`,`des_mes_id`,`measurement_value`) VALUES (UUID(),@set_id,@des_mes_id,@measurement_value);";
-            string query2 = @"INSERT INTO `belvoir`.`measurement_sets` (`set_id`,`set_name`,`user_id`,`design_id`) VALUES (@set_id,@set_name,@user_id,@design_id);";
+            string query2 = @"INSERT INTO `belvoir`.`measurement_sets` (`set_id`,`set_name`,`user_id`,`design_id`) VALUES (@set_id,@set_name,@user_id,@tailor_product);";
 
             _dbConnection.Open();
 
@@ -273,7 +273,7 @@ namespace Belvoir.DAL.Repositories.Admin
             {
                 try
                 {
-                    bool ans = await _dbConnection.ExecuteAsync(query2, new { set_id = set_id, set_name = mesurment.set_name, user_id = user_id, design_id = mesurment.design_id }) > 0;
+                    bool ans = await _dbConnection.ExecuteAsync(query2, new { set_id = set_id, set_name = mesurment.set_name, user_id = user_id, tailor_product = mesurment.tailor_product_id }) > 0;
                     if (ans)
                     {
                         foreach (var item in mesurment.values)
