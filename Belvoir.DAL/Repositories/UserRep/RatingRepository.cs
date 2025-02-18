@@ -4,6 +4,7 @@ using Dapper;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,7 +14,7 @@ namespace Belvoir.DAL.Repositories.UserRep
     public interface IRatingRepository
     {
         public Task<int> AddRating(Guid EntityId, Guid userid, RatingItem data,string rating_to);
-        public Task<IEnumerable<Ratings>> GetRating(Guid entityid, string rating_to);
+        public Task<AvgRating> GetRating(Guid entityid, string rating_to);
         public Task<int> DeleteRating(Guid ratingId, string rating_to);
         public Task<int> UpdateRating(Guid ratingId, RatingItem data, Guid userId, string rating_to);
     }
@@ -54,9 +55,16 @@ namespace Belvoir.DAL.Repositories.UserRep
                                 @userid,@rating_to,@isdeleted,@createdby,@message,@ratingvalue);";
             return await _dbConnection.ExecuteAsync(query, new { entityid = EntityId, userid = userid, isdeleted = false, createdby = userid, message = data.message, ratingvalue = data.ratingvalue ,rating_to = rating_to});
         }
-
-        public async Task<IEnumerable<Ratings>> GetRating(Guid entityid, string rating_to)
+        public async Task<AvgRating> GetRating(Guid entityid, string rating_to)
         {
+            var query1 = @"SELECT AVG(ratingvalue), COUNT(*) from Ratings 
+                            JOIN User ON Ratings.userid=User.id  
+                            WHERE Ratings.isDeleted = false AND
+                                (@rating_to = 'cloth' AND Ratings.clothid = @EntityId) OR
+                                (@rating_to = 'tailor' AND Ratings.tailorid = @EntityId) OR
+                                (@rating_to = 'rental' AND Ratings.rentalid = @EntityId) OR
+                                (@rating_to = 'design' AND Ratings.designid = @EntityId);";
+            var res = await _dbConnection.QueryFirstOrDefaultAsync<AVGCount>(query1, new { EntityId = entityid, rating_to = rating_to });
             var query = @"SELECT 
                             Ratings.id, 
                             User.name AS username, 
@@ -69,7 +77,7 @@ namespace Belvoir.DAL.Repositories.UserRep
                             (@rating_to = 'tailor' AND Ratings.tailorid = @EntityId) OR
                             (@rating_to = 'rental' AND Ratings.rentalid = @EntityId) OR
                             (@rating_to = 'design' AND Ratings.designid = @EntityId);";
-            return await _dbConnection.QueryAsync<Ratings>(query, new { EntityId = entityid, rating_to = rating_to});
+            return new AvgRating() { ratings = await _dbConnection.QueryAsync<Ratings>(query, new { EntityId = entityid, rating_to = rating_to }), averageRating = res.averageRating, count = res.count };
         }
 
         public async Task<int> DeleteRating(Guid ratingId, string rating_to)

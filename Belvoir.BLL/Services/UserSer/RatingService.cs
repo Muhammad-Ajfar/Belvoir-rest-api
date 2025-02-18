@@ -52,21 +52,13 @@ namespace Belvoir.Bll.Services.UserSer
             };
         }
 
-        public async Task<Response<IEnumerable<Ratings>>> GetRating(Guid entityid , string rating_to)
+        
+        public async Task<Response<AvgRating>> GetRating(Guid entityid , string rating_to)
         {
             var ratings = await _ratingRepository.GetRating(entityid, rating_to);
 
-            if (ratings == null || !ratings.Any())
-            {
-                return new Response<IEnumerable<Ratings>>
-                {
-                    StatusCode = 404,
-                    Message = "No ratings found",
-                    Data = null
-                };
-            }
 
-            return new Response<IEnumerable<Ratings>>
+            return new Response<AvgRating>
             {
                 StatusCode = 200,
                 Message = "Ratings retrieved successfully",
