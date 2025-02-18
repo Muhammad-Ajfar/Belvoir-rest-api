@@ -25,6 +25,8 @@ namespace Belvoir.Bll.DTO.Order
         [Required(ErrorMessage = "Product ID is required.")]
         public Guid productId { get; set; }
 
+        public Guid? SetId { get; set; }
+
         [Range(1, 10, ErrorMessage = "Quantity must be between 1 and 10.")]
         public int quantity { get; set; }
 

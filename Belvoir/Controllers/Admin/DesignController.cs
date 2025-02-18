@@ -52,7 +52,7 @@ namespace Belvoir.Controllers.Admin
                 Category = designDTO.Category,
                 Price = designDTO.Price,
                 Available = designDTO.Available,
-                CreatedBy = designDTO.CreatedBy
+                CreatedBy = Guid.Parse(HttpContext.Items["UserId"].ToString())
             };
 
             var response = await _designService.AddDesignAsync(design, designDTO.ImageFiles);

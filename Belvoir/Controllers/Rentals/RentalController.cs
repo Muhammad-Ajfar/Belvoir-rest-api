@@ -20,6 +20,7 @@ namespace Belvoir.Controllers.Rentals
             _service = service;
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> AddRental(IFormFile[] files, [FromForm] RentalSetDTO rentalData)
         {
@@ -43,6 +44,7 @@ namespace Belvoir.Controllers.Rentals
             return StatusCode(response.StatusCode, response);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("")]
         public async Task<IActionResult> DeleteRental(Guid id)
         {
@@ -51,6 +53,7 @@ namespace Belvoir.Controllers.Rentals
             return StatusCode(response.StatusCode, response);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPut("update")]
         public async Task<IActionResult> UpdateRental(Guid rentalId, IFormFile[] files, [FromForm] RentalSetDTO rentalData)
         {
@@ -59,7 +62,7 @@ namespace Belvoir.Controllers.Rentals
             return StatusCode(response.StatusCode, response);
         }
 
-        [Authorize]
+        [Authorize(Roles = "User")]
         [HttpPost("whishlist")]
         public async Task<IActionResult> AddToWhisList(Guid productid)
         {
@@ -68,12 +71,15 @@ namespace Belvoir.Controllers.Rentals
             return StatusCode(data.StatusCode, data);
         }
 
+        [Authorize(Roles = "User")]
         [HttpGet("whishlist")]
         public async Task<IActionResult> GetWhistList()
         {
             Guid userId = Guid.Parse(HttpContext.Items["UserId"].ToString());
             var data = await _service.GetWishlist(userId);
             return StatusCode(data.StatusCode, data);
+
         }  
+
     }
 }
