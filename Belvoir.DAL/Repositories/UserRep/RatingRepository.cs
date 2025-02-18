@@ -57,7 +57,7 @@ namespace Belvoir.DAL.Repositories.UserRep
         }
         public async Task<AvgRating> GetRating(Guid entityid, string rating_to)
         {
-            var query1 = @"SELECT AVG(ratingvalue), COUNT(*) from Ratings 
+            var query1 = @"SELECT AVG(ratingvalue) as averageRating, COUNT(*) as count from Ratings 
                             JOIN User ON Ratings.userid=User.id  
                             WHERE Ratings.isDeleted = false AND
                                 (@rating_to = 'cloth' AND Ratings.clothid = @EntityId) OR
