@@ -12,7 +12,7 @@ namespace Belvoir.Bll.Services.UserSer
     public interface IRatingService
     {
         public Task<Response<object>> AddRating(Guid userid, Guid entityid, RatingItem data, string rating_to);
-        public Task<Response<IEnumerable<Ratings>>> GetRating(Guid entityid, string rating_to);
+        public Task<Response<AvgRating>> GetRating(Guid entityid, string rating_to);
 
         public Task<Response<object>> DeleteRating(Guid ratingId, string rating_to);
         public Task<Response<object>> UpdateRating(Guid ratingId, RatingItem data,Guid userId, string rating_to);
