@@ -38,10 +38,7 @@ namespace Belvoir.DAL.Repositories.Rental
         public Task<IEnumerable<(RentalWhishlist, RentalImage)>> GetWishlist(Guid userId);
 
 
-        public Task<int> AddRating(Guid rentalid, Guid userid, RatingItem data);
-        public Task<AvgRating> GetRating(Guid rentalid);
-        public Task<int> DeleteRating(Guid ratingId);
-        public Task<int> UpdateRating(Guid ratingId, RatingItem data);
+       
 
 
 
@@ -228,44 +225,6 @@ namespace Belvoir.DAL.Repositories.Rental
 
 
 
-        public async Task<int> AddRating(Guid rentalid, Guid userid, RatingItem data)
-        {
-            int reviewExists = await _connection.ExecuteScalarAsync<int>(
-                "SELECT COUNT(*) FROM Ratings WHERE userid = @UserId AND rentalid = @RentalId",
-                new { UserId = userid, RentalId = rentalid });
-
-            if (reviewExists > 0)
-            {
-                return -1; // Indicates that the user has already rated this rental
-            }
-
-            var query = @"insert into Ratings (id,rentalid,userid,isdeleted,createdby,message,ratingvalue) values (UUID(),@rentalid,@userid,@isdeleted,@createdby,@message,@ratingvalue)";
-            return await _connection.ExecuteAsync(query, new { rentalid = rentalid, userid = userid, isdeleted = false, createdby = userid, message = data.message, ratingvalue = data.ratingvalue });
-        }
-
-        public async Task<AvgRating> GetRating(Guid rentalid)
-        {
-            var query1 = @"select AVG(ratingvalue), COUNT(*) from Ratings join User on Ratings.userid=User.id  where rentalid=@rentalid";
-            var res = await _connection.QueryFirstOrDefaultAsync<AVGCount>(query1, new { rentalid = rentalid });
-            var query = @"select Ratings.id ,User.name as username,Ratings.ratingvalue,message from Ratings join User on Ratings.userid=User.id  where rentalid=@rentalid";
-            return new AvgRating() { ratings = await _connection.QueryAsync<Ratings>(query, new { rentalid = rentalid }),averageRating = res.averageRating,count = res.count };
-        }
-
-        public async Task<int> DeleteRating(Guid ratingId)
-        {
-            var query = @"DELETE FROM Ratings WHERE id = @ratingId";
-            return await _connection.ExecuteAsync(query, new { ratingId });
-        }
-
-        public async Task<int> UpdateRating(Guid ratingId, RatingItem data)
-        {
-            var query = @"
-            UPDATE Ratings 
-            SET ratingvalue = @ratingValue, 
-                message = @message
-            WHERE id = @ratingId";
-
-            return await _connection.ExecuteAsync(query, new { ratingId = ratingId, @message = data.message, @ratingValue = data.ratingvalue });
-        }
+        
     }
 }

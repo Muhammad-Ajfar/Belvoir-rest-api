@@ -28,7 +28,7 @@ namespace Belvoir.DAL.Repositories.Admin
         public Task<bool> AddMesurementGuide(Mesurment_Guides mesurment);
         public Task<bool> AddDesignMesurment(List<Design_Mesurment> design_Mesurments);
         public Task<IEnumerable<MesurementListGet>> GetDesignMesurment(Guid design_id);
-        public Task<IEnumerable<MesurmentResponse>> AddMesurmentValues(MesurementSet mesurment, Guid user_id);
+        public Task<MesurmentResponseList> AddMesurmentValues(MesurementSet mesurment, Guid user_id);
         public Task<IEnumerable<MesurmentGuidGet>> GetMesurement();
     }
 
@@ -261,7 +261,7 @@ namespace Belvoir.DAL.Repositories.Admin
             return await _dbConnection.QueryAsync<MesurementListGet>(query,new { design = design_id});
         }
 
-        public async Task<IEnumerable<MesurmentResponse>> AddMesurmentValues(MesurementSet mesurment,Guid user_id)
+        public async Task<MesurmentResponseList> AddMesurmentValues(MesurementSet mesurment,Guid user_id)
         {
             Guid set_id = Guid.NewGuid();
             string query1 = @"INSERT INTO `belvoir`.`measurements` (`measurement_id`,`set_id`,`des_mes_id`,`measurement_value`) VALUES (UUID(),@set_id,@des_mes_id,@measurement_value);";
@@ -284,7 +284,7 @@ namespace Belvoir.DAL.Repositories.Admin
                     transaction.Commit();
 
                     var res = await _dbConnection.QueryAsync<MesurmentResponse>("SELECT measurement_name,measurement_value FROM design_mesurment dm JOIN measurement_guides mg ON dm.guide_id = mg.guide_id left join measurements m ON m.des_mes_id = dm.id where m.set_id = @set_id", new { set_id = set_id });
-                    return res;
+                    return new MesurmentResponseList() { set_id = set_id,mesurements = res};
                 }
                 catch (Exception ex) 
                 {

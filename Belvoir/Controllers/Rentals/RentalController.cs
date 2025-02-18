@@ -33,21 +33,15 @@ namespace Belvoir.Controllers.Rentals
         [HttpGet("id")]
         public async Task<IActionResult> SearchRentalid(Guid id)
         {
-
             var response = await _service.GetRentalById(id);
             return StatusCode(response.StatusCode, response);
-
         }
-
-
         
         [HttpGet("products")]
         public async Task<IActionResult> Paginated([FromQuery] RentalQuery query)
         {
-
             var response = await _service.PaginatedRentalProduct(query);
             return StatusCode(response.StatusCode, response);
-
         }
 
         [Authorize(Roles = "Admin")]
@@ -57,7 +51,6 @@ namespace Belvoir.Controllers.Rentals
             var user = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
             var response = await _service.DeleteRental(id, Guid.Parse(user.Value));
             return StatusCode(response.StatusCode, response);
-
         }
 
         [Authorize(Roles = "Admin")]
@@ -67,7 +60,6 @@ namespace Belvoir.Controllers.Rentals
             var user = User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
             var response = await _service.UpdateRental(rentalId, files, rentalData, Guid.Parse(user.Value));
             return StatusCode(response.StatusCode, response);
-
         }
 
         [Authorize(Roles = "User")]
@@ -86,39 +78,8 @@ namespace Belvoir.Controllers.Rentals
             Guid userId = Guid.Parse(HttpContext.Items["UserId"].ToString());
             var data = await _service.GetWishlist(userId);
             return StatusCode(data.StatusCode, data);
-        }
 
-        [HttpGet("rental-rating")]
-        public async Task<IActionResult> GetRating_(Guid productid)
-        {
-            var data = await _service.GetRating(productid);
-            return StatusCode(data.StatusCode, data);
-        }
+        }  
 
-        [Authorize(Roles = "User")]
-        [HttpPost("rental-rating")]
-        public async Task<IActionResult> AddRatings(Guid productid, [FromBody] RatingItem ratings)
-        {
-            Guid userId = Guid.Parse(HttpContext.Items["UserId"].ToString());
-            var data = await _service.AddRating(userId, productid, ratings);
-            return StatusCode(data.StatusCode, data);
-        }
-
-        [Authorize(Roles = "User")]
-        [HttpDelete("rental-rating")]
-        public async Task<IActionResult> Removerating(Guid ratingid)
-        {
-            var data = await _service.DeleteRating(ratingid);
-            return StatusCode(data.StatusCode, data);
-        }
-
-        [Authorize(Roles = "User")]
-        [HttpPut("rental-rating")]
-        public async Task<IActionResult> UpdateRating(Guid raitngid, [FromBody] RatingItem ratings)
-        {
-            Guid userId = Guid.Parse(HttpContext.Items["UserId"].ToString());
-            var data = await _service.UpdateRating(raitngid, ratings);
-            return StatusCode(data.StatusCode, data);
-        }
     }
 }
